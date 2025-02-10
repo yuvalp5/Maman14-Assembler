@@ -1,5 +1,8 @@
 .idea/
 .vscode/
-desktop.ini
 cmake-build-debug/
 CMakeLists.txt
+desktop.ini
+
+*.out
+*.o
