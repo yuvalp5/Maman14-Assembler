@@ -1,0 +1,7 @@
+registers: 24 bits each, r0 to r7
+
+PSW (program status word): keeps track of flags
+
+commands: mov, cmp, add, sub, lea, clr, not, inc, dec, jmp, bne, jsr, red, prn, rts, stop
+
+all errors are to be encountered. an error wont stop the program
