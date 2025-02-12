@@ -3,13 +3,14 @@
  */
 
 #include "instructions.h"
-// First group of commands
-void mov(int a, int b){
-    b=a;
+
+ // First group of commands
+void mov(int a, int b) {
+    b = a;
 }
 
-int cmp(int a, int b){
-    return (a==b);
+int cmp(int a, int b) {
+    return (a == b);
 }
 
 void add(int a, register rg) {
@@ -25,20 +26,20 @@ void lea(int a, register rg) {
 }
 
 // Second group of commands
-void clr(int a){
+void clr(int a) {
     a = 0;
 }
 
-void not(int a){
+void not(int a) {
     a = ~a;
 }
 
-void inc(int a){
-    a+=1;
+void inc(int a) {
+    a += 1;
 }
 
-void dec(int a){
-    a-=1;
+void dec(int a) {
+    a -= 1;
 }
 
 void jmp(int a) {
@@ -62,16 +63,16 @@ void prn(int a) {
 }
 
 // Third group of commands
-
-void rts(){
+void rts() {
     // TODO - implement a stack data structure
-    if (stack->stack_top == NULL){
+    if (stack->stack_top == NULL) {
         printf("no value to pop from the stack");
     }
-    else{
-    *pc = stack->stack_top
-    stack -> size --;
-    printf("value popped: %d\n", stack->stack_top);
+    else {
+        *pc = stack->stack_top
+            stack->size--;
+        printf("value popped: %d\n", stack->stack_top);
+
     }
 }
 
