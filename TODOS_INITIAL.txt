@@ -84,4 +84,11 @@ Things to do:
         macro name cant be an instruction name
         no need to check macroend phrase
 
+    3. Files to implement so far
+        * pre_assembler - according to the algorithm in page 40 (46 according to pdf)
+        * first_pass - page 40 (46 pdf), algorithm in page 44 (50 pdf)
+        * second_pass -  algorithm in page 45 (51 pdf)
+        * input files to test the program - at the end
+            * relevant file types - object, entries, exteranls
+
 
