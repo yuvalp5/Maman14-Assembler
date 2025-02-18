@@ -55,8 +55,8 @@ Run order:
 
     receive file of source to run
     
-    pre-assembler- read input, then convert to actual instructions
-    if failed raise error; thenn halt
+    pre-assembler- read input, then convert macros to actual instructions
+    if failed raise error; then halt
     else save output
     algorythm in p.n. 40 (16)
 
