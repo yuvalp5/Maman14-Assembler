@@ -1,4 +1,5 @@
-/* algorithm for pre-assembler:
+/*
+algorithm for pre-assembler:
 Read the next line from the source file. If the end of the macro is reached, proceed to step 9 (end).
 If the first field is the name of a macro appearing in the macro table (e.g., a_mc), replace the macro name with its content, copying all the corresponding lines from the macro table. Then, return to step 1.
 If the first field is "mcro" (macro definition start), proceed to step 6. If not, proceed to step 4.
@@ -16,19 +17,19 @@ End: Save the expanded source file.
 #include "pre_assembler.h"
 
 //0, 4, 6-8, may be broken up further later
-void pre_assembler(int text, int save_loc) {
+void pre_assembler(int open_loc, int save_loc) {
     // TODO: perform all methods as needed
-    // TODO: maybe split into fields here instead of read_next_line?
     // TODO: implement in-between parts
     is_macro = false;
+    int ln = 1;
+    char** fields[7][24];
 
-    read_next_line(text);
-    return 0;
+    while ((**fields = read_ln_num(text, ln)) != NULL) {}
 }
 
 // 1:
-void read_next_line(int text) {
-    // TODO: read each line until \n and return *char[] of all fields separated, if reached eof return NULL
+void read_ln_num(int text, int ln_num) {
+    // TODO: read line number `ln_num` until \n and return *char[] of all fields separated, if reached eof return NULL
     // deleted because needs to be redone to fit method-based run. sorry
 }
 
