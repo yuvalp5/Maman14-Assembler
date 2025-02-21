@@ -48,8 +48,30 @@ void add_macro(int text) {
 }
 
 //9:
-void save_file(int text) {
-    FILE* output_file = fopen("output.txt", "w");
-    fprintf(output_file, "%s", text);
-    fclose(output_file);
+/**
+ * @brief saves the given text to the output file
+ * @param text the text to save
+ * @param save_loc the location to save the file to (should be in ../io/)
+ *@return 0 if the file was saved successfully; 1 if file can't be opened in `w` mode; 2 if graceful closing failed, 3 if closing file failed
+ */
+ /* TODO: Move this to shared/utils */
+int save_file(int text, char* save_loc[]) {
+    /* Create FILE type */
+    FILE* output_file = fopen(*save_loc, "w");
+
+    /* failiure to create file in `w` mode */
+    if (!output_file) {
+        return 1;
+    }
+
+    /* failiure to write to file */
+    if (!fprintf(output_file, "%s", text))
+        return 2;
+
+    /* failiure to close file gracefully */
+    if (!fclose(output_file))
+        return 3;
+
+    /* success */
+    return 0;
 }
