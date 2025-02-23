@@ -11,7 +11,7 @@ If the first field is "mcro", remove the previous macro directive from the sourc
 End: Save the expanded source file.
  */
 
- // 1-5: yuval
+// 1-5: yuval
 // 6-9 + pre_assembler: oren
 
 #include "pre_assembler.h"
@@ -20,15 +20,53 @@ End: Save the expanded source file.
 void pre_assembler(int open_loc, int save_loc) {
     // TODO: perform all methods as needed
     // TODO: implement in-between parts
-    is_macro = false;
-    int ln = 1;
-    char** fields[7][24];
 
-    while ((**fields = read_ln_num(text, ln)) != NULL) {}
+    /* Run variables */
+    bool is_macro;
+    bool a;
+    char* text;
+
+    /* Iteration variables */
+    char** fields[7][24]; // TODO maybe implement as type?
+    int ln;
+    for (ln = 1; (**fields = ln_to_fields(ln) != NULL); ln++) {
+
+        if (is_macro) {
+            if (*fields[0] == "mcroend") {
+                is_macro = false;
+                continue;
+            }
+            if (fields[0] == "mcro") {
+                continue;
+            }
+            add_macro(ln);
+        }
+        else {
+            if (fields[0] == "mcro") {
+                add_macro(ln);
+                continue;
+            }
+            replace_macro(ln);
+        }
+    }
+
+    /* Save at EOF recieved */
+    switch (save_file(text, save_loc))
+    {
+    case 0:
+        break;
+    case 1:
+        break;
+    case 2:
+        break;
+    case 3:
+        break;
+    }
+
 }
 
 // 1:
-void read_ln_num(int text, int ln_num) {
+char** ln_to_fields(int ln_num) {
     // TODO: read line number `ln_num` until \n and return *char[] of all fields separated, if reached eof return NULL
     // deleted because needs to be redone to fit method-based run. sorry
 }
@@ -52,7 +90,7 @@ void add_macro(int text) {
  * @brief saves the given text to the output file
  * @param text the text to save
  * @param save_loc the location to save the file to (should be in ../io/)
- *@return 0 if the file was saved successfully; 1 if file can't be opened in `w` mode; 2 if graceful closing failed, 3 if closing file failed
+ *@return 0 if the file was saved successfully; 1 if file can't be opened in `w` mode; 2 if writing failed, 3 if closing file failed
  */
  /* TODO: Move this to shared/utils */
 int save_file(int text, char* save_loc[]) {
