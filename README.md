@@ -7,7 +7,6 @@
 ## Description
 
 This program is an implementation of a (very) basic assembler
-todo - continue on
 
 ## Details
 
@@ -25,3 +24,10 @@ todo - continue on
 `/core`: Logic and backend innerworkings
 
 `inter`: Proccessing of input before execution
+
+# TODOs:
+
+<i>more detailed TODOs are in src</i>
+
+-   expand README as progress is made
+-   manage `#include`s
