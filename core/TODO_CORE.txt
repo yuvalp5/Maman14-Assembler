@@ -5,3 +5,12 @@ PSW (program status word): keeps track of flags
 commands: mov, cmp, add, sub, lea, clr, not, inc, dec, jmp, bne, jsr, red, prn, rts, stop
 
 all errors are to be encountered. an error wont stop the program
+files list:
+.am  - input for pre assembler
+.object - output file
+externals - external data sources
+entries - ?????????????????????
+.ent - object file extension
+.ext - files to - externals files extension
+if extern and or entries - do not create them!
+

@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include "assembler_first_pass.h"
 void first_pass(){
   //1
   int IC = 100;
@@ -13,7 +14,7 @@ void first_pass(){
 
 }
 //2 - from utils
-void read_line();
+char** ln_to_fields(FILE *file, int ln_num);
 
 //3
 void is_symbol(int field);

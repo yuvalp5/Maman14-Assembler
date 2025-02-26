@@ -15,7 +15,7 @@ void pre_assembler(int text, int save_loc);
 
 // these should maybe be internal (only in .c)
 void pre_assembler(int text, int save_loc);
-char* read_next_line(char *file_name, int ln_num);
+char** ln_to_fields(FILE *file, int ln_num);
 void replace_macro(int text);
 void add_macro(int text);
 int save_file(int text, char* save_loc[]);

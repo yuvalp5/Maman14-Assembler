@@ -66,14 +66,13 @@ void pre_assembler(int open_loc, int save_loc) {
 }
 
 // 1:
-char** ln_to_fields(int ln_num) {
-    // TODO: read line number `ln_num` until \n and return *char[] of all fields separated, if reached eof return NULL
-    // deleted because needs to be redone to fit method-based run. sorry
-}
+
 
 //2:
 void replace_macro(int text) {
     // TODO: replace given text until \n with EXISTING macro text
+    //delete macro name
+    //replace with relevant values
 }
 
 
@@ -81,8 +80,11 @@ void replace_macro(int text) {
 void add_macro(int text) {
     // TODO: implement structure "macro table" (will be done later)
     // TODO: create new entry in structure "macro table"
+    // read the first field of each line
+    //if its a macro, add it to the macro table
+    //else, continue
     // 4:
-    is_macro = true;
+    is_macro = true; // not sure if needed
 }
 
 //9:
@@ -94,6 +96,7 @@ void add_macro(int text) {
  */
  /* TODO: Move this to shared/utils */
 int save_file(int text, char* save_loc[]) {
+  //TODO: replace text param with pointer to file
     /* Create FILE type */
     FILE* output_file = fopen(*save_loc, "w");
 

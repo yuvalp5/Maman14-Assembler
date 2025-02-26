@@ -3,3 +3,8 @@ separate src files to passes
 all errors are to be encountered. an error wont stop the program
 
 whitespaces need to be taken care of
+
+pre assembler - identifies macros and write them out
+first pass - look for labels (variable names) and replaces them with memory address
+second pass - look for variable values and store them in memory addresses
+
