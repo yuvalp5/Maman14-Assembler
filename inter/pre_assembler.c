@@ -24,6 +24,8 @@ void pre_assembler(int open_loc, int save_loc) {
     /* Run variables */
     bool is_macro;
     bool a;
+    char* text;
+
     /* Iteration variables */
     char** fields[7][24]; // TODO maybe implement as type?
     int ln;
@@ -46,7 +48,20 @@ void pre_assembler(int open_loc, int save_loc) {
             }
             replace_macro(ln);
         }
-    };
+    }
+
+    /* Save at EOF recieved */
+    switch (save_file(text, save_loc))
+    {
+    case 0:
+        break;
+    case 1:
+        break;
+    case 2:
+        break;
+    case 3:
+        break;
+    }
 
 }
 
