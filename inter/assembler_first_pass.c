@@ -14,7 +14,7 @@ void first_pass(){
 
 }
 //2 - from utils
-char** ln_to_fields(FILE *file, int ln_num);
+char* ln_to_fields(FILE *file, int ln_num, char *buffer, int size);
 
 //3
 void is_symbol(int field);

@@ -6,7 +6,7 @@ void second_pass(){
 
 
 //1
-char** ln_to_fields(FILE *file, int ln_num); //from utils
+char* ln_to_fields(FILE *file, int ln_num, char *buffer, int size); //from utils
 
 
 //3

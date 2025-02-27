@@ -5,9 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../shared/types.h"
-#define MAX_LINE_LEN 256
-#define MACRO_START_KW "mcro"
-#define MACRO_END_KW "mcroend"
+
  /**
   * @brief Pre-assembler method to perform algorythm, rsulting file is saved (where?)
   */
