@@ -15,6 +15,15 @@ End: Save the expanded source file.
 // 6-9 + pre_assembler: oren
 
 #include "pre_assembler.h"
+#include "../shared/utils.h"
+//macro struct - suggestion
+typedef struct {
+    char name[MAX_MACRO_NAME_LEN];
+    char content[MAX_MACRO_CONTENT_LEN];
+} Macro;
+Macro macro_table[MAX_MACROS]; // Array to store macros
+int macro_count = 0; // Counter for the number of macros
+bool is_macro = false; // Flag indicating if we are inside a macro definition
 
 //0, 4, 6-8, may be broken up further later
 void pre_assembler(int open_loc, int save_loc) {
@@ -65,26 +74,34 @@ void pre_assembler(int open_loc, int save_loc) {
 
 }
 
-// 1:
+// 1:- in utils.c
 
 
 //2:
-void replace_macro(int text) {
-    // TODO: replace given text until \n with EXISTING macro text
-    //delete macro name
-    //replace with relevant values
+void replace_macro(FILE *file, const char *line) {
+    char macro_name[50]; // replace with const later
+    sscanf(line, "%s", macro_name);
+    for (int i=0; i<macro_count; i++){ //implement macro_count later
+      if (strcmp(macro_table[i].name, macro_name) == 0) { //implelemt macro_table
+        fputs(macro_table[i].content, file); // Write macro content to output if found a match
+        return;
+        	}
+        }
+        fputs(line, file); // Write the line as is if no macro is found
 }
 
 
-//3-5: (I may be wrong)
-void add_macro(int text) {
-    // TODO: implement structure "macro table" (will be done later)
-    // TODO: create new entry in structure "macro table"
-    // read the first field of each line
-    //if its a macro, add it to the macro table
-    //else, continue
-    // 4:
-    is_macro = true; // not sure if needed
+//3-5:
+// might be modified according to  the structure of macro_table....
+// is_macro bool will be handled in the pre_assembler func
+void add_macro(const char *line) {
+    if (macro_count >=MAX_MACROS){
+      printf("Too many macros in the program\n");
+      return;
+      }
+      // Concatenate the new line to the last macro content
+    strncat(macro_table[macro_count - 1].content, line, MAX_MACRO_CONTENT_LEN - strlen(macro_table[macro_count - 1].content) - 1);
+
 }
 
 //9:
