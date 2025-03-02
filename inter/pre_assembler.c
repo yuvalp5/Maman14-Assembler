@@ -16,11 +16,8 @@ End: Save the expanded source file.
 
 #include "pre_assembler.h"
 #include "../shared/utils.h"
-//macro struct - suggestion
-typedef struct {
-    char name[MAX_MACRO_NAME_LEN];
-    char content[MAX_MACRO_CONTENT_LEN];
-} Macro;
+#include "../shared/types.h"
+
 Macro macro_table[MAX_MACROS]; // Array to store macros
 int macro_count = 0; // Counter for the number of macros
 bool is_macro = false; // Flag indicating if we are inside a macro definition
