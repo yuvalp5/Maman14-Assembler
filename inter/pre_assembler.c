@@ -11,6 +11,8 @@ If the first field is "mcro", remove the previous macro directive from the sourc
 End: Save the expanded source file.
  */
 
+//TODO: file doc
+//TODO: yuval- function docs
 // 1-5: yuval
 // 6-9 + pre_assembler: oren
 
@@ -18,14 +20,12 @@ End: Save the expanded source file.
 #include "../shared/utils.h"
 #include "../shared/types.h"
 
-Macro macro_table[MAX_MACROS]; // Array to store macros
-int macro_count = 0; // Counter for the number of macros
-bool is_macro = false; // Flag indicating if we are inside a macro definition
+Macro macro_table[MAX_MACROS]; /* Array to store macros */
+int macro_count = 0; /* Counter for the number of macros */
+bool is_macro = false; /* Flag indicating if we are inside a macro definition */
 
-//0, 4, 6-8, may be broken up further later
-void pre_assembler(int open_loc, int save_loc) {
-    // TODO: perform all methods as needed
-    // TODO: implement in-between parts
+// TODO: oren perform all methods as needed
+void pre_assembler(FILE* open_loc, FILE* save_loc) {
 
     /* Run variables */
     bool is_macro;
@@ -33,28 +33,22 @@ void pre_assembler(int open_loc, int save_loc) {
     char* text;
 
     /* Iteration variables */
-    char** fields[7][24]; // TODO maybe implement as type?
+    char** fields[7][24];
     int ln;
-    for (ln = 1; (**fields = ln_to_fields(ln) != NULL); ln++) {
+    /* Loop + assignment of current line to fields */
+    for (ln = 1; (**fields = ln_to_fields(open_loc, ln, buf, sz) != NULL); ln++) { //TODO:yuval- implement docs, not sure what buf and sz should be; if EOF encountered return NULL; we need to think of other ways to handle invalid input- maybe in later stages where actual fields are evaluated
 
-        if (is_macro) {
-            if (*fields[0] == "mcroend") {
-                is_macro = false;
-                continue;
+        switch (mcr(*fields[0])) {// TODO: oren- implement function that recieves field (str pointer), if macro definition return 1, if macro already defined return 2, else return 0
+        case 2: /* already defined */
+            replace_macro(open_loc, *fields[0]);
+        case 1: /* new definition */
+            int tmp_ln;
+            if (tmp_ln = add_macro(ln)) { //[x] later implement error if failed
+                ln = tmp_ln;
             }
-            if (fields[0] == "mcro") {
-                continue;
-            }
-            add_macro(ln);
+
+
         }
-        else {
-            if (fields[0] == "mcro") {
-                add_macro(ln);
-                continue;
-            }
-            replace_macro(ln);
-        }
-    }
 
     /* Save at EOF recieved */
     switch (save_file(text, save_loc))
@@ -71,10 +65,6 @@ void pre_assembler(int open_loc, int save_loc) {
 
 }
 
-// 1:- in utils.c
-
-
-//2:
 void replace_macro(FILE *file, const char *line) {
     char macro_name[50]; // replace with const later
     sscanf(line, "%s", macro_name);
@@ -87,11 +77,12 @@ void replace_macro(FILE *file, const char *line) {
         fputs(line, file); // Write the line as is if no macro is found
 }
 
-
-//3-5:
 // might be modified according to  the structure of macro_table....
 // is_macro bool will be handled in the pre_assembler func
-void add_macro(const char *line) {
+//TODO: yuval- return new line number value (after macroend) on success to add; 0 if table is full
+//TODO: yuval- read until "MACROEND", then delete it
+// note- maybe return line where macroend is? what if macroend is right before EOF?
+void add_macro(const char* line) {
     if (macro_count >=MAX_MACROS){
       printf("Too many macros in the program\n");
       return;
@@ -106,7 +97,7 @@ void add_macro(const char *line) {
  * @brief saves the given text to the output file
  * @param text the text to save
  * @param save_loc the location to save the file to (should be in ../io/)
- *@return 0 if the file was saved successfully; 1 if file can't be opened in `w` mode; 2 if writing failed, 3 if closing file failed
+ * @return 0 if the file was saved successfully; 1 if file can't be opened in `w` mode; 2 if writing failed; 3 if closing file failed
  */
  /* TODO: Move this to shared/utils */
 int save_file(int text, char* save_loc[]) {
