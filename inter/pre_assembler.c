@@ -20,8 +20,6 @@ step 6. End: Save the expanded source file.
 //  6-9 + pre_assembler: oren
 
 #include "pre_assembler.h"
-#include "../shared/types.h"
-#include "../shared/utils.h"
 
 Macro macro_table[MAX_MACROS]; /* Array to store macros */
 int macro_count = 0;           /* Counter for the number of macros */

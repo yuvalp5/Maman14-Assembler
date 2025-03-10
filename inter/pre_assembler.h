@@ -2,9 +2,8 @@
  * @brief Pre-assembler implementation as per P. 40
  */
 
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "../shared/types.h"
+#include "../shared/utils.h"
 
 /**
  * @brief Pre-assembler method to perform algorythm
