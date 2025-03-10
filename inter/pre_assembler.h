@@ -2,20 +2,20 @@
  * @brief Pre-assembler implementation as per P. 40
  */
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../shared/types.h"
 
- /**
-  * @brief Pre-assembler method to perform algorythm, rsulting file is saved (where?)
-  */
-void pre_assembler(int text, int save_loc);
-
-// these should maybe be internal (only in .c)
-void pre_assembler(int text, int save_loc);
-char** ln_to_fields(FILE *file, int ln_num);
+/**
+ * @brief Pre-assembler method to perform algorythm
+ *
+ * @param open_loc File to open
+ * @param save_loc File to save to
+ */
+void pre_assembler(char *src, char *dest); // todo int with success/fail output
+int macro_definition(char *field);
 void replace_macro(FILE *file, const char *line);
-void add_macro(const char *line);
-int save_file(int text, char* save_loc[]);
+int add_macro(FILE *file);
+char *get_macro(const char *macro_name);
 
 bool is_macro;
