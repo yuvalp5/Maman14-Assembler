@@ -2,13 +2,11 @@
  * @brief Basic + custom types for use in project
  */
 
-#include "utils.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
-
+#include "utils.h"
 
 //macro struct - suggestion
 typedef struct {
