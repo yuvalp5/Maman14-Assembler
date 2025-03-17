@@ -1,9 +1,10 @@
 #include "wrapper.h"
 // TODO: may be more than one  input file
-//TODO: passing input file names as arguments is done w/o extensions
-int main(int argc, char* argv[]) {
+// TODO: passing input file names as arguments is done w/o extensions
+int main(int argc, char *argv[]) {
     // argc- how many args were passed
-    // argv - args themselves, @0 is the name of the program (either wrapper.c or final binary name)
+    // argv - args themselves, @0 is the name of the program (either wrapper.c
+    // or final binary name)
 
     /*
     What to do in wrapper:
@@ -18,7 +19,6 @@ int main(int argc, char* argv[]) {
         printf("No arguments passed, exiting...\n");
         return 0;
     }
-
 
     printf("[DEBUG:] Arguments passed: \n");
     printf("[DEBUG:] %d\n", argc);
