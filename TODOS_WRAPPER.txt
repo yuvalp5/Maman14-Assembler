@@ -1,3 +1,20 @@
+17/3:
+pre_assembler.c- 
+    oren- make sure pre_assembler works
+    yuval- complete todo
+
+shared/types-
+    yuval- table for macros (get macro by its name)
+    oren- table for labels (get label address by name)
+
+assembler_forst_pass- 
+    yuval- master method + make todos
+    oren- subfuncs
+
+assembler_second_pass- 
+    oren- master method (probably only method(?))
+
+
 Things to keep in mind:
 
     an initial TODO list. later, tasks will be splittel into corrosponding files. 
