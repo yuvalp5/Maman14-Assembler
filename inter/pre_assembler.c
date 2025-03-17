@@ -70,7 +70,7 @@ int macro_definition(char *field) {
     }
     /* Call to existing */
     int i;
-    for (i = 0; i < macro_count; i++) { /* I honestly hate this */
+    for (i = 0; i < macro_count; i++) {
         if (!strcmp(macro_table[i].name, field)) {
             return 1;
         }
