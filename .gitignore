@@ -1,14 +1,9 @@
 .idea/
 .vscode/
-<<<<<<< HEAD
+
 desktop.ini
 cmake-build-debug/
 CMakeLists.txt
-=======
-cmake-build-debug/
-CMakeLists.txt
-desktop.ini
 
 *.out
 *.o
->>>>>>> 80e94c167b81a4ae6a3230e5028fa49a30d85477
