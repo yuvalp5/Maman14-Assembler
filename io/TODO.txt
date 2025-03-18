@@ -1,0 +1,6 @@
+FILE EXTENSIONS:
+
+pre assembled: .am
+object: .o
+externals: .ext
+entries: .ent
