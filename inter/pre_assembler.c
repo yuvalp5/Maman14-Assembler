@@ -1,8 +1,7 @@
-
-// TODO: file doc
-// TODO: yuval- function docs
-//  1-5: yuval
-//  6-9 + pre_assembler: oren
+/**
+ * @brief Pre-Assembler implementation. Consists of master function and other
+ * sub-functions.
+ */
 
 #include "pre_assembler.h"
 
@@ -44,6 +43,13 @@ void pre_assembler(char *src, char *dest) {
     }
 }
 
+/**
+ * @brief Check whether a field is a macro definition or a call to an existing
+ * macro.
+ * @param field The field to check.
+ * @return 1 if field is a macro definition; 2 if call to existing macro; 0
+ * otherwise.
+ */
 int macro_definition(char *field) {
     /* New definition */
     if (!strcmp(field, "mcro")) {
@@ -60,6 +66,12 @@ int macro_definition(char *field) {
     return 0;
 }
 
+/**
+ * @brief Replaces call to existing macro with its content in the output file.
+ * @param file Pointer to file for processed line to be written.
+ * @param line The input line that may contain a macro call.
+ * @return void This function does not return a value.
+ */
 void replace_macro(FILE *file, const char *line) {
     char macro_name[50]; // replace with const later
     sscanf(line, "%s", macro_name);
@@ -74,17 +86,15 @@ void replace_macro(FILE *file, const char *line) {
     fputs(line, file); // Write the line as is if no macro is found
 }
 
-
 /**
  * @brief Reads a macro definition from a file until "mcroend" is encountered.
  *        The macro name and its content are stored in the macro table.
  *        "mcroend" is not stored in the macro's content.
- *
  * @param file Pointer to the file being read.
  * @param name The name of the macro being defined.
- *
  * @return void
- */void add_macro(FILE *file, char *name) {
+ */
+void add_macro(FILE *file, char *name) {
     if (macro_count >= MAX_MACROS) {
         fprintf(stderr, "Error: Too many macros defined\n");
         exit(1);
@@ -103,7 +113,8 @@ void replace_macro(FILE *file, const char *line) {
         }
 
         /*Append line to macro content safely*/
-        strncat(current_macro->content, line, MAX_MACRO_CONTENT_LEN - strlen(current_macro->content) - 1);
+        strncat(current_macro->content, line,
+                MAX_MACRO_CONTENT_LEN - strlen(current_macro->content) - 1);
     }
 
     macro_count++; /*Increment the macro count*/

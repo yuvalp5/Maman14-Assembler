@@ -7,7 +7,6 @@
 
 /**
  * @brief Pre-assembler method to perform algorythm
- *
  * @param open_loc File to open
  * @param save_loc File to save to
  */
