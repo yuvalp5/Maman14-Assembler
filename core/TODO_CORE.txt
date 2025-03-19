@@ -1,3 +1,5 @@
+GOTO END OF PAGE 48
+
 registers: 24 bits each, r0 to r7
 
 PSW (program status word): keeps track of flags
