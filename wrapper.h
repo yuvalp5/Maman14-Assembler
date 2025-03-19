@@ -4,9 +4,17 @@
  * to the user.
  */
 
-#define INPUT_FILE_LOC "./io/input.txt"
+/* Standard file extenstions for io files */
+#define SOURCE_FILE_EXT ".as"
+#define PRE_ASSEMBLED_FILE_EXT ".am"
+#define OBJECT_FILE_EXT ".ob"
+#define OUTPUT_FILE_EXT ".out"
+#define ENTRY_FILE_EXT ".ent"
+#define EXTERN_FILE_EXT ".ext"
 #define PRE_ASSEMBLED_SAVE_LOC "./io/pre_assembler.txt"
 
+#include "inter/assembler_first_pass.h"
+#include "inter/assembler_second_pass.h"
 #include "inter/pre_assembler.h"
+
 #include <stdio.h>
-// #include "core/headers.h"
