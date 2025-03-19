@@ -1,18 +1,3 @@
-/*
-algorithm for pre-assembler:
-Read the next line from the source file. If the end of the macro is reached,
-proceed to step 9 (end). If the first field is the name of a macro appearing in
-the macro table (e.g., a_mc), replace the macro name with its content, copying
-all the corresponding lines from the macro table. Then, return to step 1. If the
-first field is "mcro" (macro definition start), proceed to step 6. If not,
-proceed to step 4. Print the line as is. (During macro definition) Insert the
-line into the macro table under the macro name (e.g., a_mc). Read the next line
-from the source file. If the end of the macro is reached, proceed to step 9
-(end). If the first field is "mcroend" (macro definition end), insert the line
-into the macro table. Then, return to step 1. If the first field is "mcro",
-remove the previous macro directive from the source file. If not, return to
-step 6. End: Save the expanded source file.
- */
 
 // TODO: file doc
 // TODO: yuval- function docs
@@ -25,7 +10,6 @@ Macro macro_table[MAX_MACROS]; /* Array to store macros */
 int macro_count = 0;           /* Counter for the number of macros */
 bool is_macro = false; /* Flag indicating if we are inside a macro definition */
 
-// TODO: oren perform all methods as needed
 void pre_assembler(char *src, char *dest) {
     /* Files to work on */
     FILE *user_input, *pre_assembled;
@@ -45,7 +29,7 @@ void pre_assembler(char *src, char *dest) {
            (**fields = line_to_fields(line) != NULL)) {
 
         switch (macro_definition(*fields[0])) {
-        case 0: // regular line - todo- do we need to check syntax errors?
+        case 0: // regular line
             fputs(line, pre_assembled);
         case 1: // new definition
             add_macro(line);
@@ -53,9 +37,6 @@ void pre_assembler(char *src, char *dest) {
         case 2: // existing macro
             replace_macro(pre_assembled, line);
         }
-
-        // TODO: oren- check if fgets returned NULL because eof or because line
-        // too long- DONE
         /* Save at EOF recieved - make sure  no errors encountered */
         if (!fclose(pre_assembled)) {
             perror("Failed to close file");
@@ -93,20 +74,39 @@ void replace_macro(FILE *file, const char *line) {
     fputs(line, file); // Write the line as is if no macro is found
 }
 
-// might be modified according to  the structure of macro_table....
-// is_macro bool will be handled in the pre_assembler func
-// TODO: yuval- read lines until "macroend" recieved then delete it
-// note- maybe return line where macroend is? what if macroend is right before
-// EOF?
-int add_macro(FILE *file) {
+
+/**
+ * @brief Reads a macro definition from a file until "mcroend" is encountered.
+ *        The macro name and its content are stored in the macro table.
+ *        "mcroend" is not stored in the macro's content.
+ *
+ * @param file Pointer to the file being read.
+ * @param name The name of the macro being defined.
+ *
+ * @return void
+ */void add_macro(FILE *file, char *name) {
     if (macro_count >= MAX_MACROS) {
-        printf("Too many macros in the program\n");
-        return;
+        fprintf(stderr, "Error: Too many macros defined\n");
+        exit(1);
     }
-    // Concatenate the new line to the last macro content
-    strncat(macro_table[macro_count - 1].content, line,
-            MAX_MACRO_CONTENT_LEN -
-                strlen(macro_table[macro_count - 1].content) - 1);
+
+    Macro *current_macro = &macro_table[macro_count];
+    strcpy(current_macro->name, name);
+    current_macro->content[0] = '\0'; /*Initialize content*/
+
+    char line[MAX_LINE_LEN];
+
+    /*Read lines until "mcroend" is encountered*/
+    while (fgets(line, MAX_LINE_LEN, file)) {
+        if (strstr(line, "mcroend") != NULL) {
+            break; /*Stop reading when "mcroend" is found*/
+        }
+
+        /*Append line to macro content safely*/
+        strncat(current_macro->content, line, MAX_MACRO_CONTENT_LEN - strlen(current_macro->content) - 1);
+    }
+
+    macro_count++; /*Increment the macro count*/
 }
 
 /**
