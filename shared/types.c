@@ -1,75 +1,97 @@
-/*
-TODO: implement types
-    string - implemented string.h
-    bool - implelented stdbool
-    table - done
-    stack - done
-*/
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdbool.h>
 #include "types.h"
 
+#ifndef STRING_H
+#define STRING_H
+#include <string.h>
+#endif
+#ifndef STDIO_H
+#define STDIO_H
+#include <stdio.h>
+#endif
+#ifndef STDLIB_H
+#define STDLIB_H
+#include <stdlib.h>
+#endif
 
-// stack basic functions - maybe we should move them to utils?
-Stack* create_stack(int capacity) {
-  if (capacity <= 0) {
-    return NULL;
-  }
-  else {
-    Stack* stack = (Stack*)malloc(sizeof(Stack));
-    if (stack == NULL) {
-      return NULL;
-    }
-    stack->collection = malloc(sizeof(int) * capacity);
-    if (stack->collection == NULL) {
-      free(stack);
-      return NULL;
-    }
-    stack->capacity = capacity;
+/* Basic DB item structure */
+typedef struct Item {
+    void *name;
+    void *value;
+    struct Item *next; // Pointer to the next item
+} Item;
+
+/* Stack structure */
+typedef struct {
+    int size;
+    Item *top; // Top of the stack (LIFO)
+} Stack;
+
+/* Initialize a new stack */
+int initStack(Stack *stack) {
     stack->size = 0;
-    return stack;
-  }
+    stack->top = NULL;
+    return 0;
 }
 
-void destroy_stack(Stack* stack) {
-  free(stack->collection);
-  free(stack);
+/* Push an item onto the stack */
+int push(Stack *stack, void *name, void *value) {
+    Item *newItem = (Item *)malloc(sizeof(Item));
+    if (!newItem) {
+        perror("Failed to allocate memory");
+        return;
+    }
+    newItem->name = name;
+    newItem->value = value;
+    newItem->next = stack->top; // Link new item to the old top
+    stack->top = newItem;       // Update stack top
+    stack->size++;
+    return 0;
 }
 
-bool is_full(Stack* stack) {
-  return stack->size == stack->capacity;
-}
-
-bool is_empty(Stack* stack) {
-  return stack->size == 0;
-}
-
-bool pop(Stack* stack, int* item) { //int item will not be int of course
-  if (is_empty(stack)) {
-    return false;
-  }
-  else {
-    *item = stack->collection[stack->size - 1];
+/* Pop an item from the stack */
+Item *pop(Stack *stack) {
+    if (stack->size == 0) {
+        return NULL; // Stack is empty
+    }
+    Item *poppedItem = stack->top;
+    stack->top = poppedItem->next; // Update top to the next item
     stack->size--;
-    return true;
-  }
+    return poppedItem;
 }
 
-bool push(Stack* stack, int item) {
-  if (is_full(stack)) {
-    return false;
-  }
-  stack->collection[stack->size] = item;
-  stack->size++;
-  return true;
-
+/* Free the stack */
+int destroy_stack(Stack *stack) {
+    while (stack->top) {
+        Item *temp = pop(stack);
+        free(temp);
+    }
+    return 0;
 }
 
-bool peek(Stack* stack, int* item) {
-  if (is_empty(stack)) {
-    return false;
-  }
-  *item = stack->collection[stack->size - 1];
+int is_empty(Stack *stack) { return stack->size == 0; }
+
+int pop(Stack *stack, int *item) { // int item will not be int of course
+    if (is_empty(stack)) {
+        return;
+    } else {
+        *item = stack->collection[stack->size - 1];
+        stack->size--;
+        return 1;
+    }
+}
+
+int push(Stack *stack, int item) {
+    if (is_full(stack)) {
+        return 0;
+    }
+    stack->collection[stack->size] = item;
+    stack->size++;
+    return 1;
+}
+
+int peek(Stack *stack, int *item) {
+    if (is_empty(stack)) {
+        return 0;
+    }
+    *item = stack->collection[stack->size - 1];
 }

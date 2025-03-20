@@ -2,7 +2,25 @@
  * @brief Entry point for program. Handles CLI and passes input to functions.
  */
 
+// TODO: better `#include`s
 #include "wrapper.h"
+#include "inter/assembler_first_pass.h"
+#include "inter/assembler_second_pass.h"
+#include "inter/pre_assembler.h"
+#include "shared/utils.h"
+
+#ifndef STDIO_H
+#define STDIO_H
+#include <stdio.h>
+#endif
+#ifndef STDLIB_H
+#define STDLIB_H
+#include <stdlib.h>
+#endif
+#ifndef STRING_H
+#define STRING_H
+#include <string.h>
+#endif
 
 /**
  * @brief main() function
@@ -10,7 +28,7 @@
  * @param argv arguments pointers
  * @return int
  */
-int main(int argc, char *argv[]) {
+int main(const int argc, char *argv[]) {
 
     /* Logging messages to print and save in log file */
     FILE *log_file = fopen(LOG_FILE_LOC, "w");
@@ -38,7 +56,7 @@ int main(int argc, char *argv[]) {
         src_name = strcat(argv[i], SOURCE_FILE_EXT),
         pre_assembled_name = strcat(argv[i], PRE_ASSEMBLED_FILE_EXT)) {
 
-        print_and_log(("[WRAPPER:] full file name passed: %d\n", src_name));
+        print_and_log("[WRAPPER:] full file name passed: %d\n");
         pre_assembler(src_name, pre_assembled_name);
     }
 

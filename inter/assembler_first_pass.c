@@ -1,11 +1,10 @@
 #include "assembler_first_pass.h"
-#include <stdbool.h>
 
 void first_pass() {
     // 1
     int IC = 100;
     int DC = 0;
-    bool is_symbol = false;
+    int is_symbol = 0;
     // 4 new symbol definition
     // 16  -update IC+L -> IC and go to to stage 2
     // 17 keep track of all errors - dont stop until end
@@ -54,7 +53,7 @@ void is_extern_or_entry(
     return 0;
 };
 
-// 11 - if everything else is "false"
+// 11 - if everything else is false
 void add_code_to_table(int field);
 
 // 12

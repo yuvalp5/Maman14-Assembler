@@ -3,11 +3,23 @@
  * sub-functions.
  */
 
-#include "pre_assembler.h"
+// #include "pre_assembler.h"
+#ifndef STDIO_H
+#define STDIO_H
+#include <stdio.h>
+#endif
+#ifndef STDLIB_H
+#define STDLIB_H
+#include <stdlib.h>
+#endif
+#ifndef STRING_H
+#define STRING_H
+#include <string.h>
+#endif
 
 Macro macro_table[MAX_MACROS]; /* Array to store macros */
 int macro_count = 0;           /* Counter for the number of macros */
-bool is_macro = false; /* Flag indicating if we are inside a macro definition */
+int is_macro = 0; /* Flag indicating if we are inside a macro definition */
 
 void pre_assembler(char *src, char *dest) {
     /* Files to work on */
@@ -16,7 +28,7 @@ void pre_assembler(char *src, char *dest) {
     pre_assembled = fopen(dest, "w+");
 
     /* Run variables */
-    bool is_macro;
+    int is_macro;
     char *text, *macro;
 
     /* Iteration variables */

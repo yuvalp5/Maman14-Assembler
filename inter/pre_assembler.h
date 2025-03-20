@@ -1,9 +1,19 @@
 /**
  * @brief Pre-assembler implementation as per P. 40
  */
+#ifndef TYPES_H
+// #define TYPES_H
+// //#include "../shared/types.h"
+#endif
 
-#include "../shared/types.h"
-#include "../shared/utils.h"
+#ifndef UTILS_H
+// #define UTILS_H
+// //#include "../shared/utils.h"
+#endif
+#ifndef STDIO_H
+#define STDIO_H
+#include <stdio.h>
+#endif
 
 /**
  * @brief Pre-assembler method to perform algorythm
@@ -16,4 +26,4 @@ void replace_macro(FILE *file, const char *line);
 int add_macro(FILE *file);
 char *get_macro(const char *macro_name);
 
-bool is_macro;
+int is_macro;

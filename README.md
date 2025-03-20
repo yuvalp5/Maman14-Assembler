@@ -30,4 +30,4 @@ This program is an implementation of a (very) basic assembler
 <i>more detailed TODOs are in src</i>
 
 -   expand README as progress is made
--   manage `#include`s
+-   manage `//#include`s

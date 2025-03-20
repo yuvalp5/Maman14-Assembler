@@ -2,7 +2,20 @@
 // TODO: implement `replace_segment()`- get file and end pos. to replace the
 // segment with the new one
 
-#include "utils.h"
+// #include "utils.h"
+
+#ifndef STDLIB_H
+#define STDLIB_H
+#include <stdlib.h>
+#endif
+#ifndef STRING_H
+#define STRING_H
+#include <string.h>
+#endif
+
+#ifndef DEFINITIONS
+// #include "../wrapper.h"
+#endif
 
 // split the line to fields with strtok
 // return the pointer to the first field
