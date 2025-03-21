@@ -17,36 +17,35 @@
 #include <string.h>
 #endif
 
-Macro macro_table[]; /* Array to store macros */
-int macro_count = 0; /* Counter for the number of macros */
-int is_macro = 0;    /* Flag indicating if we are inside a macro definition */
+Macro macro_table[MAX_MACROS]; /* Array to store macros */
 
 void pre_assembler(char *src, char *dest) {
     /* Files to work on */
-    FILE *user_input, *pre_assembled;
+    FILE *user_input, *pre_assembled; /* Pointers to input and output files*/
     user_input = fopen(src, "r");
     pre_assembled = fopen(dest, "w+");
 
     /* Run variables */
-    int is_macro;
-    char *text, *macro;
+    int macro_count = 0; /* Counter for the number of macros */
+    int is_macro  /* Flag indicating if we are inside a macro definition */;
+    char *macro; /*Pointer to current macro*/
 
     /* Iteration variables */
-    char *line;
-    char **fields[7][24];
+    char *line; /* Line that stores the input*/
+    char **fields[7][24]; /* 2D array to store max field size*/
 
     /* Loop + assign fields and advance file */
     while ((line = fgets(fields, MAX_LINE_LEN, pre_assembled)) &&
            (**fields = line_to_fields(line) != NULL)) {
 
         switch (macro_definition(*fields[0])) {
-        case 0: // regular line
+        case 0: /* regular line*/
             fputs(line, pre_assembled);
-        case 1: // new definition
+        case 1: /* new definition*/
             add_macro(line);
-            fputs(*macro, pre_assembled);
-        case 2: // existing macro
-            replace_macro(pre_assembled, line);
+            fputs(*macro, pre_assembled); /*TODO review if its supposed to be here*/
+        case 2: /*existing macro*/
+            replace_macro(pre_assembled, line); /*TODO more indicative name*/
         }
         /* Save at EOF recieved - make sure  no errors encountered */
         if (!fclose(pre_assembled)) {
@@ -85,17 +84,17 @@ int macro_definition(char *field) {
  * @return void This function does not return a value.
  */
 void replace_macro(FILE *file, const char *line) {
-    char macro_name[50]; // replace with const later
+    char macro_name[50]; /*replace with const later*/
     sscanf(line, "%s", macro_name);
-    for (int i = 0; i < macro_count; i++) { // implement macro_count later
+    for (int i = 0; i < macro_count; i++) { /* implement macro_count later*/
         if (strcmp(macro_table[i].name, macro_name) ==
             0) { // implelemt macro_table
             fputs(macro_table[i].content,
-                  file); // Write macro content to output if found a match
+                  file); /* Write macro content to output if found a match*/
             return;
         }
     }
-    fputs(line, file); // Write the line as is if no macro is found
+    fputs(line, file); /* Write the line as is if no macro is found*/
 }
 
 /**
@@ -106,6 +105,7 @@ void replace_macro(FILE *file, const char *line) {
  * @param name The name of the macro being defined.
  * @return void
  */
+/*TODO avoid exit, write to macro table, read until mcroend*/
 void add_macro(FILE *file, char *name) {
     if (macro_count >= MAX_MACROS) {
         fprintf(stderr, "Error: Too many macros defined\n");

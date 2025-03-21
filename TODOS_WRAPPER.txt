@@ -1,19 +1,20 @@
 17/3:
 pre_assembler.c- 
-    oren- make sure pre_assembler works
-    yuval- complete todo
+    yuval - line_to_field implementation - how to seperate field
+    modify field char ??
+    adjust and simplify main while loop
 
 shared/types-
-    yuval- table for macros (get macro by its name)
+    oren- table for macros (get macro by its name)
     oren- table for labels (get label address by name)
 
-assembler_forst_pass- 
-    yuval- master method + make todos
-    oren- subfuncs
+assembler_first_pass-
+    yuval - master method + make todos
+    oren + yuval - subfuncs
 
 assembler_second_pass- 
     oren- master method (probably only method(?))
-
+    need to unite with first pass
 
 Things to keep in mind:
 

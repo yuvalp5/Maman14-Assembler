@@ -2,7 +2,7 @@
 // TODO: implement `replace_segment()`- get file and end pos. to replace the
 // segment with the new one
 
-// #include "utils.h"
+#include "utils.h"
 
 #ifndef STDLIB_H
 #define STDLIB_H
@@ -14,11 +14,10 @@
 #endif
 
 #ifndef DEFINITIONS
-// #include "../wrapper.h"
+#include "../wrapper.h"
 #endif
 
-// split the line to fields with strtok
-// return the pointer to the first field
+/* Takes a line  and splits it to fields based on delimiters*/
 char *line_to_fields(char *text) {
     // sorry, file handling and navigation is not needed because ive made
     // changes to how the file is handled- you get the current line until \n

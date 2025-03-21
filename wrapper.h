@@ -4,9 +4,6 @@
  * to the user. Included are also definitions for use in the project.
  */
 
-#ifndef DEFINITIONS
-#define DEFINITIONS
-
 /* Project-wide definitions */
 #define LOG_FILE_LOC "./io/log.txt"
 #define MAX_LINE_LEN 256
@@ -24,5 +21,3 @@
 #define ENTRY_FILE_EXT ".ent"
 #define EXTERN_FILE_EXT ".ext"
 #define PRE_ASSEMBLED_SAVE_LOC "./io/pre_assembler.txt"
-
-#endif
