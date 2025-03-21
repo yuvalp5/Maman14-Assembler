@@ -1,5 +1,8 @@
 #include "types.h"
-
+#ifndef UTILS_H
+#define UTILS_H
+#include "utils.h"
+#endif
 #ifndef STRING_H
 #define STRING_H
 #include <string.h>
@@ -13,66 +16,79 @@
 #include <stdlib.h>
 #endif
 
-/* Basic DB item structure */
+/* Basic DB item structure as K-V pair */
 typedef struct Item {
     void *name;
     void *value;
-    struct Item *next; // Pointer to the next item
+    struct Item *next;
 } Item;
 
+/* Basic Node structure */
+typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+
 /* Stack structure */
-typedef struct {
+typedef struct Stack {
     int size;
-    Item *top; // Top of the stack (LIFO)
+    Node *head;
 } Stack;
 
-/* Initialize a new stack */
-int initStack(Stack *stack) {
-    stack->size = 0;
-    stack->top = NULL;
+/* Stack instance for use */
+Stack stack = {0, NULL};
+
+int is_empty() { return stack.size == 0; }
+
+int peek() {
+    if (is_empty()) {
+        printf("Stack is empty! Cannot peek.\n");
+        return -1;
+    }
+    return stack.head->data;
+}
+
+int push(int value) { // TODO remember this return val at error
+    Node *new_node = (Node *)malloc(sizeof(Node));
+    if (!new_node) {
+        print_and_log("[TYPES:] Memory allocation failed\n");
+        return 1;
+    }
+    new_node->data = value;
+    new_node->next = stack.head;
+    stack.head = new_node;
+    stack.size++;
+    print_and_log(("[TYPES:] Pushed %d onto the stack.\n", value));
     return 0;
 }
 
-/* Push an item onto the stack */
-int push(Stack *stack, void *name, void *value) {
-    Item *newItem = (Item *)malloc(sizeof(Item));
-    if (!newItem) {
-        perror("Failed to allocate memory");
-        return;
+int pop() { // TODO remember this return val at error
+    if (is_empty()) {
+        print_and_log("[TYPES:] Stack is empty! Cannot pop.\n");
+        return NULL;
     }
-    newItem->name = name;
-    newItem->value = value;
-    newItem->next = stack->top; // Link new item to the old top
-    stack->top = newItem;       // Update stack top
-    stack->size++;
+    Node *top_node = stack.head;
+    int value = top_node->data;
+    stack.head = top_node->next;
+    free(top_node);
+    stack.size--;
+    return value;
+}
+
+/* Destroy stack and free all memory */
+int destroy_stack() {
+    while (!is_empty()) {
+        pop();
+    }
+    print_and_log("[TYPES:] Stack destroyed.\n");
     return 0;
 }
 
-/* Pop an item from the stack */
-Item *pop(Stack *stack) {
-    if (stack->size == 0) {
-        return NULL; // Stack is empty
-    }
-    Item *poppedItem = stack->top;
-    stack->top = poppedItem->next; // Update top to the next item
-    stack->size--;
-    return poppedItem;
-}
-
-/* Free the stack */
-int destroy_stack(Stack *stack) {
-    while (stack->top) {
-        Item *temp = pop(stack);
-        free(temp);
-    }
-    return 0;
-}
-
-int is_empty(Stack *stack) { return stack->size == 0; }
-
+// old ver.
+/*
 int pop(Stack *stack, int *item) { // int item will not be int of course
     if (is_empty(stack)) {
-        return;
+        return NULL;
     } else {
         *item = stack->collection[stack->size - 1];
         stack->size--;
@@ -95,3 +111,4 @@ int peek(Stack *stack, int *item) {
     }
     *item = stack->collection[stack->size - 1];
 }
+*/

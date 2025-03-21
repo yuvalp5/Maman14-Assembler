@@ -4,8 +4,19 @@
 
 #ifndef DEFINITIONS
 #define DEFINITIONS
-// #include "../wrapper.h"
+#include "../wrapper.h"
 #endif
+
+int is_empty();
+
+int peek();
+
+int push(int value);
+
+int pop();
+
+/* Destroy stack and free all memory */
+int destroy_stack();
 
 /*
 // macro struct - suggestion- TODO
