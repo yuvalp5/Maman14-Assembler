@@ -15,7 +15,6 @@ int push(int value);
 
 int pop();
 
-/* Destroy stack and free all memory */
 int destroy_stack();
 
 /*
