@@ -2,10 +2,10 @@
  * @brief Basic + custom types for use in project
  */
 
-#ifndef DEFINITIONS
-#define DEFINITIONS
-#include "../wrapper.h"
-#endif
+#ifndef TYPES_H
+#define TYPES_H 1
+
+#include "definitions.h"
 
 int is_empty();
 
@@ -16,6 +16,8 @@ int push(int value);
 int pop();
 
 int destroy_stack();
+
+#endif
 
 /*
 // macro struct - suggestion- TODO

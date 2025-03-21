@@ -3,19 +3,9 @@
 // segment with the new one
 
 #include "utils.h"
-
-#ifndef STDLIB_H
-#define STDLIB_H
+#include "definitions.h"
 #include <stdlib.h>
-#endif
-#ifndef STRING_H
-#define STRING_H
 #include <string.h>
-#endif
-
-#ifndef DEFINITIONS
-#include "../wrapper.h"
-#endif
 
 /* Takes a line  and splits it to fields based on delimiters*/
 char *line_to_fields(char *text) {
@@ -43,5 +33,7 @@ int print_and_log(char *text) {
 void exit_graceful(int exit_code, FILE *log_file, int stop) {
     print_and_log(("[EXIT:] program exits with code %d\n", exit_code));
     fclose(log_file);
-    exit(exit_code);
+    if (stop) {
+        exit(exit_code);
+    }
 }

@@ -4,18 +4,9 @@
  */
 
 #include "pre_assembler.h"
-#ifndef STDIO_H
-#define STDIO_H
 #include <stdio.h>
-#endif
-#ifndef STDLIB_H
-#define STDLIB_H
 #include <stdlib.h>
-#endif
-#ifndef STRING_H
-#define STRING_H
 #include <string.h>
-#endif
 
 Macro macro_table[MAX_MACROS]; /* Array to store macros */
 
@@ -27,11 +18,11 @@ void pre_assembler(char *src, char *dest) {
 
     /* Run variables */
     int macro_count = 0; /* Counter for the number of macros */
-    int is_macro  /* Flag indicating if we are inside a macro definition */;
+    int is_macro /* Flag indicating if we are inside a macro definition */;
     char *macro; /*Pointer to current macro*/
 
     /* Iteration variables */
-    char *line; /* Line that stores the input*/
+    char *line;           /* Line that stores the input*/
     char **fields[7][24]; /* 2D array to store max field size*/
 
     /* Loop + assign fields and advance file */
@@ -43,8 +34,9 @@ void pre_assembler(char *src, char *dest) {
             fputs(line, pre_assembled);
         case 1: /* new definition*/
             add_macro(line);
-            fputs(*macro, pre_assembled); /*TODO review if its supposed to be here*/
-        case 2: /*existing macro*/
+            fputs(*macro,
+                  pre_assembled); /*TODO review if its supposed to be here*/
+        case 2:                   /*existing macro*/
             replace_macro(pre_assembled, line); /*TODO more indicative name*/
         }
         /* Save at EOF recieved - make sure  no errors encountered */

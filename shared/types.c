@@ -1,20 +1,8 @@
 #include "types.h"
-#ifndef UTILS_H
-#define UTILS_H
 #include "utils.h"
-#endif
-#ifndef STRING_H
-#define STRING_H
-#include <string.h>
-#endif
-#ifndef STDIO_H
-#define STDIO_H
 #include <stdio.h>
-#endif
-#ifndef STDLIB_H
-#define STDLIB_H
 #include <stdlib.h>
-#endif
+#include <string.h>
 
 /* Basic DB item structure as K-V pair */
 typedef struct Item {

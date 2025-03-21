@@ -3,24 +3,15 @@
  */
 
 // TODO: better `#include`s
-#include "wrapper.h"
 #include "inter/assembler_first_pass.h"
 #include "inter/assembler_second_pass.h"
 #include "inter/pre_assembler.h"
+#include "shared/definitions.h"
 #include "shared/utils.h"
 
-#ifndef STDIO_H
-#define STDIO_H
 #include <stdio.h>
-#endif
-#ifndef STDLIB_H
-#define STDLIB_H
 #include <stdlib.h>
-#endif
-#ifndef STRING_H
-#define STRING_H
 #include <string.h>
-#endif
 
 /**
  * @brief main() function

@@ -1,10 +1,11 @@
 /**
  * @brief Shared methods for project
  */
-#ifndef STDIO_H
-#define STDIO_H
+
+#ifndef UTILS_H
+#define UTILS_H 1
+
 #include <stdio.h>
-#endif
 
 /**
  * @brief Reads a line from a file and returns it as a string
@@ -28,3 +29,5 @@ int print_and_log(char *text);
  * @param stop Whether to exit() the program or not
  */
 void exit_graceful(int exit_code, FILE *log_file, int stop);
+
+#endif

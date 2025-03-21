@@ -1,23 +1,10 @@
 /**
  * @brief Pre-assembler implementation as per P. 40
  */
-#ifndef TYPES_H
-#define TYPES_H
+#include "../shared/definitions.h"
 #include "../shared/types.h"
-#endif
-
-#ifndef UTILS_H
-#define UTILS_H
 #include "../shared/utils.h"
-#endif
-#ifndef STDIO_H
-#define STDIO_H
 #include <stdio.h>
-#endif
-#ifndef DEFINITIONS_H
-#define DEFINITIONS_H
-#include "../wrapper.h"
-#endif
 
 /**
  * @brief Pre-assembler method to perform algorythm
