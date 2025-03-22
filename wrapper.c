@@ -2,7 +2,7 @@
  * @brief Entry point for program. Handles CLI and passes input to functions.
  */
 
-// TODO: better `#include`s
+#include "wrapper.h"
 #include "inter/assembler_first_pass.h"
 #include "inter/assembler_second_pass.h"
 #include "inter/pre_assembler.h"
@@ -10,8 +10,6 @@
 #include "shared/utils.h"
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /**
  * @brief main() function
@@ -32,7 +30,7 @@ int main(const int argc, char *argv[]) {
 
     print_and_log("[WRAPPER:] Arguments passed: \t");
     for (int i = 0; i < argc; i++) {
-        printf("%d - %s\n", i, argv[i]);
+        print_and_log(("%d - %s\n", i, argv[i]));
     }
 
     print_and_log("[WRAPPER:] calling pre-assembler\n");

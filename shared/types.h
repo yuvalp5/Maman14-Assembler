@@ -18,33 +18,3 @@ int pop();
 int destroy_stack();
 
 #endif
-
-/*
-// macro struct - suggestion- TODO
-typedef struct {
-    char name[MAX_MACRO_NAME_LEN];
-    char content[MAX_MACRO_CONTENT_LEN];
-} Macro;
-
-// stack DB implementation - TODO
-typedef struct Stack {
-    int *collection;
-    int capacity;
-    int size;
-} Stack;
-
-// Utility commands for the stack
-Stack *create_stack(int capacity);
-
-void destroy_stack(Stack *stack);
-
-int is_full(Stack *stack);
-
-int is_empty(Stack *stack);
-
-int pop(Stack *stack, int *item);
-
-int push(Stack *stack, int item);
-
-int peek(Stack *stack, int *item);
-*/
