@@ -3,7 +3,9 @@
  */
 
 #ifndef PRE_ASSEMBLER_H
-#define PRE_ASSEMBLER_H
+#define PRE_ASSEMBLER_H 1
+
+#include "../shared/definitions.h"
 
 // all of these are redifined from definitions.h
 /**
@@ -26,6 +28,7 @@
 
 #define MAX_MACRO_CONTENT_LEN 1000
 */
+
 /**
  * @brief Structure to represent a macro
  */
@@ -99,4 +102,4 @@ char *get_macro_content(const char *name);
  */
 int is_valid_macro_name(const char *name);
 
-#endif /* PRE_ASSEMBLER_H */
+#endif
