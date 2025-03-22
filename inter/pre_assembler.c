@@ -7,7 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 /*TODO Yuval:
-1. modify while loop - extract_first_word out side of the loop to enhance efficiency
+1. modify while loop - extract_first_word out side of the loop to enhance
+efficiency
  */
 
 /**
@@ -50,28 +51,31 @@ int pre_assembler(char *src, char *dest) {
 
             /* Set flag to indicate we're now inside a macro definition */
             in_macro = 1;
-            
-            /* Skip to next line (don't write macro definition line to output) */
+
+            /* Skip to next line (don't write macro definition line to output)
+             */
         }
         /* Handle macro definition end */
         else if (strcmp(first_word, MACRO_END_KW) == 0) {
-            /* Reset flag to indicate we're no longer inside a macro definition */
+            /* Reset flag to indicate we're no longer inside a macro definition
+             */
             in_macro = 0;
-            
+
             /* Skip to next line (don't write mcroend line to output) */
         }
         /* Handle content inside macro definition */
         else if (in_macro) {
             /* Add this line to the current macro's content */
             append_to_macro(current_macro, line);
-            
-            /* Skip to next line (don't write macro content directly to output) */
-        }
-        else {
+
+            /* Skip to next line (don't write macro content directly to output)
+             */
+        } else {
             /* Check if this line starts with a macro name */
             char *macro_content = get_macro_content(first_word);
             if (macro_content != NULL) {
-                /* Line starts with a macro name - expand it by writing its content */
+                /* Line starts with a macro name - expand it by writing its
+                 * content */
                 fputs(macro_content, output_pre_assembled);
             } else {
                 /* Not a macro - write the original line as is */
@@ -167,13 +171,13 @@ void extract_first_word(const char *line, char *word) {
  * @param name Name of the macro to add
  * @return 1 on success, 0 on failure
  */
-int add_macro(const char *name) {
+int add_macro(char *name) {
     /* Check if macro already exists by trying to get it */
     if (get_string(name) != NULL) {
         fprintf(stderr, "Error: Macro '%s' already defined\n", name);
         return 0;
     }
-    
+
     /* Add the macro to the table with empty content initially */
     return add_string(name, "");
 }
@@ -191,30 +195,30 @@ int add_macro(const char *name) {
 int append_to_macro(const char *name, const char *line) {
     /* Get current content */
     char *current_content = get_string(name);
-    
+
     /* Make sure the macro exists */
     if (current_content == NULL) {
         fprintf(stderr, "Error: Cannot append to undefined macro '%s'\n", name);
         return 0;
     }
-    
+
     /* Create new combined content */
     char *new_content = malloc(strlen(current_content) + strlen(line) + 1);
     if (new_content == NULL) {
         fprintf(stderr, "Error: Memory allocation failed\n");
         return 0;
     }
-    
+
     /* Concatenate current content and new line */
     strcpy(new_content, current_content);
     strcat(new_content, line);
-    
+
     /* Update macro with new content */
     int result = add_string(name, new_content);
-    
+
     /* Free the temporary buffer */
     free(new_content);
-    
+
     return result;
 }
 
@@ -227,9 +231,7 @@ int append_to_macro(const char *name, const char *line) {
  * @param name Name of the macro to look up
  * @return Pointer to the macro's content, or NULL if macro not found
  */
-char *get_macro_content(const char *name) {
-    return get_string(name);
-}
+char *get_macro_content(const char *name) { return get_string(name); }
 
 /**
  * ***** Keeping for future usage, we might need that for first and second pass

@@ -10,10 +10,10 @@
 /**
  * @brief Prints a message and logs it to a file
  * @param text The message to be printed and logged
- * @param log_file The file pointer to the log file
+ * @param format The format string for the message
  * @return 0 on success; 1 on failure
  */
-int print_and_log(char *text);
+int print_and_log(char *text, char *format);
 
 /**
  * @brief Exit gracefully with provided code and message, closing log file
