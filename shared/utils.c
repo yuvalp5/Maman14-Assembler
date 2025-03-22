@@ -4,23 +4,33 @@
 
 #include "utils.h"
 #include "definitions.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+/* Logging messages to print and save in log file */
+FILE *log_file;
 
-int print_and_log(char *text) {
+int print_and_log(char *text, char *format) {
     printf("%s", text);
 
-    if (fprintf(LOG_FILE_LOC, "%s", text) != NULL) {
-        return 0;
-    } else {
-        perror(("[UNLOGGED:] %s", text));
-        return 1;
+    if (log_file == NULL) {
+        /* Log file cannot be created */
+        if ((log_file = fopen(LOG_FILE_LOC, "w")) == NULL) {
+            printf("[UNLOGGED:] Unable to open log file");
+            return 1;
+        }
+        /* Log file created */
+        else {
+            perror("[LOGGED:] Log file created\n");
+        }
     }
+    fprintf(log_file, "%s", sprintf(format, text));
+    return 0;
 }
 
-void exit_graceful(int exit_code, FILE *log_file, int stop) {
-    print_and_log(("[EXIT:] program exits with code %d\n", exit_code));
+void exit_graceful(int exit_code, int stop) {
+    printf("[EXIT:] program exits with code\n", exit_code);
     fclose(log_file);
     if (stop) {
         exit(exit_code);

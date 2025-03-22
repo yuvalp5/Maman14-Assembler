@@ -36,7 +36,7 @@ void extract_first_word(const char *line, char *word);
  * @param name Name of the macro to add
  * @return 1 on success, 0 on failure
  */
-int add_macro(const char *name);
+int add_macro(char *name);
 
 /**
  * @brief Append a line to an existing macro's content

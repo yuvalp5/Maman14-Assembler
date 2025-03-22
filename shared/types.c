@@ -40,7 +40,7 @@ int get_stack_size() { return stack.size; }
 
 int peek() {
     if (is_empty()) {
-        print_and_log("[TYPES:] Stack is empty! Cannot peek.\n");
+        printf("[TYPES:] Stack is empty! Cannot peek.\n");
         return -1;
     }
     return stack.head->data;
@@ -49,21 +49,21 @@ int peek() {
 int push(int value) { // TODO remember this return val at error
     Node *new_node = (Node *)malloc(sizeof(Node));
     if (!new_node) {
-        print_and_log("[TYPES:] Memory allocation failed\n");
+        printf("[TYPES:] Memory allocation failed\n");
         return 1;
     }
     new_node->data = value;
     new_node->next = stack.head;
     stack.head = new_node;
     stack.size++;
-    print_and_log(("[TYPES:] Pushed %d onto the stack.\n", value));
+    printf("[TYPES:] Pushed %d onto the stack.\n", value);
     return 0;
 }
 
 int pop() { // TODO remember this return val at error
     if (is_empty()) {
-        print_and_log("[TYPES:] Stack is empty! Cannot pop.\n");
-        return NULL;
+        printf("[TYPES:] Stack is empty! Cannot pop.\n");
+        return -1;
     }
     Node *top_node = stack.head;
     int value = top_node->data;
@@ -78,12 +78,9 @@ int destroy_stack() {
     while (!is_empty()) {
         pop();
     }
-    print_and_log("[TYPES:] Stack destroyed.\n");
+    printf("[TYPES:] Stack destroyed.\n");
     return 0;
 }
-
-Table label_table = {0, NULL};
-Table macro_table = {0, NULL};
 
 /* Label table functions */
 int get_label_table_size() { return label_table.size; }
@@ -92,7 +89,7 @@ int add_label(char *name, int value) {
     /* Allocate memory for the value */
     int *value_ptr = (int *)malloc(sizeof(int));
     if (!value_ptr) {
-        print_and_log("[TYPES:] Memory allocation failed for label value\n");
+        printf("[TYPES:] Memory allocation failed for label value\n");
         return 1;
     }
     *value_ptr = value;
@@ -104,8 +101,7 @@ int add_label(char *name, int value) {
             /* Free the old value and update */
             free(current->value);
             current->value = value_ptr;
-            print_and_log(
-                ("[TYPES:] Updated label %s with value %d.\n", name, value));
+            printf("[TYPES:] Updated label %s with value %d.\n", name, value);
             return 0;
         }
         current = current->next;
@@ -115,7 +111,7 @@ int add_label(char *name, int value) {
     Item *new_item = (Item *)malloc(sizeof(Item));
     if (!new_item) {
         free(value_ptr);
-        print_and_log("[TYPES:] Memory allocation failed for label item\n");
+        printf("[TYPES:] Memory allocation failed for label item\n");
         return 1;
     }
 
@@ -123,7 +119,7 @@ int add_label(char *name, int value) {
     if (!new_item->name) {
         free(value_ptr);
         free(new_item);
-        print_and_log("[TYPES:] Memory allocation failed for label name\n");
+        printf("[TYPES:] Memory allocation failed for label name\n");
         return 1;
     }
 
@@ -132,7 +128,7 @@ int add_label(char *name, int value) {
     label_table.content = new_item;
     label_table.size++;
 
-    print_and_log(("[TYPES:] Added label %s with value %d.\n", name, value));
+    printf("[TYPES:] Added label %s with value %d.\n", name, value);
     return 0;
 }
 
@@ -161,12 +157,10 @@ int add_string(char *name, char *value) {
             free(current->value);
             current->value = strdup(value);
             if (!current->value) {
-                print_and_log(
-                    "[TYPES:] Memory allocation failed for string value\n");
+                printf("[TYPES:] Memory allocation failed for string value\n");
                 return 1;
             }
-            print_and_log(
-                ("[TYPES:] Updated string mapping %s to %s.\n", name, value));
+            printf("[TYPES:] Updated string mapping %s to %s.\n", name, value);
             return 0;
         }
         current = current->next;
@@ -175,14 +169,14 @@ int add_string(char *name, char *value) {
     /* Create new item */
     Item *new_item = (Item *)malloc(sizeof(Item));
     if (!new_item) {
-        print_and_log("[TYPES:] Memory allocation failed for string item\n");
+        printf("[TYPES:] Memory allocation failed for string item\n");
         return 1;
     }
 
     new_item->name = strdup(name);
     if (!new_item->name) {
         free(new_item);
-        print_and_log("[TYPES:] Memory allocation failed for string name\n");
+        printf("[TYPES:] Memory allocation failed for string name\n");
         return 1;
     }
 
@@ -190,7 +184,7 @@ int add_string(char *name, char *value) {
     if (!new_item->value) {
         free(new_item->name);
         free(new_item);
-        print_and_log("[TYPES:] Memory allocation failed for string value\n");
+        printf("[TYPES:] Memory allocation failed for string value\n");
         return 1;
     }
 
@@ -198,7 +192,7 @@ int add_string(char *name, char *value) {
     macro_table.content = new_item;
     macro_table.size++;
 
-    print_and_log(("[TYPES:] Added string mapping %s to %s.\n", name, value));
+    printf("[TYPES:] Added string mapping %s to %s.\n", name, value);
     return 0;
 }
 
@@ -230,7 +224,7 @@ void destroy_label_table() {
 
     label_table.content = NULL;
     label_table.size = 0;
-    print_and_log("[TYPES:] Label table destroyed.\n");
+    printf("[TYPES:] Label table destroyed.\n");
 }
 
 void destroy_string_table() {
@@ -247,5 +241,5 @@ void destroy_string_table() {
 
     macro_table.content = NULL;
     macro_table.size = 0;
-    print_and_log("[TYPES:] String table destroyed.\n");
+    printf("[TYPES:] String table destroyed.\n");
 }
