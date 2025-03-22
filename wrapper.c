@@ -19,10 +19,6 @@
  */
 int main(const int argc, char *argv[]) {
 
-    /* Logging messages to print and save in log file */
-    FILE *log_file = fopen(LOG_FILE_LOC, "w");
-    char *log_msg;
-
     if (argc <= 1) {
         print_and_log("[WRAPPER:] No arguments passed, exiting...\n");
         return 0;
@@ -62,6 +58,6 @@ int main(const int argc, char *argv[]) {
         //  TODO IMPLEMENT assemble() FUNCTION TO CALL BOTH PASSES
     }
 
-    exit_graceful(0, log_file, 0);
+    exit_graceful(0, 0);
     return 0;
 }
