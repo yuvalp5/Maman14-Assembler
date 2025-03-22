@@ -7,12 +7,7 @@
 
 #include <stdio.h>
 
-/**
- * @brief Reads a line from a file and returns it as a string
- * @param text text to separate into fields
- * @return line separated into fields
- */
-char *line_to_fields(char *text);
+
 
 /**
  * @brief Prints a message and logs it to a file

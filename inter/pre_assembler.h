@@ -6,49 +6,7 @@
 #define PRE_ASSEMBLER_H 1
 
 #include "../shared/definitions.h"
-
-// all of these are redifined from definitions.h
-/**
- * @brief Maximum length of a line in the assembly file
-
-#define MAX_LINE_LEN 80
-
-/**
- * @brief Maximum number of macros that can be defined
-
-#define MAX_MACROS 100
-
-/**
- * @brief Maximum length of a macro name
-
-#define MAX_MACRO_NAME_LEN 32
-
-/**
- * @brief Maximum length of the content of a macro
-
-#define MAX_MACRO_CONTENT_LEN 1000
-*/
-
-/**
- * @brief Structure to represent a macro
- */
-typedef struct {
-    /** The name of the macro */
-    char name[MAX_MACRO_NAME_LEN];
-
-    /** The content of the macro */
-    char content[MAX_MACRO_CONTENT_LEN];
-} Macro;
-
-/*
- * @brief Global array of macros
- */
-extern Macro macro_table[MAX_MACROS];
-
-/**
- * @brief Global counter for the number of defined macros
- */
-extern int macro_count;
+#include "../shared/types.h"
 
 /**
  * @brief Main function for pre-assembler - processes macros in source file and
