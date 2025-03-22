@@ -25,4 +25,12 @@ int print_and_log(char *text);
  */
 void exit_graceful(int exit_code, FILE *log_file, int stop);
 
+/**
+ * @brief Check if a macro name is valid (not a reserved word)
+ * @param name The macro name to check
+ * @return 1 if valid, 0 if invalid
+ */
+int is_valid_macro_name(const char *name);
+
+
 #endif
