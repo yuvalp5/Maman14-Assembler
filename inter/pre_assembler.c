@@ -1,139 +1,316 @@
-/**
- * @brief Pre-Assembler implementation. Consists of master function and other
- * sub-functions.
+/*
+ * @file pre_assembler.c
+ * @brief Pre-Assembler implementation for the Assembler project. *
  */
-
 #include "pre_assembler.h"
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-Macro macro_table[MAX_MACROS]; /* Array to store macros */
-
-void pre_assembler(char *src, char *dest) {
-    /* Files to work on */
-    FILE *user_input, *pre_assembled; /* Pointers to input and output files*/
-    user_input = fopen(src, "r");
-    pre_assembled = fopen(dest, "w+");
-
-    /* Run variables */
-    int macro_count = 0; /* Counter for the number of macros */
-    int is_macro /* Flag indicating if we are inside a macro definition */;
-    char *macro; /*Pointer to current macro*/
-
-    /* Iteration variables */
-    char *line;           /* Line that stores the input*/
-    char **fields[7][24]; /* 2D array to store max field size*/
-
-    /* Loop + assign fields and advance file */
-    while ((line = fgets(fields, MAX_LINE_LEN, pre_assembled)) &&
-           (**fields = line_to_fields(line) != NULL)) {
-
-        switch (macro_definition(*fields[0])) {
-        case 0: /* regular line*/
-            fputs(line, pre_assembled);
-        case 1: /* new definition*/
-            add_macro(line);
-            fputs(*macro,
-                  pre_assembled); /*TODO review if its supposed to be here*/
-        case 2:                   /*existing macro*/
-            replace_macro(pre_assembled, line); /*TODO more indicative name*/
-        }
-        /* Save at EOF recieved - make sure  no errors encountered */
-        if (!fclose(pre_assembled)) {
-            perror("Failed to close file");
-        }
-    }
-}
+/**
+ * @brief Global array to store all defined macros
+ */
+Macro macro_table[MAX_MACROS];
 
 /**
- * @brief Check whether a field is a macro definition or a call to an existing
- * macro.
- * @param field The field to check.
- * @return 1 if field is a macro definition; 2 if call to existing macro; 0
- * otherwise.
+ * @brief Global counter for the number of defined macros. Keeps track of how
+ * many macros have been added to the table.
  */
-int macro_definition(char *field) {
-    /* New definition */
-    if (!strcmp(field, "mcro")) {
-        return 1;
-    }
-    /* Call to existing */
-    int i;
-    for (i = 0; i < macro_count; i++) {
-        if (!strcmp(macro_table[i].name, field)) {
-            return 1;
+int macro_count = 0;
+
+/**
+ * @brief Main function for the pre-assembler phase. Executes the pre-aseembling
+ * process  *
+ * @param src Path to the source assembly file (.as)
+ * @param dest Path for the expanded output file (.am)
+ * @return 0 on success, 1 on failure
+ */
+int pre_assembler(char *src, char *dest) {
+    /* Files to work on */
+    FILE *user_input,
+        *output_pre_assembled; /* Pointers to input and output files*/
+
+    /* Function variables */
+    char line[MAX_LINE_LEN]; /* Buffer to store current line being processed */
+    int in_macro = 0; /* Flag indicating if we are inside a macro definition */
+    char current_macro[MAX_MACRO_NAME_LEN]; /* Buffer for the name of the macro
+                                               currently being defined */
+
+    /* Open input file */
+    user_input = fopen(src, "r");
+
+    /* Open output file */
+    output_pre_assembled = fopen(dest, "w");
+
+    /* Process the file line by line */
+    while (fgets(line, MAX_LINE_LEN, user_input) != NULL) {
+        char first_word[MAX_LINE_LEN]; /* Store the first word of the line*/
+        extract_first_word(line, first_word); /* extract first word and save in
+                                                 first_word variable */
+
+        /* Handle macro definition start */
+        if (strcmp(first_word, "mcro") == 0) {
+            /* Extract the macro name from the line */
+            extract_macro_name(line, current_macro);
+
+            /* Add the new macro to the macro table */
+            add_macro(current_macro);
+
+            /* Set flag to indicate we're now inside a macro definition */
+            in_macro = 1;
+
+            /* Skip to next line (don't write macro definition line to output)
+             */
+            continue;
+        }
+
+        /* Handle macro definition end */
+        if (strcmp(first_word, "mcroend") == 0) {
+            /* Reset flag to indicate we're no longer inside a macro definition
+             */
+            in_macro = 0;
+
+            /* Skip to next line (don't write mcroend line to output) */
+            continue;
+        }
+
+        /* Handle content inside macro definition */
+        if (in_macro) {
+            /* Add this line to the current macro's content */
+            append_to_macro(current_macro, line);
+
+            /* Skip to next line (don't write macro content directly to output)
+             */
+            continue;
+        }
+
+        /* Check if this line starts with a macro name */
+        char *macro_content = get_macro_content(first_word);
+        if (macro_content != NULL) {
+            /* Line starts with a macro name - expand it by writing its content
+             */
+            fputs(macro_content, output_pre_assembled);
+        } else {
+            /* Not a macro - write the original line as is */
+            fputs(line, output_pre_assembled);
         }
     }
-    /* Not macro */
+
+    /* close files after finishing process */
+    fclose(user_input);
+    fclose(output_pre_assembled);
+
+    /* Return success */
     return 0;
 }
 
 /**
- * @brief Replaces call to existing macro with its content in the output file.
- * @param file Pointer to file for processed line to be written.
- * @param line The input line that may contain a macro call.
- * @return void This function does not return a value.
+ * @brief Extracts the macro name from a macro definition line
+ *
+ * Given a line containing "mcro [name]", this function extracts the
+ * name part. It handles whitespace between the "mcro" keyword and
+ * the name.
+ *
+ * @param line The macro definition line (starting with "mcro")
+ * @param macro_name Buffer to store the extracted name
+ * @return 1 on success, 0 on failure
  */
-void replace_macro(FILE *file, const char *line) {
-    char macro_name[50]; /*replace with const later*/
-    sscanf(line, "%s", macro_name);
-    for (int i = 0; i < macro_count; i++) { /* implement macro_count later*/
-        if (strcmp(macro_table[i].name, macro_name) ==
-            0) { // implelemt macro_table
-            fputs(macro_table[i].content,
-                  file); /* Write macro content to output if found a match*/
-            return;
-        }
+int extract_macro_name(const char *line, char *macro_name) {
+    const char *ptr = line;
+
+    /* Skip leading whitespace */
+    while (*ptr && isspace((unsigned char)*ptr)) {
+        ptr++;
     }
-    fputs(line, file); /* Write the line as is if no macro is found*/
+
+    /* Skip "mcro" keyword */
+    if (strncmp(ptr, "mcro", 4) == 0) {
+        ptr += 4;
+    } else {
+        return 0; /* Not a macro definition line */
+    }
+
+    /* Skip whitespace after keyword */
+    while (*ptr && isspace((unsigned char)*ptr)) {
+        ptr++;
+    }
+
+    /* Extract the name */
+    int i = 0;
+    while (*ptr && !isspace((unsigned char)*ptr) &&
+           i < MAX_MACRO_NAME_LEN - 1) {
+        macro_name[i++] = *ptr++;
+    }
+    macro_name[i] = '\0';
+
+    /* Validate name is not empty */
+    return (i > 0);
 }
 
 /**
- * @brief Reads a macro definition from a file until "mcroend" is encountered.
- *        The macro name and its content are stored in the macro table.
- *        "mcroend" is not stored in the macro's content.
- * @param file Pointer to the file being read.
- * @param name The name of the macro being defined.
- * @return void
+ * @brief Extracts the first word from a line
+ *
+ * This is used to identify lines that might be macro invocations
+ * or special directives like "mcro" or "mcroend".
+ *
+ * @param line The input line
+ * @param word Buffer to store the extracted first word
  */
-/*TODO avoid exit, write to macro table, read until mcroend*/
-void add_macro(FILE *file, char *name) {
-    if (macro_count >= MAX_MACROS) {
-        fprintf(stderr, "Error: Too many macros defined\n");
-        exit(1);
+void extract_first_word(const char *line, char *word) {
+    const char *ptr = line;
+
+    /* Skip leading whitespace */
+    while (*ptr && isspace((unsigned char)*ptr)) {
+        ptr++;
     }
 
-    Macro *current_macro = &macro_table[macro_count];
-    strcpy(current_macro->name, name);
-    current_macro->content[0] = '\0'; /*Initialize content*/
-
-    char line[MAX_LINE_LEN];
-
-    /*Read lines until "mcroend" is encountered*/
-    while (fgets(line, MAX_LINE_LEN, file)) {
-        if (strstr(line, "mcroend") != NULL) {
-            break; /*Stop reading when "mcroend" is found*/
-        }
-
-        /*Append line to macro content safely*/
-        strncat(current_macro->content, line,
-                MAX_MACRO_CONTENT_LEN - strlen(current_macro->content) - 1);
+    /* Copy first word */
+    int i = 0;
+    while (*ptr && !isspace((unsigned char)*ptr) &&
+           i < MAX_MACRO_NAME_LEN - 1) {
+        word[i++] = *ptr++;
     }
-
-    macro_count++; /*Increment the macro count*/
+    word[i] = '\0';
 }
 
 /**
- * @brief get macro by name from table
- * @param macro_name the name of the macro
- * @return the content of the macro, NULL if not found
+ * @brief Adds a new macro to the macro table
+ *
+ * Performs validation checks and adds a new macro to the global table.
+ * The macro is initially created with empty content, which will be
+ * populated by subsequent calls to append_to_macro().
+ *
+ * @param name Name of the macro to add
+ * @return 1 on success, 0 on failure
  */
-char *get_macro(const char *macro_name) { // TODO: oren- check
+int add_macro(const char *name) {
+    /* Check if macro already exists */
     for (int i = 0; i < macro_count; i++) {
-        if (strcmp(macro_table[i].name, macro_name) == 0) {
+        if (strcmp(macro_table[i].name, name) == 0) {
+            fprintf(perror, "Error: Macro '%s' already defined\n", name);
+            return 0;
+        }
+    }
+
+    /* Check if we have room for another macro */
+    if (macro_count >= MAX_MACROS) {
+        fprintf(perror, "Error: Too many macros defined (max %d)\n",
+                MAX_MACROS);
+        return 0;
+    }
+
+    /* Add the macro to the table */
+    strcpy(macro_table[macro_count].name, name);
+    macro_table[macro_count].content[0] =
+        '\0'; /* Initialize with empty content */
+    macro_count++;
+    return 1;
+}
+
+/**
+ * @brief Appends a line to an existing macro's content
+ *
+ * This function is called for each line between "mcro" and "mcroend"
+ * to build up the macro's content buffer.
+ *
+ * @param name Name of the macro to append to
+ * @param line Line to append to the macro's content
+ * @return 1 on success, 0 on failure
+ */
+int append_to_macro(const char *name, const char *line) {
+    /* Find the macro in the table */
+    int macro_index = -1;
+    for (int i = 0; i < macro_count; i++) {
+        if (strcmp(macro_table[i].name, name) == 0) {
+            macro_index = i;
+            break;
+        }
+    }
+
+    /* Make sure we found the macro */
+    if (macro_index == -1) {
+        fprintf(perror, "Error: Cannot append to undefined macro '%s'\n", name);
+        return 0;
+    }
+
+    /* Check if there's enough space in the content buffer */
+    size_t current_len = strlen(macro_table[macro_index].content);
+    size_t line_len = strlen(line);
+
+    if (current_len + line_len >= MAX_MACRO_CONTENT_LEN) {
+        fprintf(perror, "Error: Macro content too large for '%s'\n", name);
+        return 0;
+    }
+
+    /* Append the line to the macro's content */
+    strcat(macro_table[macro_index].content, line);
+    return 1;
+}
+
+/**
+ * @brief Retrieves a macro's content by name
+ *
+ * Used during macro expansion to get the content that should replace
+ * a macro invocation.
+ *
+ * @param name Name of the macro to look up
+ * @return Pointer to the macro's content, or NULL if macro not found
+ */
+char *get_macro_content(const char *name) {
+    /* Search the macro table for a matching name */
+    for (int i = 0; i < macro_count; i++) {
+        if (strcmp(macro_table[i].name, name) == 0) {
             return macro_table[i].content;
         }
     }
+
+    /* Macro not found */
     return NULL;
+}
+
+/**
+ * ***** Keeping for future usage, we might need that for first and second pass
+ * *******
+ * @brief Validates a macro name against reserved words
+ *
+ * Ensures that macro names don't conflict with assembler instructions,
+ * directives, or registers.
+ *
+ * @param name The macro name to check
+ * @return 1 if the name is valid, 0 if invalid
+ */
+int is_valid_macro_name(const char *name) {
+    /* Check if name is empty */
+    if (name[0] == '\0') {
+        return 0;
+    }
+
+    /* List of reserved words that can't be macro names */
+    const char *reserved_words[] = {
+        /* Assembly instructions */
+        "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp",
+        "bne", "jsr", "red", "prn", "rts", "stop",
+
+        /* Assembler directives */
+        "data", "string", "entry", "extern",
+
+        /* Macro directives */
+        "mcro", "mcroend",
+
+        /* Registers */
+        "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
+
+        /* Terminator */
+        NULL};
+
+    /* Check against each reserved word */
+    for (int i = 0; reserved_words[i] != NULL; i++) {
+        if (strcmp(name, reserved_words[i]) == 0) {
+            return 0;
+        }
+    }
+
+    /* Name is valid */
+    return 1;
 }
