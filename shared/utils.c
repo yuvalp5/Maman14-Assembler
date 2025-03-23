@@ -1,6 +1,7 @@
-// TODO: implement errors using `perror()`
-// TODO: implement `replace_segment()`- get file and end pos. to replace the
-// segment with the new one
+/* TODO: implement errors using `perror()`
+ * TODO: implement `replace_segment()`- get file and end pos. to replace the
+ * segment with the new one
+ */
 
 #include "utils.h"
 #include "definitions.h"
@@ -25,25 +26,21 @@ int print_and_log(char *text, char *format) {
             perror("[LOGGED:] Log file created\n");
         }
     }
-    fprintf(log_file, "%s", sprintf(format, text));
+    fprintf(log_file, format, text);
     return 0;
 }
 
 void exit_graceful(int exit_code, int stop) {
-    printf("[EXIT:] program exits with code\n", exit_code);
+    printf("[EXIT:] program exits with code %d\n", exit_code);
     fclose(log_file);
     if (stop) {
         exit(exit_code);
     }
 }
 
-
-
 /**
- * ***** Keeping for future usage, we might need that for first and second pass
- * *******
+ * TODO: Keeping for future usage, we might need that for first and second pass
  * @brief Validates a macro name against reserved words
- *
  * Ensures that macro names don't conflict with assembler instructions,
  * directives, or registers.
  * TODO: yuval - move to utils and change name to is_valid_field
@@ -51,11 +48,7 @@ void exit_graceful(int exit_code, int stop) {
  * @return 1 if the name is valid, 0 if invalid
  */
 int is_valid_macro_name(const char *name) {
-    /* Check if name is empty */
-    if (name[0] == '\0') {
-        return 0;
-    }
-
+    int i;
     /* List of reserved words that can't be macro names */
     const char *reserved_words[] = {
         /* Assembly instructions */
@@ -74,8 +67,13 @@ int is_valid_macro_name(const char *name) {
         /* Terminator */
         NULL};
 
+    /* Check if name is empty */
+    if (name[0] == '\0') {
+        return 0;
+    }
+
     /* Check against each reserved word */
-    for (int i = 0; reserved_words[i] != NULL; i++) {
+    for (i = 0; reserved_words[i] != NULL; i++) {
         if (strcmp(name, reserved_words[i]) == 0) {
             return 0;
         }

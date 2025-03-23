@@ -3,13 +3,10 @@
  */
 
 #include "wrapper.h"
-#include "inter/assembler_first_pass.h"
-#include "inter/assembler_second_pass.h"
-#include "inter/pre_assembler.h"
-#include "shared/definitions.h"
-#include "shared/utils.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /**
  * @brief main() function
@@ -18,6 +15,10 @@
  * @return int
  */
 int main(const int argc, char *argv[]) {
+    int i;
+    char *src_name, *pre_assembled_name, *object_name, *output_name;
+
+    /* Iterate command line args */
 
     if (argc <= 1) {
         printf("[WRAPPER:] No arguments passed, exiting...\n");
@@ -25,23 +26,18 @@ int main(const int argc, char *argv[]) {
     }
 
     printf("[WRAPPER:] Arguments passed: \t");
-    for (int i = 0; i < argc; i++) {
+    for (i = 0; i < argc; i++) {
         printf("%d - %s\n", i, argv[i]);
     }
 
     printf("[WRAPPER:] calling pre-assembler\n");
 
-    /* Iterate command line args */
-    int i;
-    char *src_name, *pre_assembled_name, *object_name, *output_name;
-
-    /* Pre-assembler */
     for (i = 1; i < argc; i++,
 
         src_name = strcat(argv[i], SOURCE_FILE_EXT),
         pre_assembled_name = strcat(argv[i], PRE_ASSEMBLED_FILE_EXT)) {
 
-        printf("[WRAPPER:] full file name passed: %d\n");
+        printf("[WRAPPER:] full file name passed: %s\n", src_name);
         pre_assembler(src_name, pre_assembled_name);
     }
 
@@ -52,9 +48,9 @@ int main(const int argc, char *argv[]) {
         pre_assembled_name = strcat(argv[i], PRE_ASSEMBLED_FILE_EXT),
         object_name = strcat(argv[i], OBJECT_FILE_EXT)) {
 
-        printf("[WRAPPER:] full file name passed: %d\n", pre_assembled_name);
-        // assemble(src_name, pre_assembled_name, object_name);
-        //  TODO IMPLEMENT assemble() FUNCTION TO CALL BOTH PASSES
+        printf("[WRAPPER:] full file name passed: %s\n", pre_assembled_name);
+        /* assemble(src_name, pre_assembled_name, object_name);
+          TODO IMPLEMENT assemble() FUNCTION TO CALL BOTH PASSES */
     }
 
     exit_graceful(0, 0);

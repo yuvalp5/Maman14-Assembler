@@ -39,14 +39,14 @@ Table macro_table = {0, NULL};
 int get_stack_size() { return stack.size; }
 
 int peek() {
-    if (is_empty()) {
+    if (stack.size == 0) {
         printf("[TYPES:] Stack is empty! Cannot peek.\n");
         return -1;
     }
     return stack.head->data;
 }
 
-int push(int value) { // TODO remember this return val at error
+int push(int value) { /* TODO remember this return val at error */
     Node *new_node = (Node *)malloc(sizeof(Node));
     if (!new_node) {
         printf("[TYPES:] Memory allocation failed\n");
@@ -60,25 +60,37 @@ int push(int value) { // TODO remember this return val at error
     return 0;
 }
 
-int pop() { // TODO remember this return val at error
-    if (is_empty()) {
+int pop() { /* TODO remember this return val at error*/
+    int value;
+    Node *temp;
+
+    if (stack.size == 0) {
         printf("[TYPES:] Stack is empty! Cannot pop.\n");
         return -1;
     }
-    Node *top_node = stack.head;
-    int value = top_node->data;
-    stack.head = top_node->next;
-    free(top_node);
+    temp = stack.head;
+    value = temp->data;
+    stack.head = temp->next;
+    free(temp);
     stack.size--;
     return value;
 }
 
 /* Destroy stack and free all memory */
 int destroy_stack() {
-    while (!is_empty()) {
-        pop();
+    Node *current, *next;
+    int count = 0;
+
+    current = stack.head;
+    while (stack.size > 0) {
+        next = current->next;
+        free(current);
+        current = next;
+        count++;
     }
-    printf("[TYPES:] Stack destroyed.\n");
+    stack.head = NULL;
+    stack.size = 0;
+    printf("[TYPES:] Stack destroyed. Freed %d nodes.\n", count);
     return 0;
 }
 
