@@ -1,6 +1,7 @@
-// TODO: implement errors using `perror()`
-// TODO: implement `replace_segment()`- get file and end pos. to replace the
-// segment with the new one
+/* TODO: implement errors using `perror()`
+ * TODO: implement `replace_segment()`- get file and end pos. to replace the
+ * segment with the new one
+ */
 
 #include "utils.h"
 #include "definitions.h"
@@ -25,12 +26,12 @@ int print_and_log(char *text, char *format) {
             perror("[LOGGED:] Log file created\n");
         }
     }
-    fprintf(log_file, "%s", sprintf(format, text));
+    fprintf(log_file, format, text);
     return 0;
 }
 
 void exit_graceful(int exit_code, int stop) {
-    printf("[EXIT:] program exits with code\n", exit_code);
+    printf("[EXIT:] program exits with code %d\n", exit_code);
     fclose(log_file);
     if (stop) {
         exit(exit_code);
