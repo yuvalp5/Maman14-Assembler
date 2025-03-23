@@ -7,14 +7,27 @@
 
 #include "definitions.h"
 
-int is_empty();
-
-int peek();
-
+/* Stack functions */
+int is_empty(void);
+int get_stack_size(void);
+int peek(void);
 int push(int value);
+int pop(void);
+int destroy_stack(void);
 
-int pop();
+/* Label table functions */
+int get_label_table_size(void);
+int add_label(char *name, int value);
+int get_label(char *name);
+void destroy_label_table(void);
 
-int destroy_stack();
+/* String table functions */
+int get_string_table_size(void);
+int add_string(char *name, char *value);
+char *get_string(char *name);
+void destroy_string_table(void);
+
+/* Custom string functions */
+char* my_strdup(const char* str);
 
 #endif
