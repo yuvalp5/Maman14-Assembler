@@ -1,42 +1,120 @@
 #include "assembler_first_pass.h"
 
-void first_pass(char *src) {
-    /* 1 */
-    int IC = 100;
-    int DC = 0;
-    int is_symbol = 0;
-    char line[MAX_LINE_LEN];
-    char first_word[MAX_LINE_LEN];
-    FILE *input_pre_assembled;
+int DC = 0;
+int IC = 100;
+char line[MAX_LINE_LEN];
+char line_copy[MAX_LINE_LEN]; 
+FILE *input_pre_assembled = NULL;
+Symbol symbol_table[MAX_SYMBOLS];
+int symbol_count = 0;
+int error_count = 0;
+int line_number = 0;
+int ICF, DCF;
 
-    input_pre_assembled = fopen(src, "r");
-    while (fgets(line, MAX_LINE_LEN, input_pre_assembled) != NULL) {
-        first_word = split_line_to_fields(line); /* create in utils */
-        if (is_symbol(first_word)) {
-            is_symbol = 1;
-        }
-        if (is_storage(first_word)) {
-            add_symbol_to_table(symbol_name, DC);
-            /* raise error if the symbol is already in the table */
-            /*  stage 7 */
-        }
-        if (!(is_extern || is_entry)) {
-            /* stage 11 */
-        }
-        if (is_extern) {
-            /* to stage 11 */
-            add_symbol_to_table
-        }
-        if (is_entry) {
-            /* to stage 2 */
-        }
 
-        /* 4 new symbol definition */
-        /* 16  -update IC+L -> IC and go to to stage 2 */
-        /* 17 keep track of all errors - dont stop until end */
-        /* 18 - save final values if IC, DC as ICF, DCF */
-        /* 20 - move to second pass */
+
+void first_pass(const char *src) {
+    /**
+     * 1. Initialize:
+   - IC = 100 (instruction counter starts at 100 decimal) - done
+   - DC = 0 (data counter starts at 0) - done
+   - open source file - done
+   */
+    output_pre_assembled = fopen(dest, "w");
+    if (!output_pre_assembled) {
+        printf("Error: Unable to open intput file\n");
+        exit_graceful(1, 1);
+
+  /**
+   * 2. Read the next line from the input file:
+   - If end of file, go to step 17
+   */
+  while (fgets(line, MAX_LINE_LEN, input_pre_assembled) != NULL) {
+    line_number++;
+    /* Process the line (implementation of steps 3-16 will go here) */
+
+    /** 
+3. Check if the first field in the line is a symbol (label):
+   - If not, go to step 5*/
+    line_copy = split_line_to_fields(line, 0, " :"); 
+    if (line_copy == NULL) {   
+        printf("Error: Unable to split line to fields\n");
+        exit_graceful(1, 1);
     }
+    if (is_symbol(line_copy)) { /*4. Set a flag indicating symbol definition was found*/
+        is_symbol= 1;
+    }
+    if (is_storage(line_copy)) { /*5. Check if the line contains a data storage directive (.data or .string):*/
+        is_storage = 1;
+    }
+
+    /* 17. End of first pass, save final values of IC and DC as ICF and DCF */
+    ICF = IC;
+    DCF = DC;
+
+  
+
+/**
+
+5. Check if the line contains a data storage directive (.data or .string):
+   - If not, go to step 8  
+6. If symbol definition found, add the symbol to the symbol table:
+   - Symbol name = the label
+   - Symbol value = current DC
+   - Symbol type = data
+   - Raise error if the symbol is already in the table   
+7. Encode the data values in memory, update the data counter (DC) according to the number of values, and go to step 2
+8. Check if the line contains .extern or .entry directive:
+   - If not, go to step 11   
+9. If directive is .entry, skip it (will be handled in second pass) and go to step 2
+10. If directive is .extern, add the symbol to the symbol table:
+    - Symbol name = the operand of .extern
+    - Symbol value = 0
+    - Symbol type = external
+    - Go to step 2    
+11. This is an instruction line. If symbol definition found, add the symbol to the symbol table:
+    - Symbol name = the label
+    - Symbol value = current IC
+    - Symbol type = code
+    - Raise error if the symbol is already in the table   
+12. Find the instruction's opcode in the opcode table:
+    - If not found, report an error in the instruction name   
+13. Analyze the operands of the instruction:
+    - Determine addressing modes of operands
+    - Calculate the total word count (L) for this instruction   
+14. Build the binary code for:
+    - The first word of the instruction
+    - Any immediate operand value words    
+15. Save current IC and L values along with the machine code generated
+16. Update IC = IC + L, and go to step 2
+
+18. Update data symbols in the symbol table by adding ICF to their values
+    (This adjusts data symbol addresses to account for the code section)
+19. Begin second pass
+     */
+       
+    }
+}
+
+/* split line to fields, return the field number, move later to utils */
+char* split_line_to_fields(char *line, int field_number, const char *delimiters) {
+    char *token;
+    int current_field = 0;
+    
+    /* Get the first token */
+    token = strtok(line, delimiters);
+    
+    /* Walk through the tokens until we reach the requested field */
+    while (token != NULL) {
+        if (current_field == field_number) {
+            return token;
+        }
+        token = strtok(NULL, delimiters);
+        current_field++;
+    }
+    
+    /* Field not found */
+    return NULL;
 }
 
 /* 3- almost same as macro check from pre_assembler.c */
