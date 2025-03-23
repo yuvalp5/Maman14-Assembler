@@ -46,7 +46,7 @@ int peek() {
     return stack.head->data;
 }
 
-int push(int value) { // TODO remember this return val at error
+int push(int value) { /* TODO remember this return val at error */
     Node *new_node = (Node *)malloc(sizeof(Node));
     if (!new_node) {
         printf("[TYPES:] Memory allocation failed\n");
@@ -60,7 +60,7 @@ int push(int value) { // TODO remember this return val at error
     return 0;
 }
 
-int pop() { // TODO remember this return val at error
+int pop() { /* TODO remember this return val at error*/
     int value;
     Node *temp;
 
