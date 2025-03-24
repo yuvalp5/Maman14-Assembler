@@ -1,20 +1,33 @@
+# Compiler binary (cc is also a symlink to gcc)
 CC = gcc
-CFLAGS = -Wall -ansi -pedantic -g
 
-# Target executable
-TARGET = assembler_test
+# Flags
+CFLAGS = -Wall -ansi -pedantic -g
+LFLAGS = 
 
 # Source files
-SRCS = test_first_pass.c inter/assembler_first_pass.c
+SRCS = $(wildcard *.c) $(wildcard inter/*.c)
+#wrapper.c inter/pre_assembler.c inter/assembler_first_pass.c inter/assembler_second_pass.c
 
 # Object files
 OBJS = $(SRCS:.c=.o)
 
-# Header directories
-INCLUDES = -I.
+# Final executable
+TARGET = io/bin
 
-# Default target
+# Header directories for lookup
+INCLUDES = -I. -I./shared I./inter 
+
+# Build targets
 all: $(TARGET)
+#test: $(TARGET)
+
+# Clean option
+clean: 
+	rm -f $(OBJS) $(TARGET)
+
+# Fake targets
+.PHONY: all test clean
 
 # Link object files to create executable
 $(TARGET): $(OBJS)
@@ -24,12 +37,6 @@ $(TARGET): $(OBJS)
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# Clean up
-clean:
-	rm -f $(OBJS) $(TARGET)
-
 # Run the test
 run: $(TARGET)
 	./$(TARGET)
-
-.PHONY: all clean run

@@ -9,12 +9,16 @@
 
 /* Project-wide definitions */
 #define LOG_FILE_LOC "./io/log.txt"
-#define MAX_LINE_LEN 256
 #define MAX_MACRO_NAME_LEN 31
 #define MAX_MACRO_CONTENT_LEN 1000
 #define MAX_MACROS 50
 #define MACRO_START_KW "mcro"
 #define MACRO_END_KW "mcroend"
+
+/* Constants */
+#define MAX_LINE_LEN 80
+#define MAX_SYMBOL_LENGTH 31
+#define MAX_SYMBOLS 256
 
 /* Standard file extenstions for io files */
 #define SOURCE_FILE_EXT ".as"
