@@ -21,9 +21,9 @@
 
 /* Symbol table structure */
 typedef struct {
-    char symbol_name[MAX_SYMBOL_LENGTH + 1];
-    int symbol_value;
-    int symbol_type;
+  char symbol_name[MAX_SYMBOL_LENGTH + 1];
+  int symbol_value;
+  int symbol_type;
 } Symbol;
 
 /* External variables */
@@ -55,7 +55,7 @@ int search_command_in_table(char *command);
 int calc_num_of_words(char *instruction, char *operand1, char *operand2);
 int get_addressing_mode(char *operand);
 int get_operand_words(int addressing_mode);
-void word_to_binary(int instruction_index, int operand1_mode, int operand2_mode, 
+void word_to_binary(int instruction_index, int operand1_mode, int operand2_mode,
                    unsigned int *code, int *code_index);
 void save_values_with_binary(unsigned int *code, int word_count, int *memory, int current_ic);
 

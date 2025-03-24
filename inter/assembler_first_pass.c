@@ -32,59 +32,59 @@ void first_pass(const char *src) {
   while (fgets(line, MAX_LINE_LEN, input_pre_assembled) != NULL) {
     line_number++;
     /* Process the line (implementation of steps 3-16 will go here) */
+    if (feof(input_pre_assembled)) {
+        break; /* End of file, we'll not use break at the end */
 
-    /** 
-3. Check if the first field in the line is a symbol (label):
-   - If not, go to step 5*/
-    line_copy = split_line_to_fields(line, 0, " :"); 
-    if (line_copy == NULL) {   
-        printf("Error: Unable to split line to fields\n");
-        exit_graceful(1, 1);
+    line_copy = split_line_to_fields(line, 0, " :");
+    if (is_symbol(line_copy)) {
+        is_symbol = 1;
     }
-    if (is_symbol(line_copy)) { /*4. Set a flag indicating symbol definition was found*/
-        is_symbol= 1;
-    }
-    if (is_storage(line_copy)) { /*5. Check if the line contains a data storage directive (.data or .string):*/
-        is_storage = 1;
-    }
-
-    /* 17. End of first pass, save final values of IC and DC as ICF and DCF */
-    ICF = IC;
-    DCF = DC;
-
-  
-
-/**
-
-5. Check if the line contains a data storage directive (.data or .string):
-   - If not, go to step 8  
-6. If symbol definition found, add the symbol to the symbol table:
+    if (is_storage(line_copy)) {
+        /* add the symbol to the symbol table:
    - Symbol name = the label
    - Symbol value = current DC
    - Symbol type = data
-   - Raise error if the symbol is already in the table   
-7. Encode the data values in memory, update the data counter (DC) according to the number of values, and go to step 2
-8. Check if the line contains .extern or .entry directive:
-   - If not, go to step 11   
-9. If directive is .entry, skip it (will be handled in second pass) and go to step 2
-10. If directive is .extern, add the symbol to the symbol table:
+   - Encode the data values in memory, update the data counter (DC) according to the number of values, and go to step 2*/
+    }
+
+    if (is_extern_or_entry(line_copy)) {
+     /*if its .entry, skip it (will be handled in second pass) and go to step 2*/
+     /*If directive is .extern, add the symbol to the symbol table:
     - Symbol name = the operand of .extern
     - Symbol value = 0
     - Symbol type = external
-    - Go to step 2    
-11. This is an instruction line. If symbol definition found, add the symbol to the symbol table:
+    - Go to step 2 */
+    }
+
+    if (is_instruction(line_copy)) {
+        /* This is an instruction line. If symbol definition found, add the symbol to the symbol table:
     - Symbol name = the label
     - Symbol value = current IC
     - Symbol type = code
-    - Raise error if the symbol is already in the table   
+    - Raise error if the symbol is already in the table
+    */
+    }
+
+    if (search_command_in_table(line_copy) == 1) {
+        /* Find the instruction's opcode in the opcode table:*/
+    }
+    else{
+
+    }
+
+
+
+
+/**
+
 12. Find the instruction's opcode in the opcode table:
-    - If not found, report an error in the instruction name   
+    - If not found, report an error in the instruction name
 13. Analyze the operands of the instruction:
     - Determine addressing modes of operands
-    - Calculate the total word count (L) for this instruction   
+    - Calculate the total word count (L) for this instruction
 14. Build the binary code for:
     - The first word of the instruction
-    - Any immediate operand value words    
+    - Any immediate operand value words
 15. Save current IC and L values along with the machine code generated
 16. Update IC = IC + L, and go to step 2
 
@@ -92,8 +92,11 @@ void first_pass(const char *src) {
     (This adjusts data symbol addresses to account for the code section)
 19. Begin second pass
      */
-       
+
     }
+    /* 17. End of first pass, save final values of IC and DC as ICF and DCF */
+    ICF = IC;
+    DCF = DC;
 }
 
 /* split line to fields, return the field number, move later to utils */
