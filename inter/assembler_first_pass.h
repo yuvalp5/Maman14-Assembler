@@ -12,7 +12,6 @@
 #define MAX_LINE_LEN 80
 #define MAX_SYMBOL_LENGTH 31
 #define MAX_SYMBOLS 256
-#define MAX_INSTRUCTIONS 16
 
 /* Symbol types */
 #define SYMBOL_TYPE_CODE    1
@@ -27,15 +26,6 @@ typedef struct {
     int symbol_type;
 } Symbol;
 
-/* Instruction table structure */
-typedef struct {
-    char name[5];           /* Instruction name */
-    unsigned int opcode;    /* Operation code */
-    int operands;           /* Number of operands (0, 1, or 2) */
-    int source_modes;       /* Valid source addressing modes (bit field) */
-    int target_modes;       /* Valid target addressing modes (bit field) */
-} Instruction;
-
 /* External variables */
 extern Symbol symbol_table[MAX_SYMBOLS];
 extern int symbol_count;
@@ -44,7 +34,6 @@ extern int line_number;
 extern int IC;
 extern int DC;
 extern int ICF, DCF;
-extern Instruction instruction_table[MAX_INSTRUCTIONS];
 
 /* Function prototypes */
 
