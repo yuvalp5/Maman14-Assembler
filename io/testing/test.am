@@ -1,0 +1,15 @@
+; Simple test assembly file for the first pass
+
+MAIN: mov r1, LENGTH
+      add r2, r3
+LOOP: jmp L1
+      prn #-5
+      bne LOOP
+      sub r1, r4
+L1:   inc r6
+      mov r3, LOOP
+END:  stop
+
+; Data section
+STR:  .string "abcdef"
+LENGTH: .data 6, -9, 15 
