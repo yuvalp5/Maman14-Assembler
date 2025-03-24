@@ -1,16 +1,35 @@
 CC = gcc
-CFLAGS = -Wall -ansi -pedantic -I.
-SRCS = wrapper.c shared/utils.c shared/types.c inter/pre_assembler.c inter/assembler_first_pass.c inter/assembler_second_pass.c
-OBJS = $(SRCS:.c=.o)
-TARGET = assembler
+CFLAGS = -Wall -ansi -pedantic -g
 
+# Target executable
+TARGET = assembler_test
+
+# Source files
+SRCS = test_first_pass.c inter/assembler_first_pass.c
+
+# Object files
+OBJS = $(SRCS:.c=.o)
+
+# Header directories
+INCLUDES = -I.
+
+# Default target
 all: $(TARGET)
 
+# Link object files to create executable
 $(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $(TARGET)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
 
+# Compile source files to object files
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+# Clean up
 clean:
 	rm -f $(OBJS) $(TARGET)
+
+# Run the test
+run: $(TARGET)
+	./$(TARGET)
+
+.PHONY: all clean run
