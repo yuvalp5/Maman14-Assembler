@@ -2,12 +2,15 @@
 CC = gcc
 
 # Flags
-CFLAGS = -Wall -ansi -pedantic -g
+CFLAGS = -Wall -ansi -pedantic
 LFLAGS = 
 
 # Source files
-SRCS = $(wildcard *.c) $(wildcard inter/*.c)
-#wrapper.c inter/pre_assembler.c inter/assembler_first_pass.c inter/assembler_second_pass.c
+SRCS = $(wildcard *.c) $(wildcard inter/*.c) $(wildcard shared/*.c)
+#wrapper.c inter/pre_assembler.c inter/assembler_first_pass.c inter/assembler_second_pass.c shared/utils.c shared/types.c
+
+# Header directories for lookup
+INCLUDES = -I. -I./shared -I./inter
 
 # Object files
 OBJS = $(SRCS:.c=.o)
@@ -15,8 +18,13 @@ OBJS = $(SRCS:.c=.o)
 # Final executable
 TARGET = io/bin
 
-# Header directories for lookup
-INCLUDES = -I. -I./shared I./inter 
+# Link object files using Makefile pattern rules
+$(TARGET): $(OBJS)
+	$(CC) $(LDFLAGS) $(INCLUDES) -o $@ $^
+
+# Compile source files using Makefile pattern rules
+%.o: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Build targets
 all: $(TARGET)
@@ -26,17 +34,9 @@ all: $(TARGET)
 clean: 
 	rm -f $(OBJS) $(TARGET)
 
-# Fake targets
-.PHONY: all test clean
-
-# Link object files to create executable
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
-
-# Compile source files to object files
-%.o: %.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
-
 # Run the test
 run: $(TARGET)
 	./$(TARGET)
+
+# Fake targets
+.PHONY: all test clean
