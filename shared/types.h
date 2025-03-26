@@ -7,6 +7,24 @@
 
 #include "definitions.h"
 
+/* Basic Item structure */
+typedef struct Item {
+    char *name;
+    char *value;
+    struct Item *next;
+} Item;
+
+/* Table structure */
+typedef struct {
+    Item *content;
+    int size;
+} Table;
+
+/* Global tables */
+extern Table label_table;
+extern Table string_table;
+extern Table macro_table;
+
 /* Stack functions */
 int is_empty(void);
 int get_stack_size(void);
@@ -28,6 +46,6 @@ char *get_string(char *name);
 void destroy_string_table(void);
 
 /* Custom string functions */
-char* my_strdup(const char* str);
+char *my_strdup(const char *str);
 
 #endif
