@@ -58,4 +58,7 @@ void save_values_with_binary(unsigned int *code, int word_count, int *memory, in
 /* Utility functions */
 char* split_line_to_fields(char *line, int field_number, const char *delimiters);
 
+int extract_macro_name(const char *line, char *macro_name);
+void extract_first_word(const char *line, char *word);
+
 #endif /* ASSEMBLER_FIRST_PASS_H */

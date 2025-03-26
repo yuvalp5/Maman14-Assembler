@@ -15,7 +15,7 @@
 
 /* Constants */
 #define MAX_LINE_LEN 80
-#define MAX_SYMBOL_LENGTH 31
+#define MAX_SYMBOL_LEN 31
 #define MAX_SYMBOLS 256
 
 /* File extensions */
@@ -28,7 +28,7 @@ extern const char *EXTERN_FILE_EXT;
 extern const char *PRE_ASSEMBLED_SAVE_LOC;
 
 /* Macro keywords */
-extern const char *MACRO_START_KW;
-extern const char *MACRO_END_KW;
+extern const char *MACRO_START_KW = "mcro";
+extern const char *MACRO_END_KW = "mcroend";
 
 #endif
