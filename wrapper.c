@@ -9,50 +9,50 @@
 #include <string.h>
 
 /**
- * @brief main() function
- * @param argc number of arguments passed
- * @param argv arguments pointers
- * @return int
+ * @brief Main function for the assembler
+ * @param argc Number of command line arguments
+ * @param argv Array of command line arguments
+ * @return 0 if successful, 1 otherwise
  */
-int main(const int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
+    char *src_name, *pre_assembled_name;
     int i;
-    char *src_name, *pre_assembled_name, *object_name, *output_name;
 
-    /* Iterate command line args */
-
-    if (argc <= 1) {
-        printf("[WRAPPER:] No arguments passed, exiting...\n");
-        return 0;
+    /* Check if any files were provided */
+    if (argc < 2) {
+        printf("Usage: %s file1 [file2 ...]\n", argv[0]);
+        return 1;
     }
 
-    printf("[WRAPPER:] Arguments passed: \t");
-    for (i = 0; i < argc; i++) {
-        printf("%d - %s\n", i, argv[i]);
+    /* Process each file */
+    for (i = 1; i < argc; i++) {
+        src_name = argv[i];
+        pre_assembled_name = (char *)malloc(strlen(src_name) + 4);
+        if (!pre_assembled_name) {
+            printf("Error: Memory allocation failed\n");
+            return 1;
+        }
+
+        /* Create filenames */
+        strcpy(pre_assembled_name, src_name);
+        strcat(pre_assembled_name, ".am");
+
+        /* Run pre-assembler */
+        if (pre_assembler(src_name, pre_assembled_name) != 0) {
+            printf("Error: Pre-assembler failed for %s\n", src_name);
+            free(pre_assembled_name);
+            continue;
+        }
+
+        /* Run first pass */
+        first_pass(src_name);
+
+        /* Run second pass */
+        second_pass(src_name);
+
+        /* Cleanup */
+        free(pre_assembled_name);
     }
 
-    printf("[WRAPPER:] calling pre-assembler\n");
-
-    for (i = 1; i < argc; i++,
-
-        src_name = strcat(argv[i], SOURCE_FILE_EXT),
-        pre_assembled_name = strcat(argv[i], PRE_ASSEMBLED_FILE_EXT)) {
-
-        printf("[WRAPPER:] full file name passed: %s\n", src_name);
-        pre_assembler(src_name, pre_assembled_name);
-    }
-
-    /* First + second pass */
-    printf("[WRAPPER:] calling first + second pass\n");
-    for (i = 1; i < argc; i++,
-
-        pre_assembled_name = strcat(argv[i], PRE_ASSEMBLED_FILE_EXT),
-        object_name = strcat(argv[i], OBJECT_FILE_EXT)) {
-
-        printf("[WRAPPER:] full file name passed: %s\n", pre_assembled_name);
-        /* assemble(src_name, pre_assembled_name, object_name);
-          TODO IMPLEMENT assemble() FUNCTION TO CALL BOTH PASSES */
-    }
-
-    exit_graceful(0, 0);
     return 0;
 }

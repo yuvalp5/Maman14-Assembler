@@ -1,84 +1,35 @@
-/* TODO: implement errors using `perror()`
- * TODO: implement `replace_segment()`- get file and end pos. to replace the
- * segment with the new one
+/**
+ * @brief Shared methods for project
  */
 
-#include "utils.h"
-#include "definitions.h"
+#ifndef UTILS_H
+#define UTILS_H 1
+
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-/* Logging messages to print and save in log file */
-FILE *log_file;
-
-int print_and_log(char *text, char *format) {
-    printf("%s", text);
-
-    if (log_file == NULL) {
-        /* Log file cannot be created */
-        if ((log_file = fopen(LOG_FILE_LOC, "w")) == NULL) {
-            printf("[UNLOGGED:] Unable to open log file");
-            return 1;
-        }
-        /* Log file created */
-        else {
-            perror("[LOGGED:] Log file created\n");
-        }
-    }
-    fprintf(log_file, format, text);
-    return 0;
-}
-
-void exit_graceful(int exit_code, int stop) {
-    printf("[EXIT:] program exits with code %d\n", exit_code);
-    fclose(log_file);
-    if (stop) {
-        exit(exit_code);
-    }
-}
 
 /**
- * TODO: Keeping for future usage, we might need that for first and second pass
- * @brief Validates a macro name against reserved words
- * Ensures that macro names don't conflict with assembler instructions,
- * directives, or registers.
- * TODO: yuval - move to utils and change name to is_valid_field
- * @param name The macro name to check
- * @return 1 if the name is valid, 0 if invalid
+ * @brief Prints a message and logs it to a file
+ * @param text The message to be printed and logged
+ * @param format The format string for the message
+ * @return 0 on success; 1 on failure
  */
-int is_valid_macro_name(const char *name) {
-    int i;
-    /* List of reserved words that can't be macro names */
-    const char *reserved_words[] = {
-        /* Assembly instructions */
-        "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp",
-        "bne", "jsr", "red", "prn", "rts", "stop",
+int print_and_log(char *text, char *format);
 
-        /* Assembler directives */
-        "data", "string", "entry", "extern",
+/**
+ * @brief Exit gracefully with provided code and message, closing log file
+ * @param exit_code The exit code to be returned
+ * @param stop Whether to exit() the program or not
+ */
+void exit_graceful(int exit_code, int stop);
 
-        /* Macro directives */
-        MACRO_START_KW, MACRO_END_KW,
+/**
+ * @brief Check if a macro name is valid (not a reserved word)
+ * @param name The macro name to check
+ * @return 1 if valid, 0 if invalid
+ */
+int is_valid_macro_name(const char *name);
 
-        /* Registers */
-        "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
+/* Function declarations */
+int get_addressing_mode(char *operand);
 
-        /* Terminator */
-        NULL};
-
-    /* Check if name is empty */
-    if (name[0] == '\0') {
-        return 0;
-    }
-
-    /* Check against each reserved word */
-    for (i = 0; reserved_words[i] != NULL; i++) {
-        if (strcmp(name, reserved_words[i]) == 0) {
-            return 0;
-        }
-    }
-
-    /* Name is valid */
-    return 1;
-}
+#endif
