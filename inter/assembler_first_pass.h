@@ -8,10 +8,6 @@
 #include <string.h>
 #include <ctype.h>
 
-/* Constants */
-#define MAX_LINE_LEN 80
-#define MAX_SYMBOL_LENGTH 31
-#define MAX_SYMBOLS 256
 
 /* Symbol types */
 #define SYMBOL_TYPE_CODE    1
@@ -21,7 +17,7 @@
 
 /* Symbol table structure */
 typedef struct {
-  char symbol_name[MAX_SYMBOL_LENGTH + 1];
+  char symbol_name[MAX_SYMBOL_LEN + 1];
   int symbol_value;
   int symbol_type;
 } Symbol;

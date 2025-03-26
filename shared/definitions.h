@@ -10,6 +10,8 @@
 /* Project-wide definitions */
 #define LOG_FILE_LOC "./io/log.txt"
 #define MAX_LINE_LEN 256
+#define MAX_SYMBOLS 100
+#define MAX_SYMBOL_LEN 31
 #define MAX_MACRO_NAME_LEN 31
 #define MAX_MACRO_CONTENT_LEN 1000
 #define MAX_MACROS 50
