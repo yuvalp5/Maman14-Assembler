@@ -18,7 +18,7 @@
 extern int symbol_count;
 
 /* Function declarations */
-void second_pass(const char *filename);
+int second_pass(const char *filename);
 int parse_line(char *line, char **label, char **command, char **operands);
 int process_line(char *line, int line_number, int *error_count);
 int process_directive(char *directive, char *operands, int line_number,
