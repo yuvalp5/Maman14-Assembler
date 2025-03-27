@@ -1,9 +1,4 @@
-/**
- * @brief Entry point for program. Handles CLI and passes input to functions.
- */
-
 #include "wrapper.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

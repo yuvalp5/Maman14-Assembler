@@ -1,7 +1,3 @@
-/*
- * @file pre_assembler.c
- * @brief Pre-Assembler implementation for the Assembler project. *
- */
 #include "pre_assembler.h"
 #include "../shared/definitions.h"
 #include "../shared/types.h"
@@ -10,16 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Constants for macro directives are now used from definitions.h */
-
-/* Function prototypes */
-
-
 /**
- * @brief Main function for the pre-assembler phase. Executes the pre-aseembling
- * process
- * @param src Path to the source assembly file (.as)
- * @param dest Path for the expanded output file (.am)
+ * @brief Master function for pre-assembler. No error cheching done
+ * @param src Path to the source assembly file (no file name extension)
+ * @param dest Path for the expanded output file (no file name extension)
  * @return 0 on success; 1 on failure
  */
 int pre_assembler(char *src, char *dest) {
@@ -28,22 +18,16 @@ int pre_assembler(char *src, char *dest) {
          *output_pre_assembled = NULL; /* Pointers to input and output files*/
 
     /* Function variables */
-    char line[MAX_LINE_LEN]; /* Buffer to store current line being processed */
-    char
-        first_word[MAX_MACRO_NAME_LEN + 1]; /* Store the first word - only needs
-                                               to be size of macro name */
+    char line[MAX_LINE_LEN], first_word[MAX_MACRO_NAME_LEN + 1];
+    /* TODO is this needed? (below) */
     int in_macro = 0; /* Flag indicating if we are inside a macro definition */
-    char current_macro[MAX_MACRO_NAME_LEN]; /* Buffer for the name of the macro
-                                               currently being defined */
+    char current_macro_name[MAX_MACRO_NAME_LEN];
     char *macro_content;   /* Pointer to retrieved macro content */
     char *current_content; /* Temp pointer for macro content retrieval */
     char new_content[MAX_MACRO_CONTENT_LEN]; /* Buffer for building updated
                                                 macro content */
 
-    /* Open input file */
     user_input = fopen(src, "r");
-
-    /* Open output file */
     output_pre_assembled = fopen(dest, "w");
 
     /* Process the file line by line */
@@ -53,9 +37,9 @@ int pre_assembler(char *src, char *dest) {
 
         /* Macro definition start */
         if (strcmp(first_word, MACRO_START_KW) == 0) {
-            extract_macro_name(line, current_macro);
+            extract_macro_name(line, current_macro_name);
             /* Add macro to table with empty content */
-            add_string(current_macro, "");
+            add_string(current_macro_name, "");
             in_macro = 1;
         }
         /* Macro definition end */
@@ -65,7 +49,7 @@ int pre_assembler(char *src, char *dest) {
         /* Inside a macro definition - collecting content */
         else if (in_macro) {
             /* Get existing content */
-            current_content = get_string(current_macro);
+            current_content = get_string(current_macro_name);
 
             /* Create new content by concatenating existing content with the new
              * line */
@@ -79,10 +63,10 @@ int pre_assembler(char *src, char *dest) {
             if (strlen(new_content) + strlen(line) < MAX_MACRO_CONTENT_LEN) {
                 strcat(new_content, line);
                 /* Update the macro content */
-                add_string(current_macro, new_content);
+                add_string(current_macro_name, new_content);
             } else {
                 fprintf(stderr, "Error: Macro content too large for '%s'\n",
-                        current_macro);
+                        current_macro_name);
             }
         }
         /* Regular line or macro invocation */

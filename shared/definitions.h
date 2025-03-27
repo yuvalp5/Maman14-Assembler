@@ -28,7 +28,7 @@ extern const char *EXTERN_FILE_EXT;
 extern const char *PRE_ASSEMBLED_SAVE_LOC;
 
 /* Macro keywords */
-extern const char *MACRO_START_KW = "mcro";
-extern const char *MACRO_END_KW = "mcroend";
+#define MACRO_START_KW "mcro"
+#define MACRO_END_KW "mcroend"
 
 #endif

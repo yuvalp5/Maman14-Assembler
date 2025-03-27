@@ -1,5 +1,6 @@
 /**
- * @brief Header file for the pre-assembler module
+ * @brief Pre-Assembler implementation for the Assembler project. Devided into
+ * master function and supporting functions
  */
 
 #ifndef PRE_ASSEMBLER_H
@@ -59,7 +60,5 @@ char *get_macro_content(const char *name);
  * @return 1 if valid, 0 if invalid
  */
 int is_valid_macro_name(const char *name);
-
-
 
 #endif
