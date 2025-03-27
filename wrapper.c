@@ -12,47 +12,60 @@
  * @brief Main function for the assembler
  * @param argc Number of command line arguments
  * @param argv Array of command line arguments
- * @return 0 if successful, 1 otherwise
+ * @return 0 if successful; 1 otherwise
  */
 int main(int argc, char *argv[]) {
-    char *src_name, *pre_assembled_name;
+    /* File names */
+    char *src_name, *pre_assembled_name, *object_name, *externals_name,
+        *entry_name;
+    /* Iterator */
     int i;
 
-    /* Check if any files were provided */
+    /* Check passed args */
     if (argc < 2) {
-        printf("Usage: %s file1 [file2 ...]\n", argv[0]);
+        printf("[WRAPPER:] No arguments provided. File names expected as "
+               "arguments.\n");
+        printf("[WRAPPER:] Exiting...\n");
         return 1;
     }
 
-    /* Process each file */
+    /* Iterate over args */
     for (i = 1; i < argc; i++) {
-        src_name = argv[i];
-        pre_assembled_name = (char *)malloc(strlen(src_name) + 4);
-        if (!pre_assembled_name) {
-            printf("Error: Memory allocation failed\n");
+        src_name = strcat(argv[i], ".as");
+        pre_assembled_name = strcat(src_name, ".am");
+        object_name = strcat(src_name, ".ob");
+        externals_name = strcat(src_name, ".external");
+        entry_name = strcat(src_name, ".entry");
+
+        /* Pre-assembler */
+        if (pre_assembler(src_name, pre_assembled_name)) {
+            printf("[WRAPPER:] Pre-assembler completed.\n");
+        } else {
+            printf("[WRAPPER:] Pre-assembler failed.\n");
+            printf("[WRAPPER:] Exiting...\n");
             return 1;
         }
 
-        /* Create filenames */
-        strcpy(pre_assembled_name, src_name);
-        strcat(pre_assembled_name, ".am");
-
-        /* Run pre-assembler */
-        if (pre_assembler(src_name, pre_assembled_name) != 0) {
-            printf("Error: Pre-assembler failed for %s\n", src_name);
-            free(pre_assembled_name);
-            continue;
+        /* First pass */
+        if (first_pass(src_name)) {
+            printf("[WRAPPER:] First pass completed.\n");
+        } else {
+            printf("[WRAPPER:] First pass failed.\n");
+            printf("[WRAPPER:] Exiting...\n");
+            return 1;
         }
 
-        /* Run first pass */
-        first_pass(src_name);
-
-        /* Run second pass */
-        second_pass(src_name);
-
-        /* Cleanup */
-        free(pre_assembled_name);
+        /* Second pass */
+        if (second_pass(src_name)) {
+            printf("[WRAPPER:] Second pass completed.\n");
+        } else {
+            printf("[WRAPPER:] Second pass failed.\n");
+            printf("[WRAPPER:] Exiting...\n");
+            return 1;
+        }
+        /* TODO is this everything? Check */
     }
+    printf("[WRAPPER:] All operations completed successfully.\n");
 
     return 0;
 }
