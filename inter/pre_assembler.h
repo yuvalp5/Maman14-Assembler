@@ -1,6 +1,5 @@
 /**
- * @brief Pre-Assembler implementation for the Assembler project. Devided into
- * master function and supporting functions
+ * @brief Header file for the pre-assembler module
  */
 
 #ifndef PRE_ASSEMBLER_H
