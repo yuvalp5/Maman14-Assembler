@@ -19,7 +19,7 @@ TARGET = io/bin
 
 # Link object files using Makefile pattern rules
 $(TARGET): $(OBJS)
-	$(CC) $(LDFLAGS) $(INCLUDES) -o $@ $^
+	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o $@ $^
 
 # Compile source files using Makefile pattern rules
 %.o: %.c
@@ -35,7 +35,7 @@ clean:
 
 # Run the test
 run: $(TARGET)
-	./$(TARGET)
+	./$(TARGET) $(ARGS)
 
 # Fake targets
-.PHONY: all clean
+.PHONY: all clean run
