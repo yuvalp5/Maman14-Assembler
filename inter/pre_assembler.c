@@ -13,8 +13,7 @@
 /* Constants for macro directives are now used from definitions.h */
 
 /* Function prototypes */
-int extract_macro_name(const char *line, char *macro_name);
-void extract_first_word(const char *line, char *word);
+
 
 /**
  * @brief Main function for the pre-assembler phase. Executes the pre-aseembling

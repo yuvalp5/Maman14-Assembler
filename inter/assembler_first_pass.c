@@ -1,4 +1,4 @@
-#include "inter/assembler_first_pass.h"
+#include "../inter/assembler_first_pass.h"
 
 /* Global variables */
 int DC = 0; /* Data counter initialized to 0 */
@@ -24,7 +24,7 @@ void first_pass(const char *src) {
     unsigned int code[MAX_LINE_LEN]; /* To store generated machine code */
     int code_index = 0; /* Index for the code array */
     int i; /* C90 requires declarations at the beginning of blocks */
-    char symbol_name[MAX_SYMBOL_LENGTH + 1]; /* Symbol name buffer */
+    char symbol_name[MAX_SYMBOL_LEN + 1]; /* Symbol name buffer */
     int operand1_mode; /* Operand 1 mode */
     int operand2_mode; /* Operand 2 mode */
     int proceed_to_next_line; /* Flag to check if we should proceed to the next line */
@@ -33,7 +33,7 @@ void first_pass(const char *src) {
     
     /* 1. Initialize IC and DC (already done globally) */
     
-    /* Open source file for reading */
+    /* Open .am source file for reading */
     input_pre_assembled = fopen(src, "r");
     if (!input_pre_assembled) {
         perror("Error: Unable to open input file\n"); /* Print error message if file cannot be opened */

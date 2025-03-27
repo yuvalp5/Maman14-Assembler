@@ -7,19 +7,6 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H 1
 
-/* File extensions */
-/*const char *SOURCE_FILE_EXT = ".as";*/
-/*const char *PRE_ASSEMBLED_FILE_EXT = ".am";*/
-/*const char *OBJECT_FILE_EXT = ".ob";*/
-/*const char *OUTPUT_FILE_EXT = ".out";*/
-/*const char *ENTRY_FILE_EXT = ".ent";*/
-/*const char *EXTERN_FILE_EXT = ".ext";*/
-/*const char *PRE_ASSEMBLED_SAVE_LOC = "./io/pre_assembler.txt";*/
-
-/* Macro keywords */
-const char *MACRO_START_KW = "mcro";
-const char *MACRO_END_KW = "mcroend";
-
 /* Project-wide definitions */
 #define LOG_FILE_LOC "./io/log.txt"
 #define MAX_MACRO_NAME_LEN 31
@@ -28,7 +15,7 @@ const char *MACRO_END_KW = "mcroend";
 
 /* Constants */
 #define MAX_LINE_LEN 80
-#define MAX_SYMBOL_LENGTH 31
+#define MAX_SYMBOL_LEN 31
 #define MAX_SYMBOLS 256
 
 /* File extensions */
@@ -41,7 +28,7 @@ extern const char *EXTERN_FILE_EXT;
 extern const char *PRE_ASSEMBLED_SAVE_LOC;
 
 /* Macro keywords */
-extern const char *MACRO_START_KW;
-extern const char *MACRO_END_KW;
+extern const char *MACRO_START_KW = "mcro";
+extern const char *MACRO_END_KW = "mcroend";
 
 #endif

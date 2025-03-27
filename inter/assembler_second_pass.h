@@ -10,8 +10,8 @@
 #include <string.h>
 
 #include "assembler_first_pass.h"
-#include "definitions.h"
-#include "utils.h"
+#include "../shared/definitions.h"
+#include "../shared/utils.h"
 
 /* Global variables */
 /*extern Symbol symbol_table[MAX_LINE_LEN];*/
