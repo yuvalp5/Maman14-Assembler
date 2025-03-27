@@ -26,11 +26,12 @@ int main(int argc, char *argv[]) {
 
     /* Iterate over args */
     for (i = 1; i < argc; i++) {
-        src_name = strcat(argv[i], ".as");
-        pre_assembled_name = strcat(src_name, ".am");
-        object_name = strcat(src_name, ".ob");
-        externals_name = strcat(src_name, ".external");
-        entry_name = strcat(src_name, ".entry");
+        char *base_name = argv[i];
+        src_name = strcat(base_name, ".as");
+        pre_assembled_name = strcat(base_name, ".am");
+        object_name = strcat(base_name, ".ob");
+        externals_name = strcat(base_name, ".external");
+        entry_name = strcat(base_name, ".entry");
 
         /* Pre-assembler */
         if (pre_assembler(src_name, pre_assembled_name)) {
