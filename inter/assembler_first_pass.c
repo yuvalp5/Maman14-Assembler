@@ -92,16 +92,13 @@ int first_pass(const char *src) {
                             }
 
                             if (!symbol_found) {
-                                strcpy(symbol_table[symbol_count].symbol_name,
-                                       symbol_name);
+                                strcpy(symbol_table[symbol_count].symbol_name, symbol_name);
                                 symbol_table[symbol_count].symbol_value = DC;
-                                symbol_table[symbol_count].symbol_type =
-                                    SYMBOL_TYPE_DATA;
+                                symbol_table[symbol_count].symbol_type = SYMBOL_TYPE_DATA;
                                 symbol_count++;
                             }
                         } else {
-                            printf("Error: Symbol table full, max %d symbols\n",
-                                   MAX_SYMBOLS);
+                            printf("Error: Symbol table full, max %d symbols\n", MAX_SYMBOLS);
                             error_count++;
                         }
                     }
@@ -131,40 +128,27 @@ int first_pass(const char *src) {
                                 if (symbol_count < MAX_SYMBOLS) {
                                     /* Check if symbol already exists in the
                                      * table */
-                                    symbol_found = 0;
-                                    for (i = 0;
-                                         i < symbol_count && !symbol_found;
-                                         i++) {
-                                        if (strcmp(symbol_table[i].symbol_name,
-                                                   extern_symbol) == 0) {
-                                            printf("Error in line %d: Symbol "
-                                                   "'%s' already defined\n",
-                                                   line_number, extern_symbol);
+                                    symbol_found = 0; /* Reset the flag */
+                                    for (i = 0; i < symbol_count && !symbol_found; i++) { /* Loop through the symbol table */
+                                        if (strcmp(symbol_table[i].symbol_name, extern_symbol) == 0) { /* Check if the symbol already exists */
+                                            printf("Error in line %d: Symbol "  "'%s' already defined\n", line_number, extern_symbol);
                                             error_count++;
-                                            symbol_found = 1;
+                                            symbol_found = 1; /* Set the flag */
                                         }
                                     }
 
                                     if (!symbol_found) {
-                                        strcpy(symbol_table[symbol_count]
-                                                   .symbol_name,
-                                               extern_symbol);
-                                        symbol_table[symbol_count]
-                                            .symbol_value = 0;
-                                        symbol_table[symbol_count].symbol_type =
-                                            SYMBOL_TYPE_EXTERN;
+                                        strcpy(symbol_table[symbol_count].symbol_name, extern_symbol);
+                                        symbol_table[symbol_count].symbol_value = 0;
+                                        symbol_table[symbol_count].symbol_type = SYMBOL_TYPE_EXTERN;
                                         symbol_count++;
                                     }
                                 } else {
-                                    printf("Error: Symbol table full, max %d "
-                                           "symbols\n",
-                                           MAX_SYMBOLS);
+                                    printf("Error: Symbol table full, max %d " "symbols\n", MAX_SYMBOLS);
                                     error_count++;
                                 }
                             } else {
-                                printf("Error in line %d: Missing operand for "
-                                       ".extern directive\n",
-                                       line_number);
+                                printf("Error in line %d: Missing operand for " "directive\n", line_number);
                                 error_count++;
                             }
                         }
@@ -432,15 +416,12 @@ void word_to_binary(int instruction_index, int operand1_mode, int operand2_mode,
     /* For now, just store dummy values */
 
     /* First word: op-code, addressing modes, etc. */
-    code[(*code_index)++] = (instruction_index << 8) |
-                            ((operand1_mode & 0x3) << 4) |
-                            ((operand2_mode & 0x3) << 2);
+    code[(*code_index)++] = (instruction_index << 8) | ((operand1_mode & 0x3) << 4) | ((operand2_mode & 0x3) << 2);
 
     /* Additional words would be added for operands */
 }
 
-void save_values_with_binary(unsigned int *code, int word_count, int *memory,
-                             int current_ic) {
+void save_values_with_binary(unsigned int *code, int word_count, int *memory, int current_ic) {
     /* Placeholder implementation */
     /* This would save the generated code to memory */
     /* For now, just print the values */
