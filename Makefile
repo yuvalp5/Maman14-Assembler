@@ -5,15 +5,14 @@ CC = gcc
 CFLAGS = -Wall -ansi -pedantic
 LFLAGS = 
 
-# Source files
+# Source files - wrapper.c inter/pre_assembler.c inter/assembler_first_pass.c inter/assembler_second_pass.c shared/utils.c shared/types.c
 SRCS = $(wildcard *.c) $(wildcard inter/*.c) $(wildcard shared/*.c)
-#wrapper.c inter/pre_assembler.c inter/assembler_first_pass.c inter/assembler_second_pass.c shared/utils.c shared/types.c
-
-# Header directories for lookup
-INCLUDES = -I. -I./shared -I./inter
 
 # Object files
 OBJS = $(SRCS:.c=.o)
+
+# Header directories for lookup
+INCLUDES = -I. -I./shared -I./inter
 
 # Final executable
 TARGET = io/bin
@@ -28,15 +27,15 @@ $(TARGET): $(OBJS)
 
 # Build targets
 all: $(TARGET)
-#test: $(TARGET)
 
-# Clean option
+# Clean option - testing files not removed for debug pruposes
 clean: 
 	rm -f $(OBJS) $(TARGET)
+	rm -f io/*.am io/*.object io/*.externals io/*.entry
 
 # Run the test
 run: $(TARGET)
 	./$(TARGET)
 
 # Fake targets
-.PHONY: all test clean
+.PHONY: all clean
