@@ -1,20 +1,11 @@
-/**
- * @file pre_assembler.c
- * @brief Pre-Assembler implementation for the Assembler project. *
- */
 #include "pre_assembler.h"
+#include "../shared/definitions.h"
+#include "../shared/types.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-/**
- * @brief Main function for the pre-assembler phase. Executes the pre-aseembling
- * process
- * @param src Path to the source assembly file (.as)
- * @param dest Path for the expanded output file (.am)
- * @return 0 on success; 1 on failure
- */
 int pre_assembler(char *src, char *dest) {
     /* Files to work on */
     FILE *user_input = NULL,
@@ -102,12 +93,6 @@ int pre_assembler(char *src, char *dest) {
     return 0;
 }
 
-/**
- * @brief Extracts the macro name from a macro definition line
- * @param line The macro definition line (starting with "mcro")
- * @param macro_name Buffer to store the extracted name
- * @return 1 on success; 0 on failure
- */
 int extract_macro_name(const char *line, char *macro_name) {
     const char *ptr = line;
     int i;
@@ -141,11 +126,6 @@ int extract_macro_name(const char *line, char *macro_name) {
     return (i > 0);
 }
 
-/**
- * @brief Extracts the first word from a line
- * @param line The input line
- * @param word Buffer to store the extracted first word
- */
 void extract_first_word(const char *line, char *word) {
     const char *ptr = line;
     int i;
