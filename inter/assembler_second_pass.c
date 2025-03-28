@@ -13,7 +13,7 @@ static int code_segment_size = 0; /* Current size of code segment */
 static int error_found = 0;       /* Flag for indicating if errors were found */
 
 /* Symbol table (should be shared between passes) */
-SymbolEntry symbol_table[MAX_LINE_LEN];
+/*SymbolEntry symbol_table[MAX_LINE_LEN]; // already exists in types */
 int symbol_count = 0;
 static char entry_symbols[MAX_LINE_LEN][MAX_LINE_LEN];
 static int entry_count = 0;

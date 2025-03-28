@@ -8,28 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Symbol types */
-#define SYMBOL_TYPE_CODE 1
-#define SYMBOL_TYPE_DATA 2
-#define SYMBOL_TYPE_EXTERN 3
-#define SYMBOL_TYPE_ENTRY 4
-
-/* Symbol table structure */
-typedef struct {
-    char symbol_name[MAX_SYMBOL_LEN + 1];
-    int symbol_value;
-    int symbol_type;
-} Symbol;
-
-/* External variables */
-extern Symbol symbol_table[MAX_SYMBOLS];
-extern int symbol_count;
-extern int error_count;
-extern int line_number;
-extern int IC;
-extern int DC;
-extern int ICF, DCF;
-
 /* Function prototypes */
 
 /* Main function for first pass */

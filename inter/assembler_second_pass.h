@@ -5,17 +5,13 @@
 #ifndef ASSEMBLER_SECOND_PASS_H
 #define ASSEMBLER_SECOND_PASS_H 1
 
+#include "../shared/definitions.h"
+#include "../shared/types.h"
+#include "../shared/utils.h"
+#include "assembler_first_pass.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "assembler_first_pass.h"
-#include "../shared/definitions.h"
-#include "../shared/utils.h"
-
-/* Global variables */
-/*extern Symbol symbol_table[MAX_LINE_LEN];*/
-extern int symbol_count;
 
 /* Function declarations */
 int second_pass(const char *filename);

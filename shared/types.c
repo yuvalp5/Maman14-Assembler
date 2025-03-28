@@ -4,6 +4,23 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Global counter definitions */
+int IC = 100;         /* Instruction Counter starts at 100 */
+int DC = 0;           /* Data Counter starts at 0 */
+int error_count = 0;  /* Number of errors encountered */
+int LINE_NUMBER = 0;  /* Current line being processed */
+int MEMORY_SIZE = 0;  /* Total memory size (IC + DC) */
+int ICF = 0;          /* Final IC value */
+int DCF = 0;          /* Final DC value */
+int symbol_count = 0; /* Number of symbols in symbol table */
+
+/* Symbol table structure */
+typedef struct {
+    char symbol_name[MAX_SYMBOL_LEN + 1];
+    int symbol_value;
+    int symbol_type;
+} Symbol;
+
 /* Basic Node structure */
 typedef struct Node {
     int data;
@@ -35,6 +52,9 @@ Stack stack = {0, NULL};
 Table label_table = {0, NULL};
 /* Macro table instance */
 Table macro_table = {0, NULL};
+
+/* Symbol table instance */
+Symbol symbol_table[MAX_SYMBOLS];
 
 int get_stack_size() { return stack.size; }
 
