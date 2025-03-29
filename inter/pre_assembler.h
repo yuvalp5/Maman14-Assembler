@@ -11,7 +11,7 @@
  * @param dest Path for the expanded output file
  * @return 0 on success, non-zero on failure
  */
-int pre_assembler(char *src, char *dest);
+int pre_assembler(const char *src, const char *dest);
 
 /**
  * @brief Extracts macro name from a macro definition line

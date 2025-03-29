@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int pre_assembler(char *src, char *dest) {
+int pre_assembler(const char *src, const char *dest) {
     /* Files to work on */
     FILE *user_input = NULL,
          *output_pre_assembled = NULL; /* Pointers to input and output files*/

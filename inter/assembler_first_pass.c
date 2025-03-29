@@ -5,8 +5,8 @@ Symbol symbol_table[MAX_SYMBOLS];
 
 /* Memory for storing machine code */
 static int *code_memory = NULL;
-
-int first_pass(const char *src) {
+/* todo: yuval- save file at *dest */
+int first_pass(const char *src, const char *dest) {
     FILE *input_pre_assembled = NULL; /* File pointer for the input file */
     char line[MAX_LINE_LEN];          /* Line buffer */
     char line_copy[MAX_LINE_LEN];     /* Copy of the line to work with */
