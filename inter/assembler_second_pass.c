@@ -34,7 +34,7 @@ int second_pass(const char *filename) {
 
     /* Create .am filename */
     strcpy(am_filename, filename);
-    strcat(am_filename, PRE_ASSEMBLED_FILE_EXT);
+    strcat(am_filename, );
 
     printf("Starting second pass for file: %s\n", am_filename);
 

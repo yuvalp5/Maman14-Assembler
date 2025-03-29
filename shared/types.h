@@ -13,6 +13,18 @@
 #define SYMBOL_TYPE_EXTERN 3
 #define SYMBOL_TYPE_ENTRY 4
 
+/* Basic DB item structure as K-V pair */
+typedef struct Item {
+    char *name;
+    void *value;
+} Item;
+
+/* Basic table structure as array of items */
+typedef struct Table {
+    int size;
+    Item *content[];
+} Table;
+
 /* Global counters */
 extern int IC;           /* Instruction Counter */
 extern int DC;           /* Data Counter */
@@ -23,48 +35,9 @@ extern int ICF;          /* Final IC value */
 extern int DCF;          /* Final DC value */
 extern int symbol_count; /* Number of symbols in symbol table */
 
-/* Symbol table */
-extern Symbol symbol_table[MAX_SYMBOLS];
-
-/* Basic Item structure */
-typedef struct Item {
-    char *name;
-    char *value;
-    struct Item *next;
-} Item;
-
-/* Table structure */
-typedef struct {
-    Item *content;
-    int size;
-} Table;
-
 /* Global tables */
-extern Table label_table;
-extern Table string_table;
 extern Table macro_table;
-
-/* Stack functions */
-int is_empty(void);
-int get_stack_size(void);
-int peek(void);
-int push(int value);
-int pop(void);
-int destroy_stack(void);
-
-/* Label table functions */
-int get_label_table_size(void);
-int add_label(char *name, int value);
-int get_label(char *name);
-void destroy_label_table(void);
-
-/* String table functions */
-int get_string_table_size(void);
-int add_string(char *name, char *value);
-char *get_string(char *name);
-void destroy_string_table(void);
-
-/* Custom string functions */
-char *my_strdup(const char *str);
+extern Table label_table;
+extern Table symbol_table;
 
 #endif

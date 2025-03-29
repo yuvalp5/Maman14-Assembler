@@ -19,13 +19,11 @@
 #define MAX_SYMBOLS 256
 
 /* File extensions */
-extern const char *SOURCE_FILE_EXT;
-extern const char *PRE_ASSEMBLED_FILE_EXT;
-extern const char *OBJECT_FILE_EXT;
-extern const char *OUTPUT_FILE_EXT;
-extern const char *ENTRY_FILE_EXT;
-extern const char *EXTERN_FILE_EXT;
-extern const char *PRE_ASSEMBLED_SAVE_LOC;
+#define SRC_F_EXT ".as"
+#define PAS_F_EXT ".am"
+#define OBJ_F_EXT ".ob"
+#define EXT_F_EXT ".ext"
+#define ENT_F_EXT ".ent"
 
 /* Macro keywords */
 #define MACRO_START_KW "mcro"

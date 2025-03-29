@@ -87,7 +87,7 @@ int pre_assembler(char *src, char *dest) {
     fclose(output_pre_assembled);
 
     /* Free the string table at the end */
-    destroy_string_table();
+    destroy_macro_table();
 
     /* Return success */
     return 0;

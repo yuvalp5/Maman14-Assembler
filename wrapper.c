@@ -12,7 +12,7 @@
 int main(int argc, char *argv[]) {
     /* File names */
     char *src_name, *pre_assembled_name, *object_name, *externals_name,
-        *entry_name;
+        *entries_name;
     /* Iterator */
     int i;
 
@@ -27,11 +27,11 @@ int main(int argc, char *argv[]) {
     /* Iterate over args */
     for (i = 1; i < argc; i++) {
         char *base_name = argv[i];
-        src_name = strcat(base_name, ".as");
-        pre_assembled_name = strcat(base_name, ".am");
-        object_name = strcat(base_name, ".ob");
-        externals_name = strcat(base_name, ".external");
-        entry_name = strcat(base_name, ".entry");
+        src_name = strcat(base_name, SRC_F_EXT);
+        pre_assembled_name = strcat(base_name, PAS_F_EXT);
+        object_name = strcat(base_name, OBJ_F_EXT);
+        externals_name = strcat(base_name, EXT_F_EXT);
+        entries_name = strcat(base_name, ENT_F_EXT);
 
         /* Pre-assembler */
         if (pre_assembler(src_name, pre_assembled_name)) {
@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
             printf("[WRAPPER:] Exiting...\n");
             return 1;
         }
+        /*TODO: report whether externals and entries were produced? */
         /* TODO is this everything? Check */
     }
     printf("[WRAPPER:] All operations completed successfully.\n");
