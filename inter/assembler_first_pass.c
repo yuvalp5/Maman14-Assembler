@@ -1,8 +1,5 @@
 #include "inter/assembler_first_pass.h"
 
-/* Symbol table */
-Symbol symbol_table[MAX_SYMBOLS];
-
 /* Memory for storing machine code */
 static int *code_memory = NULL;
 /* todo: yuval- save file at *dest */

@@ -25,8 +25,13 @@
 #define ADDR_MODE_INDEX 2
 #define ADDR_MODE_REGISTER 3
 
-/* Master function for first pass */
-int first_pass(const char *src);
+/**
+ * @brief Master function for first pass
+ * @param src Path to the source assembly file
+ * @param dest Path for the expanded output file
+ * @return 0 on success, non-zero on failure
+ */
+int first_pass(const char *src, const char *dest);
 
 /* Symbol and label handling */
 int is_symbol(char *field);

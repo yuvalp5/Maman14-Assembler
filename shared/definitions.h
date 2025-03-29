@@ -20,25 +20,16 @@
 #define MAX_MEMORY_SIZE 4096
 
 /* Symbol types */
-#define SYMBOL_TYPE_CODE    1
-#define SYMBOL_TYPE_DATA    2
-#define SYMBOL_TYPE_EXTERN  3
-#define SYMBOL_TYPE_ENTRY   4
+#define SYMBOL_TYPE_CODE 1
+#define SYMBOL_TYPE_DATA 2
+#define SYMBOL_TYPE_EXTERN 3
+#define SYMBOL_TYPE_ENTRY 4
 
 /* Addressing modes */
 #define ADDR_MODE_IMMEDIATE 0
-#define ADDR_MODE_DIRECT    1
-#define ADDR_MODE_INDEX     2
-#define ADDR_MODE_REGISTER  3
-
-/* File extensions */
-extern const char *SOURCE_FILE_EXT;
-extern const char *PRE_ASSEMBLED_FILE_EXT;
-extern const char *OBJECT_FILE_EXT;
-extern const char *OUTPUT_FILE_EXT;
-extern const char *ENTRY_FILE_EXT;
-extern const char *EXTERN_FILE_EXT;
-extern const char *PRE_ASSEMBLED_SAVE_LOC;
+#define ADDR_MODE_DIRECT 1
+#define ADDR_MODE_INDEX 2
+#define ADDR_MODE_REGISTER 3
 
 /* Macro keywords */
 #define MACRO_START_KW "mcro"
