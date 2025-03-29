@@ -44,7 +44,7 @@ extern int L;
 /* Function prototypes */
 
 /* Main function for first pass */
-void first_pass(const char *src);
+int first_pass(const char *src);
 
 /* Symbol and label handling */
 int is_symbol(char *field);

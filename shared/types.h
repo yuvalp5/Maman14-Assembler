@@ -7,18 +7,39 @@
 
 #include "definitions.h"
 
-/* Basic Item structure */
+/* Basic Node structure */
+typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+
+/* Stack structure */
+typedef struct Stack {
+    int size;
+    Node *head;
+} Stack;
+
+/* Basic DB item structure as K-V pair */
 typedef struct Item {
-    char *name;
-    char *value;
+    void *name;
+    void *value;
     struct Item *next;
 } Item;
 
-/* Table structure */
-typedef struct {
-    Item *content;
+/* Basic table structure as array of items */
+typedef struct Table {
     int size;
+    Item *content;
 } Table;
+
+extern int DC;           /* Data counter initialized to 0 */
+extern int IC;           /* Instruction counter initialized to 100 */
+extern int symbol_count; /* Number of symbols in the symbol table */
+extern int error_count;  /* Number of errors */
+extern int line_number;  /* Line number */
+extern int ICF;          /* Final IC value */
+extern int DCF;          /* Final DC value */
+extern int L;            /* Number of words in the instruction */
 
 /* Global tables */
 extern Table label_table;

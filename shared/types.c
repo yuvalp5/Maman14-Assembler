@@ -4,37 +4,21 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Basic Node structure */
-typedef struct Node {
-    int data;
-    struct Node *next;
-} Node;
-
-/* Stack structure */
-typedef struct Stack {
-    int size;
-    Node *head;
-} Stack;
-
-/* Basic DB item structure as K-V pair */
-typedef struct Item {
-    void *name;
-    void *value;
-    struct Item *next;
-} Item;
-
-/* Basic table structure as array of items */
-typedef struct Table {
-    int size;
-    Item *content;
-} Table;
-
 /* Stack instance for use - internal variable */
 Stack stack = {0, NULL};
 /* Labels table instance */
 Table label_table = {0, NULL};
 /* Macro table instance */
 Table macro_table = {0, NULL};
+
+/* Global variables */
+int DC = 0;           /* Data counter initialized to 0 */
+int IC = 100;         /* Instruction counter initialized to 100 */
+int symbol_count = 0; /* Number of symbols in the symbol table */
+int error_count = 0;  /* Number of errors */
+int line_number = 0;  /* Line number */
+int ICF, DCF;         /* Final IC and DC values */
+int L;                /* Number of words in the instruction */
 
 int get_stack_size() { return stack.size; }
 

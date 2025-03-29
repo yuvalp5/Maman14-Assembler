@@ -6,14 +6,14 @@
 #include "assembler_second_pass.h"
 
 /* Global variables for the second pass */
-static int IC = 100;              /* Instruction Counter starts at 100 */
-static int DC = 0;                /* Data Counter */
-static int *code_segment = NULL;  /* Array to hold machine code */
-static int code_segment_size = 0; /* Current size of code segment */
-static int error_found = 0;       /* Flag for indicating if errors were found */
+IC = 100;              /* Instruction Counter starts at 100 */
+DC = 0;                /* Data Counter */
+*code_segment = NULL;  /* Array to hold machine code */
+code_segment_size = 0; /* Current size of code segment */
+error_found = 0;       /* Flag for indicating if errors were found */
 
 /* Symbol table (should be shared between passes) */
-SymbolEntry symbol_table[MAX_LINE_LEN];
+/*SymbolEntry symbol_table[MAX_LINE_LEN];*/
 int symbol_count = 0;
 static char entry_symbols[MAX_LINE_LEN][MAX_LINE_LEN];
 static int entry_count = 0;
@@ -206,51 +206,6 @@ int process_directive(char *directive, char *operands, int line_number,
 
     /* Ignore other directives in second pass */
     return 1;
-}
-
-/**
- * @brief Add an entry symbol to the symbol table
- * @param symbol Symbol name
- * @param line_number Line number for error reporting
- * @param error_count Pointer to error counter
- * @return 1 if successful, 0 otherwise
- */
-int add_entry_symbol(char *symbol, int line_number, int *error_count) {
-    int i;
-
-    /* Trim whitespace */
-    while (*symbol && (*symbol == ' ' || *symbol == '\t')) {
-        symbol++;
-    }
-
-    /* Find symbol in table */
-    for (i = 0; i < symbol_count; i++) {
-        if (strcmp(symbol_table[i].name, symbol) == 0) {
-            /* Cannot be both external and entry */
-            if (symbol_table[i].is_external) {
-                printf(
-                    "Error line %d: Symbol %s is already defined as external\n",
-                    line_number, symbol);
-                (*error_count)++;
-                return 0;
-            }
-
-            /* Mark as entry */
-            symbol_table[i].is_entry = 1;
-
-            /* Add to entry symbols list */
-            strcpy(entry_symbols[entry_count], symbol);
-            entry_count++;
-
-            return 1;
-        }
-    }
-
-    /* Symbol not found */
-    printf("Error line %d: Symbol %s not found in symbol table\n", line_number,
-           symbol);
-    (*error_count)++;
-    return 0;
 }
 
 /**
