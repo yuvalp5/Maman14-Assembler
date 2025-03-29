@@ -4,12 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Stack instance for use - internal variable */
-Stack stack = {0, NULL};
 /* Labels table instance */
 Table label_table = {0, NULL};
 /* Macro table instance */
 Table macro_table = {0, NULL};
+Symbol symbol_table[MAX_SYMBOLS];
 
 /* Global variables */
 int DC = 0;           /* Data counter initialized to 0 */
@@ -19,64 +18,6 @@ int error_count = 0;  /* Number of errors */
 int line_number = 0;  /* Line number */
 int ICF, DCF;         /* Final IC and DC values */
 int L;                /* Number of words in the instruction */
-
-int get_stack_size() { return stack.size; }
-
-int peek() {
-    if (stack.size == 0) {
-        printf("[TYPES:] Stack is empty! Cannot peek.\n");
-        return -1;
-    }
-    return stack.head->data;
-}
-
-int push(int value) { /* TODO remember this return val at error */
-    Node *new_node = (Node *)malloc(sizeof(Node));
-    if (!new_node) {
-        printf("[TYPES:] Memory allocation failed\n");
-        return 1;
-    }
-    new_node->data = value;
-    new_node->next = stack.head;
-    stack.head = new_node;
-    stack.size++;
-    printf("[TYPES:] Pushed %d onto the stack.\n", value);
-    return 0;
-}
-
-int pop() { /* TODO remember this return val at error*/
-    int value;
-    Node *temp;
-
-    if (stack.size == 0) {
-        printf("[TYPES:] Stack is empty! Cannot pop.\n");
-        return -1;
-    }
-    temp = stack.head;
-    value = temp->data;
-    stack.head = temp->next;
-    free(temp);
-    stack.size--;
-    return value;
-}
-
-/* Destroy stack and free all memory */
-int destroy_stack() {
-    Node *current, *next;
-    int count = 0;
-
-    current = stack.head;
-    while (stack.size > 0) {
-        next = current->next;
-        free(current);
-        current = next;
-        count++;
-    }
-    stack.head = NULL;
-    stack.size = 0;
-    printf("[TYPES:] Stack destroyed. Freed %d nodes.\n", count);
-    return 0;
-}
 
 /* Label table functions */
 int get_label_table_size() { return label_table.size; }

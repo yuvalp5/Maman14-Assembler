@@ -7,24 +7,19 @@
 
 #include "definitions.h"
 
-/* Basic Node structure */
-typedef struct Node {
-    int data;
-    struct Node *next;
-} Node;
-
-/* Stack structure */
-typedef struct Stack {
-    int size;
-    Node *head;
-} Stack;
-
 /* Basic DB item structure as K-V pair */
 typedef struct Item {
     void *name;
     void *value;
     struct Item *next;
 } Item;
+
+/* Symbol table structure */
+typedef struct Symbol {
+    char symbol_name[MAX_SYMBOL_LEN + 1];
+    int symbol_value;
+    int symbol_type;
+} Symbol;
 
 /* Basic table structure as array of items */
 typedef struct Table {
@@ -42,17 +37,11 @@ extern int DCF;          /* Final DC value */
 extern int L;            /* Number of words in the instruction */
 
 /* Global tables */
+/* TODO: implement as item arrays */
 extern Table label_table;
 extern Table string_table;
 extern Table macro_table;
-
-/* Stack functions */
-int is_empty(void);
-int get_stack_size(void);
-int peek(void);
-int push(int value);
-int pop(void);
-int destroy_stack(void);
+extern Symbol symbol_table[MAX_SYMBOLS];
 
 /* Label table functions */
 int get_label_table_size(void);

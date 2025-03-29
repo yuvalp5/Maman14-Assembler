@@ -1,16 +1,17 @@
-#ifndef ASSEMBLER_FIRST_PASS_H
-#define ASSEMBLER_FIRST_PASS_H
+/**
+ * @brief First pass implementation
+ */
 
-/* Standard library includes */
+#ifndef ASSEMBLER_FIRST_PASS_H
+#define ASSEMBLER_FIRST_PASS_H 1
+
+#include "definitions.h"
+#include "types.h"
+#include "utils.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-/* Project includes */
-#include "definitions.h"
-#include "types.h"
-#include "utils.h"
 
 /* Symbol types */
 #define SYMBOL_TYPE_CODE 1
@@ -24,26 +25,7 @@
 #define ADDR_MODE_INDEX 2
 #define ADDR_MODE_REGISTER 3
 
-/* Symbol table structure */
-typedef struct {
-    char symbol_name[MAX_SYMBOL_LEN + 1];
-    int symbol_value;
-    int symbol_type;
-} Symbol;
-
-/* External variables */
-extern Symbol symbol_table[MAX_SYMBOLS];
-extern int symbol_count;
-extern int error_count;
-extern int line_number;
-extern int IC;
-extern int DC;
-extern int ICF, DCF;
-extern int L;
-
-/* Function prototypes */
-
-/* Main function for first pass */
+/* Master function for first pass */
 int first_pass(const char *src);
 
 /* Symbol and label handling */
@@ -79,4 +61,4 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
 char *split_line_to_fields(char *line, int field_number,
                            const char *delimiters);
 
-#endif /* ASSEMBLER_FIRST_PASS_H */
+#endif
