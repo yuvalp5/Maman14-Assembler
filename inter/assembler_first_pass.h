@@ -2,27 +2,27 @@
 #define ASSEMBLER_FIRST_PASS_H
 
 /* Standard library includes */
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
 /* Project includes */
-#include "shared/definitions.h"
+#include "definitions.h"
 #include "types.h"
 #include "utils.h"
 
 /* Symbol types */
-#define SYMBOL_TYPE_CODE    1
-#define SYMBOL_TYPE_DATA    2
-#define SYMBOL_TYPE_EXTERN  3
-#define SYMBOL_TYPE_ENTRY   4
+#define SYMBOL_TYPE_CODE 1
+#define SYMBOL_TYPE_DATA 2
+#define SYMBOL_TYPE_EXTERN 3
+#define SYMBOL_TYPE_ENTRY 4
 
 /* Addressing modes */
 #define ADDR_MODE_IMMEDIATE 0
-#define ADDR_MODE_DIRECT    1
-#define ADDR_MODE_INDEX     2
-#define ADDR_MODE_REGISTER  3
+#define ADDR_MODE_DIRECT 1
+#define ADDR_MODE_INDEX 2
+#define ADDR_MODE_REGISTER 3
 
 /* Symbol table structure */
 typedef struct {
@@ -63,16 +63,20 @@ int calc_num_of_words(char *instruction, char *operand1, char *operand2);
 int get_addressing_mode(char *operand);
 int get_operand_words(int addressing_mode);
 void word_to_binary(int instruction_index, int operand1_mode, int operand2_mode,
-                   unsigned int *code, int *code_index);
-void save_values_with_binary(unsigned int *code, int word_count, int *memory, int current_ic);
+                    unsigned int *code, int *code_index);
+void save_values_with_binary(unsigned int *code, int word_count, int *memory,
+                             int current_ic);
 
 /* Data storage handling */
-int encode_data_storage(const char *directive, char *operands, int *data_memory);
+int encode_data_storage(const char *directive, char *operands,
+                        int *data_memory);
 
 /* Operand validation */
-int validate_operand(char *operand, int instruction_index, int operand_num, int addressing_mode);
+int validate_operand(char *operand, int instruction_index, int operand_num,
+                     int addressing_mode);
 
 /* Utility functions */
-char* split_line_to_fields(char *line, int field_number, const char *delimiters);
+char *split_line_to_fields(char *line, int field_number,
+                           const char *delimiters);
 
 #endif /* ASSEMBLER_FIRST_PASS_H */
