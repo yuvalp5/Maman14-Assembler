@@ -11,8 +11,8 @@
  */
 int main(int argc, char *argv[]) {
     /* File names */
-    char *src_name, *pre_assembled_name, *object_name, *externals_name,
-        *entry_name;
+    char *base_name, *src_name, *pre_assembled_name, *object_name,
+        *externals_name, *entry_name;
     /* Iterator */
     int i;
 
@@ -26,8 +26,8 @@ int main(int argc, char *argv[]) {
 
     /* Iterate over args */
     for (i = 1; i < argc; i++) {
-        char *base_name = argv[i];
-        src_name = strcat(base_name, ".as");
+        /* Assign file names */
+        base_name = argv[i], src_name = strcat(base_name, ".as");
         pre_assembled_name = strcat(base_name, ".am");
         object_name = strcat(base_name, ".ob");
         externals_name = strcat(base_name, ".external");
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
         }
 
         /* First pass */
-        if (first_pass(src_name)) {
+        if (first_pass(pre_assembled_name, object_name)) {
             printf("[WRAPPER:] First pass completed.\n");
         } else {
             printf("[WRAPPER:] First pass failed.\n");
@@ -52,14 +52,13 @@ int main(int argc, char *argv[]) {
         }
 
         /* Second pass */
-        if (second_pass(src_name)) {
+        if (second_pass(object_name, object_name)) {
             printf("[WRAPPER:] Second pass completed.\n");
         } else {
             printf("[WRAPPER:] Second pass failed.\n");
             printf("[WRAPPER:] Exiting...\n");
             return 1;
         }
-        /* TODO is this everything? Check */
     }
     printf("[WRAPPER:] All operations completed successfully.\n");
 
