@@ -1,6 +1,6 @@
 #include "pre_assembler.h"
-#include "../shared/definitions.h"
-#include "../shared/types.h"
+#include "definitions.h"
+#include "types.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>

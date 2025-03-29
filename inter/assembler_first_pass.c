@@ -1,4 +1,11 @@
 #include "inter/assembler_first_pass.h"
+#include "definitions.h"
+#include "types.h"
+#include "utils.h"
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /* Memory for storing machine code */
 static int *code_memory = NULL;

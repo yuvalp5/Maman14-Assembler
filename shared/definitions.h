@@ -7,8 +7,15 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H 1
 
-/* Project-wide definitions */
+/* File handling */
+#define SRC_F_EXT ".as"
+#define PAS_F_EXT ".am"
+#define OBJ_F_EXT ".ob"
+#define EXT_F_EXT ".external"
+#define ENT_F_EXT ".entry"
 #define LOG_FILE_LOC "./io/log.txt"
+
+/* Project-wide definitions */
 #define MAX_MACRO_NAME_LEN 31
 #define MAX_MACRO_CONTENT_LEN 1000
 #define MAX_MACROS 50

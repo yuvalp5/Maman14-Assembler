@@ -5,14 +5,6 @@
 #ifndef ASSEMBLER_FIRST_PASS_H
 #define ASSEMBLER_FIRST_PASS_H 1
 
-#include "definitions.h"
-#include "types.h"
-#include "utils.h"
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 /* Symbol types */
 #define SYMBOL_TYPE_CODE 1
 #define SYMBOL_TYPE_DATA 2
