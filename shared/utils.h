@@ -22,4 +22,12 @@ int print_and_log(char *text, char *format);
  */
 void exit_graceful(int exit_code, int stop);
 
+/**
+ * Concatenes two strings to a new one (used to add filename extensions)
+ * @param str1 First string
+ * @param str2 Second string
+ * @return Concatenated string
+ */
+char *add_ext(const char *str1, const char *str2);
+
 #endif

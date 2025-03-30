@@ -37,3 +37,18 @@ void exit_graceful(int exit_code, int stop) {
         exit(exit_code);
     }
 }
+
+char *add_ext(const char *str1, const char *str2) {
+    /* Allocate memory */
+    char *result = malloc((strlen(str1) + strlen(str2)) * sizeof(char));
+    if (!result) {
+        printf("[UTILS:] Nenory could not be allocated\n");
+        return NULL;
+    }
+
+    /* Concatenate */
+    strcpy(result, str1);
+    strcat(result, str2);
+
+    return result;
+}
