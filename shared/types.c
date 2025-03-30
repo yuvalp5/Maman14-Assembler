@@ -6,10 +6,14 @@
 
 int _insert_item(Table *instance, void *item);
 void *_safe_malloc(const int size, const char *table_name);
+
 /* Global instances */
-Table *label_table = &(Table){0, NULL};
-Table *macro_table = &(Table){0, NULL};
-Table *symbol_table = &(Table){0, NULL};
+Table _tbl1 = {0, NULL};
+Table _tbl2 = {0, NULL};
+Table _tbl3 = {0, NULL};
+Table *label_table = &_tbl1;
+Table *macro_table = &_tbl2;
+Table *symbol_table = &_tbl3;
 
 /* Global variables */
 int DC = 0;           /* Data counter initialized to 0 */
