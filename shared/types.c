@@ -5,7 +5,7 @@
 #include <string.h>
 
 int _insert_item(Table *instance, void *item);
-void *_safe_malloc(const size_t size, const char *table_name);
+void *_safe_malloc(const int size, const char *table_name);
 /* Global instances */
 Table *label_table = &(Table){0, NULL};
 Table *macro_table = &(Table){0, NULL};
@@ -38,7 +38,7 @@ int _insert_item(Table *instance, void *item) {
     return 0;
 }
 
-void *_safe_malloc(const size_t size, const char *table_name) {
+void *_safe_malloc(const int size, const char *table_name) {
     void *ptr = malloc(size);
     if (!ptr) {
         printf("[TYPES:] Memory allocation failed for table: %s\n", table_name);
@@ -53,11 +53,11 @@ int insert_macro(const char *name, const char *value) {
         return 1;
 
     macro->name = name;
-    macro->value = strdup(value); // Use strdup to simplify allocation
+    macro->value = strdup(value);
 
     /* Check if strdup succeeded */
     if (!macro->value) {
-        free(macro); // Free the macro structure if strdup fails
+        free(macro);
         printf("[TYPES:] Macro value memory allocation failed\n");
         return 1;
     }
@@ -96,7 +96,7 @@ void *get_item(const Table *instance, const char *name) {
         return NULL;
     }
 
-    size_t i;
+    int i;
     for (i = 0; i < instance->count; i++) {
         item_name = ((Symbol *)instance->content[i])->name;
 

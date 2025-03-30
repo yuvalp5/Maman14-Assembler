@@ -11,33 +11,33 @@
 int *code_memory = NULL;
 
 /* Global variables from types.h */
-extern int DC;           /* Data counter */
-extern int IC;           /* Instruction counter */
-extern int ICF;          /* Final IC value */
-extern int DCF;          /* Final DC value */
-extern int L;            /* Number of words in the instruction */
-extern int symbol_count; /* Number of symbols in the symbol table */
-extern int error_count;  /* Number of errors */
-extern int line_number;  /* Line number */
+extern int DC;              /* Data counter */
+extern int IC;              /* Instruction counter */
+extern int ICF;             /* Final IC value */
+extern int DCF;             /* Final DC value */
+extern int L;               /* Number of words in the instruction */
+extern int symbol_count;    /* Number of symbols in the symbol table */
+extern int error_count;     /* Number of errors */
+extern int line_number;     /* Line number */
 extern Table *symbol_table; /* Symbol table */
 
 /* Helper function to handle symbol table operations */
 int handle_symbol_addition(const char *symbol_name, int value, int type) {
     /* Check if symbol already exists in the table */
     if (find_symbol_in_table(symbol_name)) {
-        printf("Error in line %d: Symbol '%s' already defined\n",
-               line_number, symbol_name);
+        printf("Error in line %d: Symbol '%s' already defined\n", line_number,
+               symbol_name);
         error_count++;
         return 0;
-    } 
-    
+    }
+
     /* Check if table is  full */
     if (symbol_table && symbol_table->count >= MAX_SYMBOLS) {
         printf("Error: Symbol table full, max %d symbols\n", MAX_SYMBOLS);
         error_count++;
         return 0;
     }
-    
+
     /* Add symbol to table with specified type */
     if (add_symbol_to_table(symbol_name, value, type) != 0) {
         printf("Error in line %d: Failed to add symbol '%s' to table\n",
@@ -45,14 +45,14 @@ int handle_symbol_addition(const char *symbol_name, int value, int type) {
         error_count++;
         return 0;
     }
-    
+
     return 1;
 }
 
 /* Helper function to initialize code memory if needed */
 int initialize_code_memory() {
     int i;
-    
+
     if (!code_memory) {
         code_memory = (int *)malloc(MAX_MEMORY_SIZE * sizeof(int));
         if (!code_memory) {
@@ -90,12 +90,13 @@ int first_pass(const char *src, const char *dest) {
     int code_index = 0;               /* Index for the code array */
     int i;                            /* Counter for various loops */
     char symbol_name[MAX_SYMBOL_LEN + 1]; /* Symbol name buffer */
-    int operand1_mode;                /* Operand 1 mode */
-    int operand2_mode;                /* Operand 2 mode */
-    int proceed_to_next_line = 0;     /* Flag to check if we should proceed to the next line */
-    char *extern_symbol;              /* External symbol pointer */
-    char *operands;                   /* For data storage operands */
-    int len;                          /* Length variable for string operations */
+    int operand1_mode;                    /* Operand 1 mode */
+    int operand2_mode;                    /* Operand 2 mode */
+    int proceed_to_next_line =
+        0; /* Flag to check if we should proceed to the next line */
+    char *extern_symbol; /* External symbol pointer */
+    char *operands;      /* For data storage operands */
+    int len;             /* Length variable for string operations */
 
     /* Initialize IC and DC */
     IC = 100; /* Start at 100 as per requirements */
@@ -107,7 +108,7 @@ int first_pass(const char *src, const char *dest) {
         perror("Error: Unable to open input file\n");
         return 1;
     }
-    
+
     /* 2. Read the next line from the input file */
     while (fgets(line, MAX_LINE_LEN, input_pre_assembled) != NULL) {
         line_number++;
@@ -169,7 +170,8 @@ int first_pass(const char *src, const char *dest) {
                         extern_symbol = strtok(NULL, " \t\n");
 
                         if (extern_symbol) {
-                            handle_symbol_addition(extern_symbol, 0, SYMBOL_TYPE_EXTERN);
+                            handle_symbol_addition(extern_symbol, 0,
+                                                   SYMBOL_TYPE_EXTERN);
                         } else { /* if the operand is missing, print an
                                     error message */
                             printf("Error in line %d: Missing operand for "
@@ -202,12 +204,12 @@ int first_pass(const char *src, const char *dest) {
                         operand2 ? get_addressing_mode(operand2) : -1;
 
                     /* Validate operands */
-                    if (!validate_operand(
-                            operand1, search_command_in_table(instruction),
-                            1, operand1_mode) ||
-                        !validate_operand(
-                            operand2, search_command_in_table(instruction),
-                            2, operand2_mode)) {
+                    if (!validate_operand(operand1,
+                                          search_command_in_table(instruction),
+                                          1, operand1_mode) ||
+                        !validate_operand(operand2,
+                                          search_command_in_table(instruction),
+                                          2, operand2_mode)) {
                         proceed_to_next_line = 1;
                         continue;
                     }
@@ -305,16 +307,17 @@ int first_pass(const char *src, const char *dest) {
 
     /* Write first pass output to file if no errors */
     if (error_count == 0) {
-        /* Now open the output file for writing since we know there are no errors */
+        /* Now open the output file for writing since we know there are no
+         * errors */
         output_file = fopen(dest, "w");
         if (!output_file) {
             perror("Error: Unable to open output file for writing results\n");
             return 1;
         }
-        
+
         /* Write header with ICF and DCF */
         fprintf(output_file, "ICF=%d\tDCF=%d\n", ICF, DCF);
-        
+
         /* Write code and data segments to the output file */
         fprintf(output_file, "Code segment:\n");
         for (i = 100; i < ICF; i++) {
@@ -326,12 +329,13 @@ int first_pass(const char *src, const char *dest) {
         fprintf(output_file, "Data segment:\n");
         for (i = 0; i < DCF; i++) {
             if (code_memory && ICF + i < MAX_MEMORY_SIZE) {
-                fprintf(output_file, "%04d\t%06X\n", ICF + i, code_memory[ICF + i]);
+                fprintf(output_file, "%04d\t%06X\n", ICF + i,
+                        code_memory[ICF + i]);
             }
         }
 
         printf("First pass output written to %s\n", dest);
-        
+
         /* Close the output file */
         fclose(output_file);
     }
@@ -344,7 +348,7 @@ int first_pass(const char *src, const char *dest) {
 int is_symbol(char *field) {
     int len;
     char symbol_name[MAX_SYMBOL_LEN + 1];
-    
+
     /* Check if the field ends with a colon, indicating a label/symbol */
     len = strlen(field);
 
@@ -372,7 +376,7 @@ int is_reserved_word(const char *word) {
         ".data", ".string", ".entry", ".extern", "r0",  "r1",  "r2",  "r3",
         "r4",    "r5",      "r6",     "r7",      NULL};
     int i = 0;
-    
+
     while (reserved_words[i] != NULL) {
         if (strcmp(word, reserved_words[i]) == 0) {
             return 1; /* It is a reserved word */
@@ -592,7 +596,7 @@ void save_values_with_binary(unsigned int *code, int word_count, int *memory,
 }
 
 void add_lcf_to_data(int offset) {
-    size_t i;
+    int i;
     Symbol *symbol;
 
     printf("Adding offset %d to data symbols\n", offset);
@@ -604,15 +608,16 @@ void add_lcf_to_data(int offset) {
             if (symbol && symbol->symbol_type == SYMBOL_TYPE_DATA) {
                 /* Add the full ICF value to each data symbol */
                 symbol->symbol_value += offset;
-                printf("Updated symbol '%s' to value %d\n",
-                       symbol->name, symbol->symbol_value);
+                printf("Updated symbol '%s' to value %d\n", symbol->name,
+                       symbol->symbol_value);
             }
         }
     }
 }
 
 /* Validate operand based on instruction and addressing mode */
-int validate_operand(char *operand, int instruction_index, int operand_num, int addressing_mode) {
+int validate_operand(char *operand, int instruction_index, int operand_num,
+                     int addressing_mode) {
     char *value;   /* For immediate value validation */
     char *bracket; /* For index addressing validation */
     char *reg;     /* For register validation */
@@ -829,7 +834,8 @@ int validate_operand(char *operand, int instruction_index, int operand_num, int 
 }
 
 /* Encode data storage directive */
-int encode_data_storage(const char *directive, char *operands, int *data_memory) {
+int encode_data_storage(const char *directive, char *operands,
+                        int *data_memory) {
     char *token;
     int value;
     int i;
@@ -930,14 +936,14 @@ int encode_data_storage(const char *directive, char *operands, int *data_memory)
 
 /* Print the symbol table contents using the Table structure for debugging */
 void print_symbol_table(void) {
-    size_t i;
+    int i;
     Symbol *symbol;
-    
+
     printf("\nSymbol Table Contents:\n");
     printf("----------------------\n");
     printf("Name\t\tValue\tType\n");
     printf("----------------------\n");
-    
+
     if (symbol_table && symbol_table->content) {
         for (i = 0; i < symbol_table->count; i++) {
             symbol = (Symbol *)symbol_table->content[i];
@@ -969,7 +975,7 @@ void print_symbol_table(void) {
 /* Implementation of symbol table functions using the proper API */
 int add_symbol_to_table(const char *name, int value, int type) {
     int result = insert_symbol(name, value, type);
-    
+
     /* Note: The Table structure already updates its count internally
        through the insert_symbol function, which calls _insert_item.
        We still update symbol_count for backward compatibility with
@@ -977,7 +983,7 @@ int add_symbol_to_table(const char *name, int value, int type) {
     if (result == 0 && symbol_table) {
         symbol_count = symbol_table->count;
     }
-    
+
     return result;
 }
 

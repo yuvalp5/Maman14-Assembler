@@ -10,7 +10,7 @@
 
 /* Generic table structure holding dynamically typed content array */
 typedef struct {
-    size_t count;
+    int count;
     void **content;
 } Table;
 
