@@ -9,7 +9,17 @@
 
 /* Memory for storing machine code - made global for second pass access */
 int *code_memory = NULL;
-/* todo: yuval- save file at *dest .obj file */
+
+/* Global variables from types.h */
+extern int DC;           /* Data counter */
+extern int IC;           /* Instruction counter */
+extern int ICF;          /* Final IC value */
+extern int DCF;          /* Final DC value */
+extern int L;            /* Number of words in the instruction */
+extern int symbol_count; /* Number of symbols in the symbol table */
+extern int error_count;  /* Number of errors */
+extern int line_number;  /* Line number */
+extern Table *symbol_table; /* Symbol table */
 
 /* Helper function to handle symbol table operations */
 int handle_symbol_addition(const char *symbol_name, int value, int type) {
@@ -21,7 +31,7 @@ int handle_symbol_addition(const char *symbol_name, int value, int type) {
         return 0;
     } 
     
-    /* Check if table is too full */
+    /* Check if table is  full */
     if (symbol_table && symbol_table->count >= MAX_SYMBOLS) {
         printf("Error: Symbol table full, max %d symbols\n", MAX_SYMBOLS);
         error_count++;
@@ -41,6 +51,8 @@ int handle_symbol_addition(const char *symbol_name, int value, int type) {
 
 /* Helper function to initialize code memory if needed */
 int initialize_code_memory() {
+    int i;
+    
     if (!code_memory) {
         code_memory = (int *)malloc(MAX_MEMORY_SIZE * sizeof(int));
         if (!code_memory) {
@@ -49,7 +61,7 @@ int initialize_code_memory() {
             return 0;
         }
         /* Initialize memory to zero */
-        for (int i = 0; i < MAX_MEMORY_SIZE; i++) {
+        for (i = 0; i < MAX_MEMORY_SIZE; i++) {
             code_memory[i] = 0;
         }
     }
@@ -62,12 +74,11 @@ get content from symol table:
 
 search by name:
 get_item(const Table *instance, const char *name);
-
-
+*/
 
 int first_pass(const char *src, const char *dest) {
     FILE *input_pre_assembled = NULL; /* File pointer for the input file */
-    FILE *output_file = NULL;        /* File pointer for the output file */
+    FILE *output_file = NULL;         /* File pointer for the output file */
     char line[MAX_LINE_LEN];          /* Line buffer */
     char line_copy[MAX_LINE_LEN];     /* Copy of the line to work with */
     int is_symbol_flag = 0;           /* Flag to check if a symbol is found */
@@ -77,14 +88,14 @@ int first_pass(const char *src, const char *dest) {
     char *operand2;                   /* Operand 2 pointer */
     unsigned int code[MAX_LINE_LEN];  /* To store generated machine code */
     int code_index = 0;               /* Index for the code array */
-    int i; /* counter for the loop in the symbol table*/
+    int i;                            /* Counter for various loops */
     char symbol_name[MAX_SYMBOL_LEN + 1]; /* Symbol name buffer */
-    int operand1_mode;                    /* Operand 1 mode */
-    int operand2_mode;                    /* Operand 2 mode */
-    int proceed_to_next_line; /* Flag to check if we should proceed to the next
-                                 line */
-    char *extern_symbol;
-    char *operands;   /* For data storage operands */
+    int operand1_mode;                /* Operand 1 mode */
+    int operand2_mode;                /* Operand 2 mode */
+    int proceed_to_next_line = 0;     /* Flag to check if we should proceed to the next line */
+    char *extern_symbol;              /* External symbol pointer */
+    char *operands;                   /* For data storage operands */
+    int len;                          /* Length variable for string operations */
 
     /* Initialize IC and DC */
     IC = 100; /* Start at 100 as per requirements */
@@ -97,8 +108,6 @@ int first_pass(const char *src, const char *dest) {
         return 1;
     }
     
-    /* We'll open the output file after the parsing is complete */
-
     /* 2. Read the next line from the input file */
     while (fgets(line, MAX_LINE_LEN, input_pre_assembled) != NULL) {
         line_number++;
@@ -113,7 +122,7 @@ int first_pass(const char *src, const char *dest) {
         field = strtok(line_copy, " \t\n");
 
         if (field) {
-            int len = strlen(field);
+            len = strlen(field);
             /* Check if field ends with a colon, indicating a symbol */
             if (len > 0 && field[len - 1] == ':') {
                 /* Extract symbol name (without the colon) */
@@ -164,8 +173,8 @@ int first_pass(const char *src, const char *dest) {
                         } else { /* if the operand is missing, print an
                                     error message */
                             printf("Error in line %d: Missing operand for "
-                                       ".extern directive\n",
-                                       line_number);
+                                   ".extern directive\n",
+                                   line_number);
                             error_count++;
                         }
                     }
@@ -333,13 +342,15 @@ int first_pass(const char *src, const char *dest) {
 /* Helper functions */
 
 int is_symbol(char *field) {
+    int len;
+    char symbol_name[MAX_SYMBOL_LEN + 1];
+    
     /* Check if the field ends with a colon, indicating a label/symbol */
-    int len = strlen(field);
+    len = strlen(field);
 
     /* Check if the field is a valid symbol name */
     if (len > 0 && field[len - 1] == ':') {
         /* Create a temporary copy of the symbol name without the colon */
-        char symbol_name[MAX_SYMBOL_LEN + 1];
         strncpy(symbol_name, field, len - 1);
         symbol_name[len - 1] = '\0';
 
@@ -360,8 +371,8 @@ int is_reserved_word(const char *word) {
         "dec",   "jmp",     "bne",    "jsr",     "red", "prn", "rts", "stop",
         ".data", ".string", ".entry", ".extern", "r0",  "r1",  "r2",  "r3",
         "r4",    "r5",      "r6",     "r7",      NULL};
-
     int i = 0;
+    
     while (reserved_words[i] != NULL) {
         if (strcmp(word, reserved_words[i]) == 0) {
             return 1; /* It is a reserved word */
@@ -601,8 +612,7 @@ void add_lcf_to_data(int offset) {
 }
 
 /* Validate operand based on instruction and addressing mode */
-int validate_operand(char *operand, int instruction_index, int operand_num,
-                     int addressing_mode) {
+int validate_operand(char *operand, int instruction_index, int operand_num, int addressing_mode) {
     char *value;   /* For immediate value validation */
     char *bracket; /* For index addressing validation */
     char *reg;     /* For register validation */
@@ -819,8 +829,7 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
 }
 
 /* Encode data storage directive */
-int encode_data_storage(const char *directive, char *operands,
-                        int *data_memory) {
+int encode_data_storage(const char *directive, char *operands, int *data_memory) {
     char *token;
     int value;
     int i;
