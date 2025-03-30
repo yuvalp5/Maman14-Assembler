@@ -42,6 +42,22 @@
 #define MACRO_START_KW "mcro"
 #define MACRO_END_KW "mcroend"
 
-/*TODO: define reserved kw here */
+#define RESERVED_KW {\
+        /* Instructions */\
+        "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp",\
+        "bne", "jsr", "red", "prn", "rts", "stop",\
+\
+        /* Assembler directives */\
+        "data", "string", "entry", "extern",\
+\
+        /* Macro directives */\
+        MACRO_START_KW, MACRO_END_KW,\
+\
+        /* Registers */\
+        "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",\
+\
+        /* Terminator */\
+        NULL\
+}
 
 #endif

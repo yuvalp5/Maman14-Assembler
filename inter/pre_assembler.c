@@ -49,7 +49,7 @@ int pre_assembler(const char *src, const char *dest) {
         /* Inside a macro definition - collecting content */
         else if (in_macro) {
             /* Get existing content */
-            current_content = get_string(current_macro);
+            current_content = ((Macro *)get_item(macro_table, current_macro))->value;
 
             /* Create new content by concatenating existing content with the new
              * line */
@@ -63,7 +63,7 @@ int pre_assembler(const char *src, const char *dest) {
             if (strlen(new_content) + strlen(line) < MAX_MACRO_CONTENT_LEN) {
                 strcat(new_content, line);
                 /* Update the macro content */
-                add_string(current_macro, new_content);
+                insert_macro(current_macro, new_content);
             } else {
                 fprintf(stderr, "Error: Macro content too large for '%s'\n",
                         current_macro);
@@ -71,7 +71,7 @@ int pre_assembler(const char *src, const char *dest) {
         }
         /* Regular line or macro invocation */
         else {
-            macro_content = get_string(first_word);
+            macro_content = ((Macro *)get_item(macro_table, first_word))->value;
             if (macro_content != NULL) {
                 /* Expand macro */
                 fputs(macro_content, output_pre_assembled);
@@ -85,9 +85,6 @@ int pre_assembler(const char *src, const char *dest) {
     /* close files after finishing process */
     fclose(user_input);
     fclose(output_pre_assembled);
-
-    /* Free the string table at the end */
-    destroy_string_table();
 
     /* Return success */
     return 0;
@@ -156,6 +153,7 @@ void extract_first_word(const char *line, char *word) {
 int is_valid_macro_name(const char *name) {
     int i;
     /* List of reserved words that can't be macro names */
+    /* TODO use RESERVED_KW */
     const char *reserved_words[] = {
         /* Assembly instructions */
         "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp",
