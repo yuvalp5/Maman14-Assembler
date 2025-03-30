@@ -42,4 +42,6 @@
 #define MACRO_START_KW "mcro"
 #define MACRO_END_KW "mcroend"
 
+/*TODO: define reserved kw here */
+
 #endif

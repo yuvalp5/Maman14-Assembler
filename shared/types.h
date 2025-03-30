@@ -7,25 +7,35 @@
 
 #include "definitions.h"
 
-/* Basic DB item structure as K-V pair */
-typedef struct Item {
-    void *name;
-    void *value;
-    struct Item *next;
-} Item;
+/* Generic table structure holding dynamically typed content array */
+typedef struct {
+    size_t count;
+    void **content;
+} Table;
 
-/* Symbol table structure */
-typedef struct Symbol {
-    char symbol_name[MAX_SYMBOL_LEN + 1];
+/* Macro structure */
+typedef struct {
+    char *name;
+    char *value;
+} Macro;
+
+/* Symbol structure */
+typedef struct {
+    char *name;
     int symbol_value;
     int symbol_type;
 } Symbol;
 
-/* Basic table structure as array of items */
-typedef struct Table {
-    int size;
-    Item *content;
-} Table;
+/* Label structure */
+typedef struct {
+    char *name;
+    int value;
+} Label;
+
+/* Global tables */
+extern Table *label_table;
+extern Table *macro_table;
+extern Table *symbol_table;
 
 extern int DC;           /* Data counter initialized to 0 */
 extern int IC;           /* Instruction counter initialized to 100 */
@@ -36,26 +46,9 @@ extern int ICF;          /* Final IC value */
 extern int DCF;          /* Final DC value */
 extern int L;            /* Number of words in the instruction */
 
-/* Global tables */
-/* TODO: implement as item arrays */
-extern Table label_table;
-extern Table string_table;
-extern Table macro_table;
-extern Symbol symbol_table[MAX_SYMBOLS];
-
-/* Label table functions */
-int get_label_table_size(void);
-int add_label(char *name, int value);
-int get_label(char *name);
-void destroy_label_table(void);
-
-/* String table functions */
-int get_string_table_size(void);
-int add_string(char *name, char *value);
-char *get_string(char *name);
-void destroy_string_table(void);
-
-/* Custom string functions */
-char *my_strdup(const char *str);
+/* Table functions */
+int insert_macro(const char *name, const char *value);
+int insert_label(const char *name, const int value);
+int insert_symbol(const char *name, const int value, const int type);
 
 #endif

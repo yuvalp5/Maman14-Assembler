@@ -4,11 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Labels table instance */
-Table label_table = {0, NULL};
-/* Macro table instance */
-Table macro_table = {0, NULL};
-Symbol symbol_table[MAX_SYMBOLS];
+int _insert_item(Table *instance, void *item);
+void *_safe_malloc(const size_t size, const char *table_name);
+/* Global instances */
+Table *label_table = &(Table){.count = 0, .content = NULL};
+Table *macro_table = &(Table){.count = 0, .content = NULL};
+Table *symbol_table = &(Table){.count = 0, .content = NULL};
 
 /* Global variables */
 int DC = 0;           /* Data counter initialized to 0 */
@@ -19,164 +20,72 @@ int line_number = 0;  /* Line number */
 int ICF, DCF;         /* Final IC and DC values */
 int L;                /* Number of words in the instruction */
 
-/* Label table functions */
-int get_label_table_size() { return label_table.size; }
+int _insert_item(Table *instance, void *item) {
+    // Reallocate memory with 1 slot increase every time
+    instance->content = (void **)realloc(
+        instance->content, (instance->count + 1) * sizeof(void *));
 
-int add_label(char *name, int value) {
-    /* Allocate memory for the value */
-    int *value_ptr = (int *)malloc(sizeof(int));
-    if (!value_ptr) {
-        printf("[TYPES:] Memory allocation failed for label value\n");
-        return 1;
-    }
-    *value_ptr = value;
-
-    /* Check if the label already exists */
-    Item *current = label_table.content;
-    while (current) {
-        if (strcmp((char *)current->name, name) == 0) {
-            /* Free the old value and update */
-            free(current->value);
-            current->value = value_ptr;
-            printf("[TYPES:] Updated label %s with value %d.\n", name, value);
-            return 0;
-        }
-        current = current->next;
-    }
-
-    /* Create new item */
-    Item *new_item = (Item *)malloc(sizeof(Item));
-    if (!new_item) {
-        free(value_ptr);
-        printf("[TYPES:] Memory allocation failed for label item\n");
+    // Check if realloc succeeded
+    if (!instance->content) {
+        printf("[TYPES:] Table memory allocation failed\n");
         return 1;
     }
 
-    new_item->name = strdup(name);
-    if (!new_item->name) {
-        free(value_ptr);
-        free(new_item);
-        printf("[TYPES:] Memory allocation failed for label name\n");
-        return 1;
-    }
+    // Insert the new item
+    instance->content[instance->count] = item;
+    instance->count++;
 
-    new_item->value = value_ptr;
-    new_item->next = label_table.content;
-    label_table.content = new_item;
-    label_table.size++;
-
-    printf("[TYPES:] Added label %s with value %d.\n", name, value);
     return 0;
 }
 
-int get_label(char *name) {
-    Item *current = label_table.content;
-
-    while (current) {
-        if (strcmp((char *)current->name, name) == 0) {
-            return *((int *)current->value);
-        }
-        current = current->next;
+void *_safe_malloc(const size_t size, const char *table_name) {
+    void *ptr = malloc(size);
+    if (!ptr) {
+        printf("[TYPES:] Memory allocation failed for table: %s\n", table_name);
     }
-
-    return -1; /* Return -1 if label not found */
+    return ptr;
 }
 
-/* String table functions */
-int get_string_table_size() { return macro_table.size; }
+int insert_macro(const char *name, const char *value) {
+    // Allocate memory for new macro structure
+    Macro *macro = (Macro *)_safe_malloc(sizeof(Macro), "macro_table");
+    if (!macro)
+        return 1;
 
-int add_string(char *name, char *value) {
-    /* Check if the string already exists */
-    Item *current = macro_table.content;
-    while (current) {
-        if (strcmp((char *)current->name, name) == 0) {
-            /* Free the old value and update */
-            free(current->value);
-            current->value = strdup(value);
-            if (!current->value) {
-                printf("[TYPES:] Memory allocation failed for string value\n");
-                return 1;
-            }
-            printf("[TYPES:] Updated string mapping %s to %s.\n", name, value);
-            return 0;
-        }
-        current = current->next;
-    }
+    macro->name = name;
+    macro->value = strdup(value); // Use strdup to simplify allocation
 
-    /* Create new item */
-    Item *new_item = (Item *)malloc(sizeof(Item));
-    if (!new_item) {
-        printf("[TYPES:] Memory allocation failed for string item\n");
+    // Check if strdup succeeded
+    if (!macro->value) {
+        free(macro); // Free the macro structure if strdup fails
+        printf("[TYPES:] Macro value memory allocation failed\n");
         return 1;
     }
 
-    new_item->name = strdup(name);
-    if (!new_item->name) {
-        free(new_item);
-        printf("[TYPES:] Memory allocation failed for string name\n");
+    return _insert_item(macro_table, macro);
+}
+
+int insert_label(const char *name, const int value) {
+    // Allocate memory for new label structure
+    Label *label = (Label *)_safe_malloc(sizeof(Label), "label_table");
+    if (!label)
         return 1;
-    }
 
-    new_item->value = strdup(value);
-    if (!new_item->value) {
-        free(new_item->name);
-        free(new_item);
-        printf("[TYPES:] Memory allocation failed for string value\n");
+    label->name = name;
+    label->value = value;
+
+    return _insert_item(label_table, label);
+}
+
+int insert_symbol(const char *name, const int value, const int type) {
+    // Allocate memory for new symbol structure
+    Symbol *symbol = (Symbol *)_safe_malloc(sizeof(Symbol), "symbol_table");
+    if (!symbol)
         return 1;
-    }
 
-    new_item->next = macro_table.content;
-    macro_table.content = new_item;
-    macro_table.size++;
+    symbol->name = name;
+    symbol->symbol_value = value;
+    symbol->symbol_type = type;
 
-    printf("[TYPES:] Added string mapping %s to %s.\n", name, value);
-    return 0;
-}
-
-char *get_string(char *name) {
-    Item *current = macro_table.content;
-
-    while (current) {
-        if (strcmp((char *)current->name, name) == 0) {
-            return (char *)current->value;
-        }
-        current = current->next;
-    }
-
-    return NULL; /* Return NULL if string not found */
-}
-
-/* Free memory allocated for tables */
-void destroy_label_table() {
-    Item *current = label_table.content;
-    Item *next;
-
-    while (current) {
-        next = current->next;
-        free(current->name);
-        free(current->value);
-        free(current);
-        current = next;
-    }
-
-    label_table.content = NULL;
-    label_table.size = 0;
-    printf("[TYPES:] Label table destroyed.\n");
-}
-
-void destroy_string_table() {
-    Item *current = macro_table.content;
-    Item *next;
-
-    while (current) {
-        next = current->next;
-        free(current->name);
-        free(current->value);
-        free(current);
-        current = next;
-    }
-
-    macro_table.content = NULL;
-    macro_table.size = 0;
-    printf("[TYPES:] String table destroyed.\n");
+    return _insert_item(symbol_table, symbol);
 }
