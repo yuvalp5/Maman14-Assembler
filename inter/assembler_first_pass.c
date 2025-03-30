@@ -10,6 +10,14 @@
 /* Memory for storing machine code */
 static int *code_memory = NULL;
 /* todo: yuval- save file at *dest */
+
+/* TODO: yuval-
+get content from symol table:
+((Macro *)macro_table->content[0])-><some_attr>)
+add to symbol table:
+insert_symbol(const char *name, const int value, const int type);
+*/
+
 int first_pass(const char *src, const char *dest) {
     FILE *input_pre_assembled = NULL; /* File pointer for the input file */
     char line[MAX_LINE_LEN];          /* Line buffer */

@@ -6,6 +6,7 @@
 #define TYPES_H 1
 
 #include "definitions.h"
+#include <stddef.h>
 
 /* Generic table structure holding dynamically typed content array */
 typedef struct {
