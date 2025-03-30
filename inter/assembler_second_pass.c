@@ -17,4 +17,4 @@
  * @param dest_file Path of file save
  * @return 0 if successful; 1 otherwise
  */
-int second_pass(const char *filename, const char *dest_file) { return 0; }
+int second_pass(const char *src_file, const char *dest_file) { return 0; }

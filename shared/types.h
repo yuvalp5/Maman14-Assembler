@@ -48,8 +48,36 @@ extern int DCF;          /* Final DC value */
 extern int L;            /* Number of words in the instruction */
 
 /* Table functions */
+/**
+ *
+ * @param name Name of macro as declared in src
+ * @param value Macro content as declared in src
+ * @return 0 on success; 1 otherwise
+ */
 int insert_macro(const char *name, const char *value);
+
+/**
+ *
+ * @param name Name of label as declared in src
+ * @param value Value of macro
+ * @return 0 on success; 1 otherwise
+ */
 int insert_label(const char *name, const int value);
+/**
+ *
+ * @param name Name of label as declared in src
+ * @param value Value of macro
+ * @param type type of Symbol
+ * @return 0 on success; 1 otherwise
+ */
 int insert_symbol(const char *name, const int value, const int type);
+
+/**
+ *
+ * @param instance Instance of Table type to search in
+ * @param name Name to retrieve content of
+ * @return Item content if found; NULL otherwise
+ */
+void *get_item(const Table *instance, const char *name);
 
 #endif

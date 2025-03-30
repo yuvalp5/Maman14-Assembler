@@ -14,6 +14,10 @@ static int *code_memory = NULL;
 /* TODO: yuval-
 get content from symol table:
 ((Macro *)macro_table->content[0])-><some_attr>)
+
+search by name:
+get_item(const Table *instance, const char *name);
+
 add to symbol table:
 insert_symbol(const char *name, const int value, const int type);
 */

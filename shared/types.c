@@ -89,3 +89,21 @@ int insert_symbol(const char *name, const int value, const int type) {
 
     return _insert_item(symbol_table, symbol);
 }
+
+void *get_item(const Table *instance, const char *name) {
+    char *item_name;
+    if (!instance || !instance->content || !name) {
+        return NULL;
+    }
+
+    for (size_t i = 0; i < instance->count; i++) {
+        item_name = ((Symbol *)instance->content[i])->name;
+
+        if (item_name && strcmp(item_name, name) == 0) {
+            return instance->content[i];
+        }
+    }
+
+    return NULL; // Not found
+}
+

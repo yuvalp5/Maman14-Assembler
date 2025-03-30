@@ -39,7 +39,7 @@ int pre_assembler(const char *src, const char *dest) {
         if (strcmp(first_word, MACRO_START_KW) == 0) {
             extract_macro_name(line, current_macro);
             /* Add macro to table with empty content */
-            add_string(current_macro, "");
+            insert_macro(current_macro, "");
             in_macro = 1;
         }
         /* Macro definition end */
