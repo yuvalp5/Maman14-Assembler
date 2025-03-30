@@ -7,9 +7,9 @@
 int _insert_item(Table *instance, void *item);
 void *_safe_malloc(const int size, const char *table_name);
 /* Global instances */
-Table *label_table = &(Table){.count = 0, .content = NULL};
-Table *macro_table = &(Table){.count = 0, .content = NULL};
-Table *symbol_table = &(Table){.count = 0, .content = NULL};
+Table *label_table = &(Table){0, NULL};
+Table *macro_table = &(Table){0, NULL};
+Table *symbol_table = &(Table){0, NULL};
 
 /* Global variables */
 int DC = 0;           /* Data counter initialized to 0 */
@@ -96,7 +96,7 @@ void *get_item(const Table *instance, const char *name) {
     if (!instance || !instance->content || !name) {
         return NULL;
     }
-    
+
     for (i = 0; i < instance->count; i++) {
         item_name = ((Symbol *)instance->content[i])->name;
 
@@ -107,4 +107,3 @@ void *get_item(const Table *instance, const char *name) {
 
     return NULL; /* Not found */
 }
-
