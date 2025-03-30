@@ -1,17 +1,40 @@
+inter1-
+p. 48
+registers: 24 bits each, r0 to r7
+PSW (program status word): keeps track of flags
+commands: mov, cmp, add, sub, lea, clr, not, inc, dec, jmp, bne, jsr, red, prn, rts, stop
+
+all errors are to be encountered. an error wont stop the program
+
+p. 51:
+entries - external labels
+externals - external data sources
+.ent - object file extension
+.ext - files to - externals files extension
+if extern and or entries - do not create them!
+
+inter2-
+separate src files to passes
+
+all errors are to be encountered. an error wont stop the program
+
+whitespaces need to be taken care of
+
+pre assembler - identifies macros and write them out
+first pass - look for labels (variable names) and replaces them with memory address
+second pass - look for variable values and store them in memory addresses
+
+io-
+FILE EXTENSIONS:
+
+source: .as
+pre assembled: .am
+object: .o
+externals: .ext
+entries: .ent
+
+wrapper-
 17/3:
-pre_assembler.c- 
-    yuval - line_to_field implementation - how to seperate field
-    modify field char ??
-    adjust and simplify main while loop
-
-shared/types-
-    oren- table for macros (get macro by its name)
-    oren- table for labels (get label address by name)
-
-assembler_first_pass-
-    yuval - master method + make todos
-    oren + yuval - subfuncs
-
 assembler_second_pass- 
     oren- master method (probably only method(?))
     need to unite with first pass

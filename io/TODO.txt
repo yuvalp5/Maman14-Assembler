@@ -1,7 +1,0 @@
-FILE EXTENSIONS:
-
-source: .as
-pre assembled: .am
-object: .o
-externals: .ext
-entries: .ent
