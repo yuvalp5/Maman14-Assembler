@@ -21,17 +21,17 @@ int ICF, DCF;         /* Final IC and DC values */
 int L;                /* Number of words in the instruction */
 
 int _insert_item(Table *instance, void *item) {
-    // Reallocate memory with 1 slot increase every time
+    /* Reallocate memory with 1 slot increase every time */
     instance->content = (void **)realloc(
         instance->content, (instance->count + 1) * sizeof(void *));
 
-    // Check if realloc succeeded
+    /* Check if realloc succeeded */
     if (!instance->content) {
         printf("[TYPES:] Table memory allocation failed\n");
         return 1;
     }
 
-    // Insert the new item
+    /* Insert the new item */
     instance->content[instance->count] = item;
     instance->count++;
 
@@ -47,7 +47,7 @@ void *_safe_malloc(const size_t size, const char *table_name) {
 }
 
 int insert_macro(const char *name, const char *value) {
-    // Allocate memory for new macro structure
+    /* Allocate memory for new macro structure */
     Macro *macro = (Macro *)_safe_malloc(sizeof(Macro), "macro_table");
     if (!macro)
         return 1;
@@ -55,7 +55,7 @@ int insert_macro(const char *name, const char *value) {
     macro->name = name;
     macro->value = strdup(value); // Use strdup to simplify allocation
 
-    // Check if strdup succeeded
+    /* Check if strdup succeeded */
     if (!macro->value) {
         free(macro); // Free the macro structure if strdup fails
         printf("[TYPES:] Macro value memory allocation failed\n");
@@ -66,7 +66,7 @@ int insert_macro(const char *name, const char *value) {
 }
 
 int insert_label(const char *name, const int value) {
-    // Allocate memory for new label structure
+    /* Allocate memory for new label structure */
     Label *label = (Label *)_safe_malloc(sizeof(Label), "label_table");
     if (!label)
         return 1;
@@ -78,7 +78,7 @@ int insert_label(const char *name, const int value) {
 }
 
 int insert_symbol(const char *name, const int value, const int type) {
-    // Allocate memory for new symbol structure
+    /* Allocate memory for new symbol structure */
     Symbol *symbol = (Symbol *)_safe_malloc(sizeof(Symbol), "symbol_table");
     if (!symbol)
         return 1;
@@ -96,7 +96,8 @@ void *get_item(const Table *instance, const char *name) {
         return NULL;
     }
 
-    for (size_t i = 0; i < instance->count; i++) {
+    size_t i;
+    for (i = 0; i < instance->count; i++) {
         item_name = ((Symbol *)instance->content[i])->name;
 
         if (item_name && strcmp(item_name, name) == 0) {
@@ -104,6 +105,6 @@ void *get_item(const Table *instance, const char *name) {
         }
     }
 
-    return NULL; // Not found
+    return NULL; /* Not found */
 }
 
