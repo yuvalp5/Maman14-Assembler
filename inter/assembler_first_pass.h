@@ -17,6 +17,9 @@
 #define ADDR_MODE_INDEX 2
 #define ADDR_MODE_REGISTER 3
 
+/* Memory for storing machine code - declared globally for second pass access */
+extern int *code_memory;
+
 /**
  * @brief Master function for first pass
  * @param src Path to the source assembly file
@@ -25,6 +28,10 @@
  */
 int first_pass(const char *src, const char *dest);
 
+/* Helper functions */
+int handle_symbol_addition(const char *symbol_name, int value, int type);
+int initialize_code_memory();
+
 /* Symbol and label handling */
 int is_symbol(char *field);
 int is_storage(char *field);
@@ -32,7 +39,10 @@ int is_extern_or_entry(char *field);
 int is_reserved_word(const char *word);
 
 /* Symbol table functions */
-int add_code_to_table(char *symbol_name);
+int add_symbol_to_table(const char *name, int value, int type);
+int find_symbol_in_table(const char *name);
+int get_symbol_value(const char *name);
+int get_symbol_type(const char *name);
 void add_lcf_to_data(int offset);
 void print_symbol_table(void);
 

@@ -7,9 +7,54 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Memory for storing machine code */
-static int *code_memory = NULL;
-/* todo: yuval- save file at *dest */
+/* Memory for storing machine code - made global for second pass access */
+int *code_memory = NULL;
+/* todo: yuval- save file at *dest .obj file */
+
+/* Helper function to handle symbol table operations */
+int handle_symbol_addition(const char *symbol_name, int value, int type) {
+    /* Check if symbol already exists in the table */
+    if (find_symbol_in_table(symbol_name)) {
+        printf("Error in line %d: Symbol '%s' already defined\n",
+               line_number, symbol_name);
+        error_count++;
+        return 0;
+    } 
+    
+    /* Check if table is too full */
+    if (symbol_table && symbol_table->count >= MAX_SYMBOLS) {
+        printf("Error: Symbol table full, max %d symbols\n", MAX_SYMBOLS);
+        error_count++;
+        return 0;
+    }
+    
+    /* Add symbol to table with specified type */
+    if (add_symbol_to_table(symbol_name, value, type) != 0) {
+        printf("Error in line %d: Failed to add symbol '%s' to table\n",
+               line_number, symbol_name);
+        error_count++;
+        return 0;
+    }
+    
+    return 1;
+}
+
+/* Helper function to initialize code memory if needed */
+int initialize_code_memory() {
+    if (!code_memory) {
+        code_memory = (int *)malloc(MAX_MEMORY_SIZE * sizeof(int));
+        if (!code_memory) {
+            printf("Error: Memory allocation failed for code storage\n");
+            error_count++;
+            return 0;
+        }
+        /* Initialize memory to zero */
+        for (int i = 0; i < MAX_MEMORY_SIZE; i++) {
+            code_memory[i] = 0;
+        }
+    }
+    return 1;
+}
 
 /* TODO: yuval-
 get content from symol table:
@@ -18,12 +63,11 @@ get content from symol table:
 search by name:
 get_item(const Table *instance, const char *name);
 
-add to symbol table:
-insert_symbol(const char *name, const int value, const int type);
-*/
+
 
 int first_pass(const char *src, const char *dest) {
     FILE *input_pre_assembled = NULL; /* File pointer for the input file */
+    FILE *output_file = NULL;        /* File pointer for the output file */
     char line[MAX_LINE_LEN];          /* Line buffer */
     char line_copy[MAX_LINE_LEN];     /* Copy of the line to work with */
     int is_symbol_flag = 0;           /* Flag to check if a symbol is found */
@@ -40,305 +84,249 @@ int first_pass(const char *src, const char *dest) {
     int proceed_to_next_line; /* Flag to check if we should proceed to the next
                                  line */
     char *extern_symbol;
-    int symbol_found; /* Flag to track if a symbol was found in the loop */
     char *operands;   /* For data storage operands */
 
     /* Initialize IC and DC */
     IC = 100; /* Start at 100 as per requirements */
     DC = 0;   /* Data counter starts at 0 */
 
-    /* Open source file for reading */
-    input_pre_assembled = fopen(src, "r");
+    /* Open files */
+    input_pre_assembled = fopen(src, "r"); /* Open source file for reading */
     if (!input_pre_assembled) {
         perror("Error: Unable to open input file\n");
-    } else {
-        /* 2. Read the next line from the input file */
-        while (fgets(line, MAX_LINE_LEN, input_pre_assembled) != NULL) {
-            line_number++;
-            is_symbol_flag = 0;
-            code_index = 0;
-            proceed_to_next_line = 0;
+        return 1;
+    }
+    
+    /* We'll open the output file after the parsing is complete */
 
-            /* Make a copy of the line to work with */
-            strcpy(line_copy, line);
+    /* 2. Read the next line from the input file */
+    while (fgets(line, MAX_LINE_LEN, input_pre_assembled) != NULL) {
+        line_number++;
+        is_symbol_flag = 0;
+        code_index = 0;
+        proceed_to_next_line = 0;
 
-            /* 3. Check if first field is a symbol (label) */
-            field = strtok(line_copy, " \t\n");
+        /* Make a copy of the line to work with */
+        strcpy(line_copy, line);
 
-            if (field) {
-                int len = strlen(field);
-                /* Check if field ends with a colon, indicating a symbol */
-                if (len > 0 && field[len - 1] == ':') {
-                    /* Extract symbol name (without the colon) */
-                    strncpy(symbol_name, field, len - 1);
-                    symbol_name[len - 1] = '\0';
+        /* 3. Check if first field is a symbol (label) */
+        field = strtok(line_copy, " \t\n");
 
-                    if (!is_reserved_word(symbol_name)) {
-                        is_symbol_flag = 1;
-                        /* Get the next field (instruction) */
-                        field = strtok(NULL, " \t\n");
-                    }
+        if (field) {
+            int len = strlen(field);
+            /* Check if field ends with a colon, indicating a symbol */
+            if (len > 0 && field[len - 1] == ':') {
+                /* Extract symbol name (without the colon) */
+                strncpy(symbol_name, field, len - 1);
+                symbol_name[len - 1] = '\0';
+
+                if (!is_reserved_word(symbol_name)) {
+                    is_symbol_flag = 1;
+                    /* Get the next field (instruction) */
+                    field = strtok(NULL, " \t\n");
                 }
             }
+        }
 
-            /* Process the line only if it's not empty, not a comment, and we
-             * have a field */
-            if (field != NULL && field[0] != ';') {
-                /* 5. Check if line contains a data storage directive (.data or
-                 * .string) */
-                if (is_storage(field)) {
-                    /* 6. If symbol definition found, add the symbol to the
+        /* Process the line only if it's not empty, not a comment, and we
+         * have a field */
+        if (field != NULL && field[0] != ';') {
+            /* 5. Check if line contains a data storage directive (.data or
+             * .string) */
+            if (is_storage(field)) {
+                /* 6. If symbol definition found, add the symbol to the
+                 * symbol table */
+                if (is_symbol_flag) {
+                    handle_symbol_addition(symbol_name, DC, SYMBOL_TYPE_DATA);
+                }
+
+                /* 7. Encode the data values in memory, update DC */
+                operands = strtok(NULL, " \t\n");
+                if (!encode_data_storage(field, operands, code_memory)) {
+                    proceed_to_next_line = 1;
+                    continue;
+                }
+                proceed_to_next_line = 1;
+            }
+            /* 8. Check if line contains .extern or .entry directive */
+            else if (is_extern_or_entry(field)) {
+                /* 9. If directive is .entry, skip it (will be handled in
+                 * second pass) */
+                if (strcmp(field, ".entry") != 0) {
+                    /* 10. If directive is .extern, add the symbol to the
                      * symbol table */
-                    if (is_symbol_flag) {
-                        /* Add symbol to table with type DATA */
-                        if (symbol_count < MAX_SYMBOLS) {
-                            /* Check if symbol already exists in the table */
-                            symbol_found = 0;
-                            for (i = 0; i < symbol_count && !symbol_found;
-                                 i++) {
-                                if (strcmp(symbol_table[i].symbol_name,
-                                           symbol_name) == 0) {
-                                    printf("Error in line %d: Symbol '%s' "
-                                           "already defined\n",
-                                           line_number, symbol_name);
-                                    error_count++;
-                                    symbol_found = 1;
-                                }
-                            }
+                    if (strcmp(field, ".extern") == 0) {
+                        /* Get the operand of .extern */
+                        extern_symbol = strtok(NULL, " \t\n");
 
-                            if (!symbol_found) {
-                                strcpy(symbol_table[symbol_count].symbol_name,
-                                       symbol_name);
-                                symbol_table[symbol_count].symbol_value = DC;
-                                symbol_table[symbol_count].symbol_type =
-                                    SYMBOL_TYPE_DATA;
-                                symbol_count++;
-                            }
-                        } else {
-                            printf("Error: Symbol table full, max %d symbols\n",
-                                   MAX_SYMBOLS);
+                        if (extern_symbol) {
+                            handle_symbol_addition(extern_symbol, 0, SYMBOL_TYPE_EXTERN);
+                        } else { /* if the operand is missing, print an
+                                    error message */
+                            printf("Error in line %d: Missing operand for "
+                                       ".extern directive\n",
+                                       line_number);
                             error_count++;
                         }
                     }
+                }
+                proceed_to_next_line = 1;
+            }
+            /* This is an instruction line */
+            else if (!proceed_to_next_line) {
+                /* 11. If symbol definition found, add to symbol table */
+                if (is_symbol_flag) {
+                    handle_symbol_addition(symbol_name, IC, SYMBOL_TYPE_CODE);
+                }
 
-                    /* 7. Encode the data values in memory, update DC */
-                    operands = strtok(NULL, " \t\n");
-                    if (!encode_data_storage(field, operands, code_memory)) {
+                /* Process instruction */
+                instruction = field;
+                if (search_command_in_table(instruction)) {
+                    /* Get operands and calculate word count */
+                    operand1 = strtok(NULL, " \t\n,");
+                    operand2 = strtok(NULL, " \t\n,");
+
+                    /* Get addressing modes */
+                    operand1_mode =
+                        operand1 ? get_addressing_mode(operand1) : -1;
+                    operand2_mode =
+                        operand2 ? get_addressing_mode(operand2) : -1;
+
+                    /* Validate operands */
+                    if (!validate_operand(
+                            operand1, search_command_in_table(instruction),
+                            1, operand1_mode) ||
+                        !validate_operand(
+                            operand2, search_command_in_table(instruction),
+                            2, operand2_mode)) {
                         proceed_to_next_line = 1;
                         continue;
                     }
-                    proceed_to_next_line = 1;
-                }
-                /* 8. Check if line contains .extern or .entry directive */
-                else if (is_extern_or_entry(field)) {
-                    /* 9. If directive is .entry, skip it (will be handled in
-                     * second pass) */
-                    if (strcmp(field, ".entry") != 0) {
-                        /* 10. If directive is .extern, add the symbol to the
-                         * symbol table */
-                        if (strcmp(field, ".extern") == 0) {
-                            /* Get the operand of .extern */
-                            extern_symbol = strtok(NULL, " \t\n");
 
-                            if (extern_symbol) {
-                                if (symbol_count < MAX_SYMBOLS) {
-                                    /* Check if symbol already exists in the
-                                     * table */
-                                    symbol_found = 0;
-                                    for (i = 0;
-                                         i < symbol_count && !symbol_found;
-                                         i++) {
-                                        if (strcmp(symbol_table[i].symbol_name,
-                                                   extern_symbol) == 0) {
-                                            printf("Error in line %d: Symbol "
-                                                   "'%s' already defined\n",
-                                                   line_number, extern_symbol);
-                                            error_count++;
-                                            symbol_found = 1;
-                                        }
-                                    }
+                    /* Calculate the total word count (L) for this
+                     * instruction */
+                    L = calc_num_of_words(instruction, operand1, operand2);
 
-                                    if (!symbol_found) {
-                                        strcpy(symbol_table[symbol_count]
-                                                   .symbol_name,
-                                               extern_symbol);
-                                        symbol_table[symbol_count]
-                                            .symbol_value = 0;
-                                        symbol_table[symbol_count].symbol_type =
-                                            SYMBOL_TYPE_EXTERN;
-                                        symbol_count++;
-                                    }
-                                } else {
-                                    printf("Error: Symbol table full, max %d "
-                                           "symbols\n",
-                                           MAX_SYMBOLS);
-                                    error_count++;
-                                }
-                            } else { /* if the operand is missing, print an
-                                        error message */
-                                printf("Error in line %d: Missing operand for "
-                                       ".extern directive\n",
-                                       line_number);
-                                error_count++;
-                            }
-                        }
-                    }
-                    proceed_to_next_line = 1;
-                }
-                /* This is an instruction line */
-                else if (!proceed_to_next_line) {
-                    /* 11. If symbol definition found, add to symbol table */
-                    if (is_symbol_flag) {
-                        /* Add symbol to table with type CODE */
-                        if (symbol_count < MAX_SYMBOLS) {
-                            /* Check if symbol already exists in the table */
-                            symbol_found = 0;
-                            for (i = 0; i < symbol_count && !symbol_found;
-                                 i++) {
-                                if (strcmp(symbol_table[i].symbol_name,
-                                           symbol_name) == 0) {
-                                    printf("Error in line %d: Symbol '%s' "
-                                           "already defined\n",
-                                           line_number, symbol_name);
-                                    error_count++;
-                                    symbol_found = 1;
-                                }
-                            }
+                    /* Generate binary code for the instruction */
+                    word_to_binary(search_command_in_table(instruction),
+                                   operand1_mode, operand2_mode, code,
+                                   &code_index);
 
-                            if (!symbol_found) {
-                                strcpy(symbol_table[symbol_count].symbol_name,
-                                       symbol_name);
-                                symbol_table[symbol_count].symbol_value = IC;
-                                symbol_table[symbol_count].symbol_type =
-                                    SYMBOL_TYPE_CODE;
-                                symbol_count++;
-                            }
-                        } else {
-                            printf("Error: Symbol table full, max %d symbols\n",
-                                   MAX_SYMBOLS);
-                            error_count++;
+                    /* Add operand values to the code array */
+                    if (operand1_mode >= 0) {
+                        switch (operand1_mode) {
+                        case 0: /* Immediate */
+                            code[code_index++] = atoi(operand1 + 1);
+                            break;
+                        case 1: /* Direct */
+                            code[code_index++] =
+                                0; /* Will be updated in second pass */
+                            break;
+                        case 2: /* Index */
+                            code[code_index++] =
+                                0; /* Will be updated in second pass */
+                            code[code_index++] =
+                                operand1[strlen(operand1) - 2] - '0';
+                            break;
                         }
                     }
 
-                    /* Process instruction */
-                    instruction = field;
-                    if (search_command_in_table(instruction)) {
-                        /* Get operands and calculate word count */
-                        operand1 = strtok(NULL, " \t\n,");
-                        operand2 = strtok(NULL, " \t\n,");
-
-                        /* Get addressing modes */
-                        operand1_mode =
-                            operand1 ? get_addressing_mode(operand1) : -1;
-                        operand2_mode =
-                            operand2 ? get_addressing_mode(operand2) : -1;
-
-                        /* Validate operands */
-                        if (!validate_operand(
-                                operand1, search_command_in_table(instruction),
-                                1, operand1_mode) ||
-                            !validate_operand(
-                                operand2, search_command_in_table(instruction),
-                                2, operand2_mode)) {
-                            proceed_to_next_line = 1;
-                            continue;
+                    if (operand2_mode >= 0) {
+                        switch (operand2_mode) {
+                        case 0: /* Immediate */
+                            code[code_index++] = atoi(operand2 + 1);
+                            break;
+                        case 1: /* Direct */
+                            code[code_index++] =
+                                0; /* Will be updated in second pass */
+                            break;
+                        case 2: /* Index */
+                            code[code_index++] =
+                                0; /* Will be updated in second pass */
+                            code[code_index++] =
+                                operand2[strlen(operand2) - 2] - '0';
+                            break;
                         }
-
-                        /* Calculate the total word count (L) for this
-                         * instruction */
-                        L = calc_num_of_words(instruction, operand1, operand2);
-
-                        /* Generate binary code for the instruction */
-                        word_to_binary(search_command_in_table(instruction),
-                                       operand1_mode, operand2_mode, code,
-                                       &code_index);
-
-                        /* Add operand values to the code array */
-                        if (operand1_mode >= 0) {
-                            switch (operand1_mode) {
-                            case 0: /* Immediate */
-                                code[code_index++] = atoi(operand1 + 1);
-                                break;
-                            case 1: /* Direct */
-                                code[code_index++] =
-                                    0; /* Will be updated in second pass */
-                                break;
-                            case 2: /* Index */
-                                code[code_index++] =
-                                    0; /* Will be updated in second pass */
-                                code[code_index++] =
-                                    operand1[strlen(operand1) - 2] - '0';
-                                break;
-                            }
-                        }
-
-                        if (operand2_mode >= 0) {
-                            switch (operand2_mode) {
-                            case 0: /* Immediate */
-                                code[code_index++] = atoi(operand2 + 1);
-                                break;
-                            case 1: /* Direct */
-                                code[code_index++] =
-                                    0; /* Will be updated in second pass */
-                                break;
-                            case 2: /* Index */
-                                code[code_index++] =
-                                    0; /* Will be updated in second pass */
-                                code[code_index++] =
-                                    operand2[strlen(operand2) - 2] - '0';
-                                break;
-                            }
-                        }
-
-                        /* Save current IC and L values along with the machine
-                         * code generated */
-                        save_values_with_binary(code, code_index, NULL, IC);
-
-                        /* Update IC */
-                        IC += L;
-                    } else {
-                        printf("Error in line %d: Unknown instruction '%s'\n",
-                               line_number, instruction);
-                        error_count++;
                     }
+
+                    /* Save current IC and L values along with the machine
+                     * code generated */
+                    save_values_with_binary(code, code_index, NULL, IC);
+
+                    /* Update IC */
+                    IC += L;
+                } else {
+                    printf("Error in line %d: Unknown instruction '%s'\n",
+                           line_number, instruction);
+                    error_count++;
                 }
             }
         }
-
-        /* 17. End of first pass, save final values of IC and DC as ICF and DCF
-         */
-        ICF = IC;
-        DCF = DC;
-
-        /* 18. Update data symbols in the symbol table by adding ICF to their
-         * values */
-        add_lcf_to_data(ICF);
-
-        /* Clean up */
-        fclose(input_pre_assembled);
-
-        /* Free code memory */
-        if (code_memory) {
-            free(code_memory);
-            code_memory = NULL;
-        }
-
-        /* Print summary */
-        printf("First pass finished.\n");
-        printf("ICF = %d, DCF = %d\n", ICF, DCF);
-        printf("Symbol count = %d\n", symbol_count);
-        printf("Error count = %d\n", error_count);
-
-        /* Print symbol table */
-        print_symbol_table();
-
-        if (error_count > 0) {
-            printf("First pass completed with errors.\n");
-        } else {
-            printf("First pass completed successfully.\n");
-        }
-        printf("Total errors: %d\n", error_count);
     }
+
+    /* 17. End of first pass, save final values of IC and DC as ICF and DCF
+     */
+    ICF = IC;
+    DCF = DC;
+
+    /* 18. Update data symbols in the symbol table by adding ICF to their
+     * values */
+    add_lcf_to_data(ICF);
+
+    /* Clean up input file handle */
+    fclose(input_pre_assembled);
+
+    /* Note: code_memory is preserved for use in the second pass */
+
+    /* Print summary */
+    printf("First pass finished.\n");
+    printf("ICF = %d, DCF = %d\n", ICF, DCF);
+    printf("Symbol count = %zu\n", symbol_table ? symbol_table->count : 0);
+    printf("Error count = %d\n", error_count);
+
+    /* Print symbol table */
+    print_symbol_table();
+
+    if (error_count > 0) {
+        printf("First pass completed with errors.\n");
+    } else {
+        printf("First pass completed successfully.\n");
+    }
+    printf("Total errors: %d\n", error_count);
+
+    /* Write first pass output to file if no errors */
+    if (error_count == 0) {
+        /* Now open the output file for writing since we know there are no errors */
+        output_file = fopen(dest, "w");
+        if (!output_file) {
+            perror("Error: Unable to open output file for writing results\n");
+            return 1;
+        }
+        
+        /* Write header with ICF and DCF */
+        fprintf(output_file, "ICF=%d\tDCF=%d\n", ICF, DCF);
+        
+        /* Write code and data segments to the output file */
+        fprintf(output_file, "Code segment:\n");
+        for (i = 100; i < ICF; i++) {
+            if (code_memory && i < MAX_MEMORY_SIZE) {
+                fprintf(output_file, "%04d\t%06X\n", i, code_memory[i]);
+            }
+        }
+
+        fprintf(output_file, "Data segment:\n");
+        for (i = 0; i < DCF; i++) {
+            if (code_memory && ICF + i < MAX_MEMORY_SIZE) {
+                fprintf(output_file, "%04d\t%06X\n", ICF + i, code_memory[ICF + i]);
+            }
+        }
+
+        printf("First pass output written to %s\n", dest);
+        
+        /* Close the output file */
+        fclose(output_file);
+    }
+
     return 0;
 }
 
@@ -571,14 +559,9 @@ void save_values_with_binary(unsigned int *code, int word_count, int *memory,
     /* Store the generated machine code in memory */
     int i;
 
-    /* If memory array is NULL, allocate it */
-    if (!code_memory) {
-        code_memory = (int *)malloc(MAX_MEMORY_SIZE * sizeof(int));
-        if (!code_memory) {
-            printf("Error: Memory allocation failed for code storage\n");
-            error_count++;
-            return;
-        }
+    /* Initialize code memory if needed */
+    if (!initialize_code_memory()) {
+        return;
     }
 
     /* Store each word of machine code */
@@ -586,7 +569,6 @@ void save_values_with_binary(unsigned int *code, int word_count, int *memory,
         /* Check if we're within memory bounds */
         if (current_ic + i >= MAX_MEMORY_SIZE) {
             printf("Error: Memory overflow at address %d\n", current_ic + i);
-            error_count++;
             return;
         }
 
@@ -599,16 +581,21 @@ void save_values_with_binary(unsigned int *code, int word_count, int *memory,
 }
 
 void add_lcf_to_data(int offset) {
-    int i;
+    size_t i;
+    Symbol *symbol;
 
     printf("Adding offset %d to data symbols\n", offset);
 
-    for (i = 0; i < symbol_count; i++) {
-        if (symbol_table[i].symbol_type == SYMBOL_TYPE_DATA) {
-            /* Add the full ICF value to each data symbol */
-            symbol_table[i].symbol_value += offset;
-            printf("Updated symbol '%s' to value %d\n",
-                   symbol_table[i].symbol_name, symbol_table[i].symbol_value);
+    /* Iterate through the symbol table using the Table structure */
+    if (symbol_table && symbol_table->content) {
+        for (i = 0; i < symbol_table->count; i++) {
+            symbol = (Symbol *)symbol_table->content[i];
+            if (symbol && symbol->symbol_type == SYMBOL_TYPE_DATA) {
+                /* Add the full ICF value to each data symbol */
+                symbol->symbol_value += offset;
+                printf("Updated symbol '%s' to value %d\n",
+                       symbol->name, symbol->symbol_value);
+            }
         }
     }
 }
@@ -839,20 +826,11 @@ int encode_data_storage(const char *directive, char *operands,
     int i;
     char operands_copy[MAX_LINE_LEN];
 
-    /* If memory array is NULL, allocate it */
-    if (!data_memory && !code_memory) {
-        code_memory = (int *)malloc(MAX_MEMORY_SIZE * sizeof(int));
-        if (!code_memory) {
-            printf("Error: Memory allocation failed for data storage\n");
-            error_count++;
-            return 0;
-        }
-        /* Initialize memory to zero */
-        for (i = 0; i < MAX_MEMORY_SIZE; i++) {
-            code_memory[i] = 0;
-        }
-        data_memory = code_memory;
+    /* Initialize code memory if needed */
+    if (!initialize_code_memory()) {
+        return 0;
     }
+    data_memory = code_memory;
 
     if (strcmp(directive, ".data") == 0) {
         /* Handle .data directive */
@@ -941,33 +919,77 @@ int encode_data_storage(const char *directive, char *operands,
     return 1;
 }
 
-/* Add this function at the end of the file for debugging purposes */
+/* Print the symbol table contents using the Table structure for debugging */
 void print_symbol_table(void) {
-    int i;
+    size_t i;
+    Symbol *symbol;
+    
     printf("\nSymbol Table Contents:\n");
     printf("----------------------\n");
     printf("Name\t\tValue\tType\n");
     printf("----------------------\n");
-    for (i = 0; i < symbol_count; i++) {
-        printf("%-16s %-8d ", symbol_table[i].symbol_name,
-               symbol_table[i].symbol_value);
-        switch (symbol_table[i].symbol_type) {
-        case SYMBOL_TYPE_CODE:
-            printf("CODE\n");
-            break;
-        case SYMBOL_TYPE_DATA:
-            printf("DATA\n");
-            break;
-        case SYMBOL_TYPE_EXTERN:
-            printf("EXTERN\n");
-            break;
-        case SYMBOL_TYPE_ENTRY:
-            printf("ENTRY\n");
-            break;
-        default:
-            printf("UNKNOWN\n");
-            break;
+    
+    if (symbol_table && symbol_table->content) {
+        for (i = 0; i < symbol_table->count; i++) {
+            symbol = (Symbol *)symbol_table->content[i];
+            if (symbol) {
+                printf("%-16s %-8d ", symbol->name, symbol->symbol_value);
+                switch (symbol->symbol_type) {
+                case SYMBOL_TYPE_CODE:
+                    printf("CODE\n");
+                    break;
+                case SYMBOL_TYPE_DATA:
+                    printf("DATA\n");
+                    break;
+                case SYMBOL_TYPE_EXTERN:
+                    printf("EXTERN\n");
+                    break;
+                case SYMBOL_TYPE_ENTRY:
+                    printf("ENTRY\n");
+                    break;
+                default:
+                    printf("UNKNOWN\n");
+                    break;
+                }
+            }
         }
     }
     printf("----------------------\n");
+}
+
+/* Implementation of symbol table functions using the proper API */
+int add_symbol_to_table(const char *name, int value, int type) {
+    int result = insert_symbol(name, value, type);
+    
+    /* Note: The Table structure already updates its count internally
+       through the insert_symbol function, which calls _insert_item.
+       We still update symbol_count for backward compatibility with
+       other parts of the code that might rely on it. */
+    if (result == 0 && symbol_table) {
+        symbol_count = symbol_table->count;
+    }
+    
+    return result;
+}
+
+int find_symbol_in_table(const char *name) {
+    Symbol *symbol = (Symbol *)get_item(symbol_table, name);
+    return (symbol != NULL);
+}
+
+/* Modified symbol table search function */
+int get_symbol_value(const char *name) {
+    Symbol *symbol = (Symbol *)get_item(symbol_table, name);
+    if (symbol) {
+        return symbol->symbol_value;
+    }
+    return -1; /* Symbol not found */
+}
+
+int get_symbol_type(const char *name) {
+    Symbol *symbol = (Symbol *)get_item(symbol_table, name);
+    if (symbol) {
+        return symbol->symbol_type;
+    }
+    return -1; /* Symbol not found */
 }
