@@ -1,4 +1,9 @@
-#include "wrapper.h"
+/**
+ * @brief Entry point for program. Handles CLI and passes input to functions.
+ * file names to be proccessed are to be provided as arguments without file
+ * extensions
+ */
+
 #include "assembler_first_pass.h"
 #include "assembler_second_pass.h"
 #include "definitions.h"
