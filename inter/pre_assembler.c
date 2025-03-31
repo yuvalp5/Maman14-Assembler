@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int pre_assembler(const char *src, const char *dest) {
+int pre_assembler(const char *file_basename) {
     /* Files to work on */
     FILE *user_input = NULL,
          *output_pre_assembled = NULL; /* Pointers to input and output files*/
@@ -29,23 +29,23 @@ int pre_assembler(const char *src, const char *dest) {
     line_number = 0;
 
     /* Open input file */
-    user_input = fopen(src, "r");
+    user_input = fopen(add_ext(file_basename, SRC_F_EXT), "r");
     if (!user_input) {
-        fprintf(stderr, "Error: Could not open source file '%s'\n", src);
+        fprintf(stderr, "Error: Could not open source file '%s'\n", add_ext(file_basename, SRC_F_EXT));
         return 1;
     }
 
     /* Open output file */
-    output_pre_assembled = fopen(dest, "w");
+    output_pre_assembled = fopen(add_ext(file_basename, PAS_F_EXT), "w");
     if (!output_pre_assembled) {
-        fprintf(stderr, "Error: Could not create output file '%s'\n", dest);
+        fprintf(stderr, "Error: Could not create output file '%s'\n", add_ext(file_basename, PAS_F_EXT));
         fclose(user_input);
         return 1;
     }
 
     fprintf(stderr, "Debug: Starting pre-assembler processing\n");
-    fprintf(stderr, "Debug: Source file: %s\n", src);
-    fprintf(stderr, "Debug: Destination file: %s\n", dest);
+    fprintf(stderr, "Debug: Source file: %s\n", add_ext(file_basename, SRC_F_EXT));
+    fprintf(stderr, "Debug: Destination file: %s\n", add_ext(file_basename, PAS_F_EXT));
 
     /* Process the file line by line */
     while (fgets(line, MAX_LINE_LEN, user_input) != NULL) {

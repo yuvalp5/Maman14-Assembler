@@ -9,7 +9,7 @@
 
 /* Memory for storing machine code - made global for second pass access */
 int *code_memory = NULL;
-
+/* TODO yuval: not needed! exists globally from types.h- remove this */
 /* Global variables from types.h */
 extern int DC;           /* Data counter */
 extern int IC;           /* Instruction counter */
@@ -76,7 +76,7 @@ search by name:
 get_item(const Table *instance, const char *name);
 */
 
-int first_pass(const char *src, const char *dest) {
+int first_pass(const char *file_basename) {
     FILE *input_pre_assembled = NULL; /* File pointer for the input file */
     FILE *output_file = NULL;         /* File pointer for the output file */
     char line[MAX_LINE_LEN];          /* Line buffer */
@@ -102,7 +102,7 @@ int first_pass(const char *src, const char *dest) {
     DC = 0;   /* Data counter starts at 0 */
 
     /* Open files */
-    input_pre_assembled = fopen(src, "r"); /* Open source file for reading */
+    input_pre_assembled = fopen(add_ext(file_basename, PAS_F_EXT), "r"); /* Open source file for reading */
     if (!input_pre_assembled) {
         perror("Error: Unable to open input file\n");
         return 1;
@@ -306,7 +306,7 @@ int first_pass(const char *src, const char *dest) {
     /* Write first pass output to file if no errors */
     if (error_count == 0) {
         /* Now open the output file for writing since we know there are no errors */
-        output_file = fopen(dest, "w");
+        output_file = fopen(add_ext(file_basename, OBJ_F_EXT), "w");
         if (!output_file) {
             perror("Error: Unable to open output file for writing results\n");
             return 1;
@@ -330,7 +330,7 @@ int first_pass(const char *src, const char *dest) {
             }
         }
 
-        printf("First pass output written to %s\n", dest);
+        printf("First pass output written to %s\n", add_ext(file_basename, OBJ_F_EXT));
         
         /* Close the output file */
         fclose(output_file);

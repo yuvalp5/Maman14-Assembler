@@ -26,7 +26,7 @@ extern int *code_memory;
  * @param dest Path for the expanded output file
  * @return 0 on success, non-zero on failure
  */
-int first_pass(const char *src, const char *dest);
+int first_pass(const char *file_basename);
 
 /* Helper functions */
 int handle_symbol_addition(const char *symbol_name, int value, int type);

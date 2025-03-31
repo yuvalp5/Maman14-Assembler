@@ -11,61 +11,7 @@
  #include <stdio.h>
  #include <stdlib.h>
  #include <string.h>
- 
- int pre_assembler(const char *src, const char *dest) {
-     FILE *src_file, *dest_file;
-     char line[MAX_LINE_LEN];
-     char current_macro[MAX_MACRO_NAME_LEN];
-     char macro_content[MAX_MACRO_CONTENT_LEN];
-     int in_macro = 0;
-     int success = 1;
- 
-     /* Reset line number counter */
-     line_number = 1;
- 
-     /* Open source file */
-     src_file = fopen(src, "r");
-     if (!src_file) {
-         printf("Error: Could not open source file %s\n", src);
-         return 0;
-     }
- 
-     /* Open destination file */
-     dest_file = fopen(dest, "w");
-     if (!dest_file) {
-         printf("Error: Could not create destination file %s\n", dest);
-         fclose(src_file);
-         return 0;
-     }
- 
-     /* Process each line */
-     while (fgets(line, MAX_LINE_LEN, src_file)) {
-         /* Skip empty lines and comments */
-         if (is_empty_or_comment(line)) {
-             line_number++;
-             continue;
-         }
- 
-         /* Process the line */
-         if (!process_line_pre_assembler(line, &in_macro, current_macro, macro_content)) {
-             success = 0;
-         }
- 
-         /* If not in macro definition, write to output file */
-         if (!in_macro) {
-             fputs(line, dest_file);
-         }
- 
-         line_number++;
-     }
- 
-     /* Close files */
-     fclose(src_file);
-     fclose(dest_file);
- 
-     return success;
- }
- 
+  
  int process_line_pre_assembler(char *line, int *in_macro, char *current_macro, char *macro_content) {
      char first_word[MAX_MACRO_NAME_LEN + 1];
      char *ptr = line;

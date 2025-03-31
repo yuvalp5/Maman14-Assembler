@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
         entry_name = add_ext(argv[i], ENT_F_EXT);
 
         /* Pre-assembler */
-        if (pre_assembler(src_name, pre_assembled_name)) {
+        if (pre_assembler(argv[i])) {
             printf("[WRAPPER:] Pre-assembler completed.\n");
         } else {
             printf("[WRAPPER:] Pre-assembler failed.\n");
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
         }
 
         /* First pass */
-        if (first_pass(pre_assembled_name, object_name)) {
+        if (first_pass(argv[i])) {
             printf("[WRAPPER:] First pass completed.\n");
         } else {
             printf("[WRAPPER:] First pass failed.\n");
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
         }
 
         /* Second pass */
-        if (second_pass(object_name, object_name)) {
+        if (second_pass(object_name)) {
             printf("[WRAPPER:] Second pass completed.\n");
         } else {
             printf("[WRAPPER:] Second pass failed.\n");

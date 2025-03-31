@@ -9,15 +9,6 @@
  #include "types.h"
  
  /**
-  * @brief Main function for pre-assembler
-  * Processes macros in source file and writes expanded output
-  * @param src Path to source assembly file
-  * @param dest Path for expanded output file
-  * @return 0 on success, non-zero on failure
-  */
- int pre_assembler(const char *src, const char *dest);
- 
- /**
   * @brief Process a single line for macro definition or usage
   * @param line The line to process
   * @param in_macro Flag indicating if we're inside a macro definition
