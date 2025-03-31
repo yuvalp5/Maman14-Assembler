@@ -24,6 +24,7 @@ int pre_assembler(const char *file_basename) {
     char *current_content; /* Temp pointer for macro content retrieval */
     char new_content[MAX_MACRO_CONTENT_LEN]; /* Buffer for building updated
                                                 macro content */
+    Macro *existing_macro;
 
     /* Initialize line counter */
     line_number = 0;
@@ -82,7 +83,7 @@ int pre_assembler(const char *file_basename) {
         else if (in_macro) {
             fprintf(stderr, "Debug: Inside macro '%s'\n", current_macro);
             /* Get existing content */
-            Macro *existing_macro = get_item(macro_table, current_macro);
+            existing_macro = get_item(macro_table, current_macro);
             if (!existing_macro) {
                 fprintf(stderr, "Error: Macro '%s' not found at line %d\n", current_macro, line_number);
                 success = 0;
