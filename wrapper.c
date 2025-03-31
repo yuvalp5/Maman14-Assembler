@@ -4,14 +4,12 @@
  * extensions
  */
 
-#include "inter/assembler_first_pass.h"
-#include "inter/assembler_second_pass.h"
+#include "assembler_first_pass.h"
+#include "assembler_second_pass.h"
 #include "definitions.h"
-#include "inter/pre_assembler.h"
+#include "pre_assembler.h"
 #include "utils.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /**
  * @brief Main function for the assembler
@@ -20,10 +18,7 @@
  * @return 0 if successful; 1 otherwise
  */
 int main(int argc, char *argv[]) {
-    /* File names */
-    /*char *src_name, *pre_assembled_name,  *externals_name,
-        *entry_name;*/
-    char *object_name;
+
     /* Iterator */
     int i;
 
@@ -37,15 +32,9 @@ int main(int argc, char *argv[]) {
 
     /* Iterate over args */
     for (i = 1; i < argc; i++) {
-        /* Assign file names */
-        /*src_name = add_ext(argv[i], SRC_F_EXT);*/ 
-        /*pre_assembled_name = add_ext(argv[i], PAS_F_EXT);*/
-        object_name = add_ext(argv[i], OBJ_F_EXT);
-        /*externals_name = add_ext(argv[i], EXT_F_EXT);*/
-        /*entry_name = add_ext(argv[i], ENT_F_EXT);*/
 
         /* Pre-assembler */
-        if (pre_assembler(argv[i])) {
+        if (pre_assembler(argv[i]) == 0) {
             printf("[WRAPPER:] Pre-assembler completed.\n");
         } else {
             printf("[WRAPPER:] Pre-assembler failed.\n");
@@ -54,7 +43,7 @@ int main(int argc, char *argv[]) {
         }
 
         /* First pass */
-        if (first_pass(argv[i])) {
+        if (first_pass(argv[i]) == 0) {
             printf("[WRAPPER:] First pass completed.\n");
         } else {
             printf("[WRAPPER:] First pass failed.\n");
@@ -63,7 +52,7 @@ int main(int argc, char *argv[]) {
         }
 
         /* Second pass */
-        if (second_pass(object_name)) {
+        if (second_pass(argv[i]) == 0) {
             printf("[WRAPPER:] Second pass completed.\n");
         } else {
             printf("[WRAPPER:] Second pass failed.\n");

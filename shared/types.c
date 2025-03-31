@@ -1,5 +1,4 @@
 #include "types.h"
-#include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -91,7 +90,7 @@ int insert_label(const char *name, const int value) {
         printf("[TYPES:] Label name memory allocation failed\n");
         return 1;
     }
-    
+
     label->value = value;
 
     return _insert_item(label_table, label);
@@ -109,7 +108,7 @@ int insert_symbol(const char *name, const int value, const int type) {
         printf("[TYPES:] Symbol name memory allocation failed\n");
         return 1;
     }
-    
+
     symbol->symbol_value = value;
     symbol->symbol_type = type;
 

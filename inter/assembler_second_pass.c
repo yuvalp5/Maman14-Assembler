@@ -8,15 +8,12 @@
 #include "utils.h"
 #include <ctype.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-/* Add explicit declaration for strdup if needed */
-#if defined(__STRICT_ANSI__)
-char *strdup(const char *s);
-#endif
+int second_pass(const char *object_file) { return 0; }
 
-int process_line_pre_assembler(char *line, int *in_macro, char *current_macro, char *macro_content) {
+int process_line_pre_assembler(char *line, int *in_macro, char *current_macro,
+                               char *macro_content) {
     char first_word[MAX_MACRO_NAME_LEN + 1];
     char *ptr = line;
     int success = 1;
@@ -47,12 +44,14 @@ int process_line_pre_assembler(char *line, int *in_macro, char *current_macro, c
     /* Check for macro definition end */
     else if (strcmp(first_word, MACRO_END_KW) == 0) {
         if (!*in_macro) {
-            printf("Error: %s without matching %s at line %d\n", MACRO_END_KW, MACRO_START_KW, line_number);
+            printf("Error: %s without matching %s at line %d\n", MACRO_END_KW,
+                   MACRO_START_KW, line_number);
             success = 0;
         } else {
             /* Add macro to table */
             if (insert_macro(current_macro, macro_content) != 0) {
-                printf("Error: Memory allocation failed at line %d\n", line_number);
+                printf("Error: Memory allocation failed at line %d\n",
+                       line_number);
                 success = 0;
             }
             *in_macro = 0;
@@ -80,8 +79,9 @@ int process_line_pre_assembler(char *line, int *in_macro, char *current_macro, c
     return success;
 }
 
-/* The extract_macro_name function was removed to eliminate the duplicate definition.
-   Using the version from pre_assembler.c instead, which is made available through pre_assembler.h */
+/* The extract_macro_name function was removed to eliminate the duplicate
+   definition. Using the version from pre_assembler.c instead, which is made
+   available through pre_assembler.h */
 
 int is_empty_or_comment(const char *line) {
     const char *ptr = line;
@@ -94,4 +94,3 @@ int is_empty_or_comment(const char *line) {
     /* Check if line is empty or starts with ';' */
     return (*ptr == '\0' || *ptr == ';');
 }
- 

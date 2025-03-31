@@ -1,11 +1,12 @@
 TODOs:
-    - only pass basename to functions
     - check: different types for data and instructions? keep binary codes in tables?
     - make use of RESERVED_KW
     - DOC
     - implement Memory type? end of p. 48 - machine code, type, text
     - error checking and reporting- dont stop before ending reading stream
     - logging
+    - define SUCCESS_CODE globally
+    - 2nd pass
     
     optional:
         - print methods in utils for debug

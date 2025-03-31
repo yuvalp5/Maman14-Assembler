@@ -6,7 +6,7 @@
 #ifndef ASSEMBLER_SECOND_PASS_H
 #define ASSEMBLER_SECOND_PASS_H 1
 
-#include "shared/types.h"
+#include "types.h"
 
 /**
  * @brief Master function for second pass
@@ -23,7 +23,8 @@ int second_pass(const char *object_file);
  * @param macro_content Content of the macro being defined
  * @return 0 on success, non-zero on failure
  */
-int process_line_pre_assembler(char *line, int *in_macro, char *current_macro, char *macro_content);
+int process_line_pre_assembler(char *line, int *in_macro, char *current_macro,
+                               char *macro_content);
 
 /**
  * @brief Extract macro name from a macro definition line
@@ -41,4 +42,3 @@ int extract_macro_name(const char *line, char *macro_name);
 int is_empty_or_comment(const char *line);
 
 #endif
- 
