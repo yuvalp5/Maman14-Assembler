@@ -3,7 +3,6 @@
  * Handles macro expansion in source files
  */
 
-#include "pre_assembler.h"
 #include "definitions.h"
 #include "types.h"
 #include "utils.h"
