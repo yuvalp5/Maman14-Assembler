@@ -11,8 +11,8 @@
 #define SRC_F_EXT ".as"
 #define PAS_F_EXT ".am"
 #define OBJ_F_EXT ".ob"
-#define EXT_F_EXT ".external"
-#define ENT_F_EXT ".entry"
+#define EXT_F_EXT ".ext"
+#define ENT_F_EXT ".ent"
 #define LOG_FILE_LOC "./io/log.txt"
 
 /* Project-wide definitions */
