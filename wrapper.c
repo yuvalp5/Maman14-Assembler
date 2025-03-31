@@ -21,8 +21,8 @@
  */
 int main(int argc, char *argv[]) {
     /* File names */
-    char *src_name, *pre_assembled_name, *object_name, *externals_name,
-        *entry_name;
+    /*char *src_name, *pre_assembled_name, *object_name, *externals_name,
+        *entry_name;*/
     /* Iterator */
     int i;
 
@@ -37,11 +37,11 @@ int main(int argc, char *argv[]) {
     /* Iterate over args */
     for (i = 1; i < argc; i++) {
         /* Assign file names */
-        src_name = add_ext(argv[i], SRC_F_EXT);
-        pre_assembled_name = add_ext(argv[i], PAS_F_EXT);
+        /*src_name = add_ext(argv[i], SRC_F_EXT);*/ 
+        /*pre_assembled_name = add_ext(argv[i], PAS_F_EXT);*/
         object_name = add_ext(argv[i], OBJ_F_EXT);
-        externals_name = add_ext(argv[i], EXT_F_EXT);
-        entry_name = add_ext(argv[i], ENT_F_EXT);
+        /*externals_name = add_ext(argv[i], EXT_F_EXT);*/
+        /*entry_name = add_ext(argv[i], ENT_F_EXT);*/
 
         /* Pre-assembler */
         if (pre_assembler(argv[i])) {
