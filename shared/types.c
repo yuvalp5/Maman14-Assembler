@@ -4,6 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Add explicit declaration for strdup if needed */
+#if defined(__STRICT_ANSI__)
+char *strdup(const char *s);
+#endif
+
 int _insert_item(Table *instance, void *item);
 void *_safe_malloc(const int size, const char *table_name);
 
@@ -56,12 +61,17 @@ int insert_macro(const char *name, const char *value) {
     if (!macro)
         return 1;
 
-    macro->name = name;
-    macro->value = strdup(value); /* Use strdup to simplify allocation */
+    macro->name = strdup(name);
+    if (!macro->name) {
+        free(macro);
+        printf("[TYPES:] Macro name memory allocation failed\n");
+        return 1;
+    }
 
-    /* Check if strdup succeeded */
+    macro->value = strdup(value);
     if (!macro->value) {
-        free(macro); /* Free the macro structure if strdup fails */
+        free(macro->name);
+        free(macro);
         printf("[TYPES:] Macro value memory allocation failed\n");
         return 1;
     }
@@ -75,7 +85,13 @@ int insert_label(const char *name, const int value) {
     if (!label)
         return 1;
 
-    label->name = name;
+    label->name = strdup(name);
+    if (!label->name) {
+        free(label);
+        printf("[TYPES:] Label name memory allocation failed\n");
+        return 1;
+    }
+    
     label->value = value;
 
     return _insert_item(label_table, label);
@@ -87,7 +103,13 @@ int insert_symbol(const char *name, const int value, const int type) {
     if (!symbol)
         return 1;
 
-    symbol->name = name;
+    symbol->name = strdup(name);
+    if (!symbol->name) {
+        free(symbol);
+        printf("[TYPES:] Symbol name memory allocation failed\n");
+        return 1;
+    }
+    
     symbol->symbol_value = value;
     symbol->symbol_type = type;
 

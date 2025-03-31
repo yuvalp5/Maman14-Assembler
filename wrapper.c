@@ -4,10 +4,10 @@
  * extensions
  */
 
-#include "assembler_first_pass.h"
-#include "assembler_second_pass.h"
+#include "inter/assembler_first_pass.h"
+#include "inter/assembler_second_pass.h"
 #include "definitions.h"
-#include "pre_assembler.h"
+#include "inter/pre_assembler.h"
 #include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
