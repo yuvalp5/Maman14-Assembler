@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 /* Logging messages to print and save in log file */
 FILE *log_file;
@@ -51,4 +52,37 @@ char *add_ext(const char *str1, const char *str2) {
     strcat(result, str2);
 
     return result;
+}
+
+int extract_macro_name(const char *line, char *macro_name) {
+    const char *ptr = line;
+    int i;
+
+    /* Skip leading whitespace */
+    while (*ptr && isspace((unsigned char)*ptr)) {
+        ptr++;
+    }
+
+    /* Skip "mcro" keyword */
+    if (strncmp(ptr, MACRO_START_KW, strlen(MACRO_START_KW)) == 0) {
+        ptr += strlen(MACRO_START_KW);
+    } else {
+        return 0; /* Not a macro definition line */
+    }
+
+    /* Skip whitespace after keyword */
+    while (*ptr && isspace((unsigned char)*ptr)) {
+        ptr++;
+    }
+
+    /* Extract the name */
+    i = 0;
+    while (*ptr && !isspace((unsigned char)*ptr) &&
+           i < MAX_MACRO_NAME_LEN - 1) {
+        macro_name[i++] = *ptr++;
+    }
+    macro_name[i] = '\0';
+
+    /* Validate name is not empty */
+    return (i > 0);
 }

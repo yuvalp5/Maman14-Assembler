@@ -14,14 +14,6 @@
 int pre_assembler(const char *file_basename);
 
 /**
- * @brief Extracts macro name from a macro definition line
- * @param line The macro definition line
- * @param macro_name Buffer to store the extracted name
- * @return 1 on success, 0 on failure
- */
-int extract_macro_name(const char *line, char *macro_name);
-
-/**
  * @brief Extract the first word from a line
  * @param line The input line
  * @param word Buffer to store the extracted first word

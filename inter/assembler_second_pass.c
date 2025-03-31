@@ -31,7 +31,7 @@ int process_line_pre_assembler(char *line, int *in_macro, char *current_macro, c
     sscanf(ptr, "%s", first_word);
 
     /* Check for macro definition start */
-    if (strcmp(first_word, "mcro") == 0) {
+    if (strcmp(first_word, MACRO_START_KW) == 0) {
         if (*in_macro) {
             printf("Error: Nested macro definition at line %d\n", line_number);
             success = 0;
@@ -46,9 +46,9 @@ int process_line_pre_assembler(char *line, int *in_macro, char *current_macro, c
         }
     }
     /* Check for macro definition end */
-    else if (strcmp(first_word, "endmcro") == 0) {
+    else if (strcmp(first_word, MACRO_END_KW) == 0) {
         if (!*in_macro) {
-            printf("Error: endmcro without matching mcro at line %d\n", line_number);
+            printf("Error: %s without matching %s at line %d\n", MACRO_END_KW, MACRO_START_KW, line_number);
             success = 0;
         } else {
             /* Add macro to table */
@@ -81,36 +81,8 @@ int process_line_pre_assembler(char *line, int *in_macro, char *current_macro, c
     return success;
 }
 
-int extract_macro_name(const char *line, char *macro_name) {
-    const char *ptr = line;
-    int i = 0;
-
-    /* Skip "mcro" keyword */
-    while (*ptr && isspace((unsigned char)*ptr)) {
-        ptr++;
-    }
-    if (strncmp(ptr, "mcro", 4) == 0) {
-        ptr += 4;
-    }
-
-    /* Skip whitespace after keyword */
-    while (*ptr && isspace((unsigned char)*ptr)) {
-        ptr++;
-    }
-
-    /* Extract macro name */
-    while (*ptr && !isspace((unsigned char)*ptr) && i < MAX_MACRO_NAME_LEN - 1) {
-        macro_name[i++] = *ptr++;
-    }
-    macro_name[i] = '\0';
-
-    /* Validate name */
-    if (i == 0 || !isalpha((unsigned char)macro_name[0])) {
-        return 0;
-    }
-
-    return 1;
-}
+/* The extract_macro_name function was removed to eliminate the duplicate definition.
+   Using the version from pre_assembler.c instead, which is made available through pre_assembler.h */
 
 int is_empty_or_comment(const char *line) {
     const char *ptr = line;

@@ -30,4 +30,12 @@ void exit_graceful(int exit_code, int stop);
  */
 char *add_ext(const char *str1, const char *str2);
 
+/**
+ * @brief Extracts macro name from a macro definition line
+ * @param line The macro definition line
+ * @param macro_name Buffer to store the extracted name
+ * @return 1 on success, 0 on failure
+ */
+int extract_macro_name(const char *line, char *macro_name);
+
 #endif

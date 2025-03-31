@@ -135,38 +135,7 @@ int pre_assembler(const char *file_basename) {
     return success ? 0 : 1;
 }
 
-int extract_macro_name(const char *line, char *macro_name) {
-    const char *ptr = line;
-    int i;
-
-    /* Skip leading whitespace */
-    while (*ptr && isspace((unsigned char)*ptr)) {
-        ptr++;
-    }
-
-    /* Skip "mcro" keyword */
-    if (strncmp(ptr, MACRO_START_KW, strlen(MACRO_START_KW)) == 0) {
-        ptr += strlen(MACRO_START_KW);
-    } else {
-        return 0; /* Not a macro definition line */
-    }
-
-    /* Skip whitespace after keyword */
-    while (*ptr && isspace((unsigned char)*ptr)) {
-        ptr++;
-    }
-
-    /* Extract the name */
-    i = 0;
-    while (*ptr && !isspace((unsigned char)*ptr) &&
-           i < MAX_MACRO_NAME_LEN - 1) {
-        macro_name[i++] = *ptr++;
-    }
-    macro_name[i] = '\0';
-
-    /* Validate name is not empty */
-    return (i > 0);
-}
+/* extract_macro_name has been moved to utils.c */
 
 void extract_first_word(const char *line, char *word) {
     const char *ptr = line;
