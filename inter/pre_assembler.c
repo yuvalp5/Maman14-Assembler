@@ -1,6 +1,7 @@
 #include "pre_assembler.h"
 #include "definitions.h"
 #include "types.h"
+#include "utils.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +11,7 @@ int pre_assembler(const char *src, const char *dest) {
     /* Files to work on */
     FILE *user_input = NULL,
          *output_pre_assembled = NULL; /* Pointers to input and output files*/
+    int success = 1;
 
     /* Function variables */
     char line[MAX_LINE_LEN]; /* Buffer to store current line being processed */
@@ -19,37 +21,74 @@ int pre_assembler(const char *src, const char *dest) {
     int in_macro = 0; /* Flag indicating if we are inside a macro definition */
     char current_macro[MAX_MACRO_NAME_LEN]; /* Buffer for the name of the macro
                                                currently being defined */
-    char *macro_content;   /* Pointer to retrieved macro content */
     char *current_content; /* Temp pointer for macro content retrieval */
     char new_content[MAX_MACRO_CONTENT_LEN]; /* Buffer for building updated
                                                 macro content */
 
+    /* Initialize line counter */
+    line_number = 0;
+
     /* Open input file */
     user_input = fopen(src, "r");
+    if (!user_input) {
+        fprintf(stderr, "Error: Could not open source file '%s'\n", src);
+        return 1;
+    }
 
     /* Open output file */
     output_pre_assembled = fopen(dest, "w");
+    if (!output_pre_assembled) {
+        fprintf(stderr, "Error: Could not create output file '%s'\n", dest);
+        fclose(user_input);
+        return 1;
+    }
+
+    fprintf(stderr, "Debug: Starting pre-assembler processing\n");
+    fprintf(stderr, "Debug: Source file: %s\n", src);
+    fprintf(stderr, "Debug: Destination file: %s\n", dest);
 
     /* Process the file line by line */
     while (fgets(line, MAX_LINE_LEN, user_input) != NULL) {
-        extract_first_word(line, first_word); /* extract first word and save in
-                                                 first_word variable */
+        line_number++;
+        fprintf(stderr, "Debug: Processing line %d: %s", line_number, line);
+
+        extract_first_word(line, first_word);
+        fprintf(stderr, "Debug: First word: '%s'\n", first_word);
 
         /* Macro definition start */
         if (strcmp(first_word, MACRO_START_KW) == 0) {
-            extract_macro_name(line, current_macro);
+            fprintf(stderr, "Debug: Found macro start\n");
+            if (!extract_macro_name(line, current_macro)) {
+                fprintf(stderr, "Error: Invalid macro name at line %d\n", line_number);
+                success = 0;
+                continue;
+            }
+            if (!is_valid_macro_name(current_macro)) {
+                fprintf(stderr, "Error: Invalid macro name '%s' at line %d\n", current_macro, line_number);
+                success = 0;
+                continue;
+            }
+            fprintf(stderr, "Debug: Adding macro '%s'\n", current_macro);
             /* Add macro to table with empty content */
             insert_macro(current_macro, "");
             in_macro = 1;
         }
         /* Macro definition end */
         else if (strcmp(first_word, MACRO_END_KW) == 0) {
+            fprintf(stderr, "Debug: Found macro end\n");
             in_macro = 0;
         }
         /* Inside a macro definition - collecting content */
         else if (in_macro) {
+            fprintf(stderr, "Debug: Inside macro '%s'\n", current_macro);
             /* Get existing content */
-            current_content = ((Macro *)get_item(macro_table, current_macro))->value;
+            Macro *existing_macro = get_item(macro_table, current_macro);
+            if (!existing_macro) {
+                fprintf(stderr, "Error: Macro '%s' not found at line %d\n", current_macro, line_number);
+                success = 0;
+                continue;
+            }
+            current_content = existing_macro->value;
 
             /* Create new content by concatenating existing content with the new
              * line */
@@ -67,27 +106,32 @@ int pre_assembler(const char *src, const char *dest) {
             } else {
                 fprintf(stderr, "Error: Macro content too large for '%s'\n",
                         current_macro);
+                success = 0;
             }
         }
         /* Regular line or macro invocation */
         else {
-            macro_content = ((Macro *)get_item(macro_table, first_word))->value;
-            if (macro_content != NULL) {
+            Macro *macro = get_item(macro_table, first_word);
+            if (macro != NULL && macro->value != NULL) {
+                fprintf(stderr, "Debug: Expanding macro '%s'\n", first_word);
                 /* Expand macro */
-                fputs(macro_content, output_pre_assembled);
+                fputs(macro->value, output_pre_assembled);
             } else {
+                fprintf(stderr, "Debug: Regular line\n");
                 /* Regular line */
                 fputs(line, output_pre_assembled);
             }
         }
     }
 
+    fprintf(stderr, "Debug: Finished processing. Success = %d\n", success);
+
     /* close files after finishing process */
     fclose(user_input);
     fclose(output_pre_assembled);
 
-    /* Return success */
-    return 0;
+    /* Return success status */
+    return success ? 0 : 1;
 }
 
 int extract_macro_name(const char *line, char *macro_name) {
