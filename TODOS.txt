@@ -1,83 +1,27 @@
-inter1-
-p. 48
+TODOs:
+    - only pass basename to functions
+    - check: different types for data and instructions? keep binary codes in tables?
+    - make use of RESERVED_KW
+    - DOC
+    - implement Memory type? end of p. 48 - machine code, type, text
+    - error checking and reporting- dont stop before ending reading stream
+    - logging
+    
+    optional:
+        - print methods in utils for debug
+
 registers: 24 bits each, r0 to r7
-PSW (program status word): keeps track of flags
+a command is 1 to 3 words
+words are encided as hex values
 commands: mov, cmp, add, sub, lea, clr, not, inc, dec, jmp, bne, jsr, red, prn, rts, stop
+sentences are separated by newlines and tabs (\n, \t) and are either empty, comment- starts with ;, or instruction command
 
-all errors are to be encountered. an error wont stop the program
-
-p. 51:
-entries - external labels
-externals - external data sources
-.ent - object file extension
-.ext - files to - externals files extension
-if extern and or entries - do not create them!
-
-inter2-
-separate src files to passes
-
-all errors are to be encountered. an error wont stop the program
-
-whitespaces need to be taken care of
-
-pre assembler - identifies macros and write them out
-first pass - look for labels (variable names) and replaces them with memory address
-second pass - look for variable values and store them in memory addresses
-
-io-
-FILE EXTENSIONS:
-
-source: .as
-pre assembled: .am
-object: .o
-externals: .ext
-entries: .ent
-
-wrapper-
-17/3:
-assembler_second_pass- 
-    oren- master method (probably only method(?))
-    need to unite with first pass
-
-Things to keep in mind:
-
-    an initial TODO list. later, tasks will be splittel into corrosponding files. 
-
-    registers: 24 bits each, r0 to r7
-
-    PSW (program status word): keeps track of flags
-
-    a command is 1 to 3 words
-
-    words are encided as hex values
-
-    commands: mov, cmp, add, sub, lea, clr, not, inc, dec, jmp, bne, jsr, red, prn, rts, stop
-
-    sentences are separated by newlines and tabs (\n, \t)
-
-    sentence types are:
-
-        empty
-        comment- starts with ;
-        instruction
-        command
-
-        more info in PDF
-
-    table of all operands and theoir respective binary codes - values set at runtime
-
-    separate data from instructions
-
-    all errors are to be encountered. an error wont stop the program
-    
-
-    fields:
-    
-        label- 
-            starts the symbol and ends with :
-            can only be declared once
-            case sensitive
-            cannot be a keyword
+fields:
+label- 
+    starts the symbol and ends with :
+        can only be declared once
+        case sensitive
+        cannot be a keyword
 
         number-
             starts with optional + or -
@@ -91,45 +35,4 @@ Things to keep in mind:
             surroded by "
             space is also a part of the string
 
-
-Run order:
-
-    receive file of source to run
-    
-    pre-assembler- read input, then convert macros to actual instructions
-    if failed raise error; then halt
-    else save output
-    algorythm in p.n. 40 (16)
-
-    declare symbols, then declared symbols are given values dynamically
-
-    go over raw source twice: forst find labels and replace them with values (real locations), second to write actual machine code
-
-    
-
-    convery symbols to machine code
-
-    make a file of ready-to-run example
-
-
-
-Things to do:
-
-    1. implement described above commands:
-        2 operands
-        1 operand
-        0 operands
-
-    2. implement macros (dynamic allocation)
-        no מקוננות macros
-        macro name cant be an instruction name
-        no need to check macroend phrase
-
-    3. Files to implement so far
-        * pre_assembler - according to the algorithm in page 40 (46 according to pdf)
-        * first_pass - page 40 (46 pdf), algorithm in page 44 (50 pdf)
-        * second_pass -  algorithm in page 45 (51 pdf)
-        * input files to test the program - at the end
-            * relevant file types - object, entries, exteranls
-
-
+declare symbols, then declared symbols are given values dynamically
