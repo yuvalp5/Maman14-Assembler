@@ -21,8 +21,9 @@
  */
 int main(int argc, char *argv[]) {
     /* File names */
-    /*char *src_name, *pre_assembled_name, *object_name, *externals_name,
+    /*char *src_name, *pre_assembled_name,  *externals_name,
         *entry_name;*/
+    char *object_name;
     /* Iterator */
     int i;
 
