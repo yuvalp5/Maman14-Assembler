@@ -37,3 +37,43 @@ label-
             space is also a part of the string
 
 declare symbols, then declared symbols are given values dynamically
+
+-----------------------------
+
+* Include the appropriate header for strdup OR implement your own string duplication function
+Note that strdup is not part of standard C90, which explains the implicit declaration warning
+Add prototype: char *my_strdup(const char *str);
+
+
+* Resolve the insert_item function issue:
+
+Add function prototype before using it in assembler_second_pass.c
+Ensure the implementation exists in one of your files
+Check if it should be imported from another module
+
+
+* Fix multiple definition of extract_macro_name:
+
+Function is defined in both pre_assembler.c and assembler_second_pass.c
+Make it static in one file OR move it to a common utility file and include properly
+Ensure consistent implementation across files if shared
+
+
+* Implement missing second_pass function:
+
+Create or complete the implementation of second_pass which is referenced in wrapper.c
+Add proper function prototype in relevant header file
+
+
+* Resolve project structure issues:
+
+Review header inclusions to ensure all functions have proper declarations
+Check function visibility between modules
+Make sure utility functions are properly shared
+
+
+* Implement insert_item function:
+
+It appears to be missing or incorrectly linked
+Verify its implementation or provide one in the appropriate file
+Add its prototype to a header file visible to assembler_second_pass.c
