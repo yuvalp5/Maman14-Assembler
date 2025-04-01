@@ -1,88 +1,189 @@
 /**
- * @brief Pre-assembler implementation
- * Handles macro expansion in source files
+ * @brief Second pass implementation
+ * Handles final code generation and output file creation
  */
 
+#include "assembler_second_pass.h"
 #include "definitions.h"
 #include "types.h"
 #include "utils.h"
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-int second_pass(const char *object_file) { return 0; }
+/* Function declarations */
+int search_command_in_table(const char *command);
+int get_addressing_mode(const char *operand);
 
-int process_line_pre_assembler(char *line, int *in_macro, char *current_macro,
-                               char *macro_content) {
-    char first_word[MAX_MACRO_NAME_LEN + 1];
-    char *ptr = line;
-    int success = 1;
+/* Global variables from types.h */
+extern int *code_memory;    /* Memory for storing machine code */
+extern int DC;              /* Data counter */
+extern int IC;              /* Instruction counter */
+extern int ICF;             /* Final IC value */
+extern int DCF;             /* Final DC value */
+extern int L;               /* Number of words in the instruction */
+extern int symbol_count;    /* Number of symbols in the symbol table */
+extern int error_count;     /* Number of errors */
+extern int line_number;     /* Line number */
+extern Table *symbol_table; /* Symbol table */
 
-    /* Skip leading whitespace */
-    while (*ptr && isspace((unsigned char)*ptr)) {
-        ptr++;
+/**
+ * @brief Master function for second pass
+ * @param object_file Path to the object file to be created
+ * @return 0 on success, 1 on failure
+ */
+int second_pass(const char *object_file) {
+    FILE *input_file = NULL;
+    FILE *output_file = NULL;
+    FILE *ext_file = NULL;
+    FILE *ent_file = NULL;
+    char line[MAX_LINE_LEN];
+    char *field;
+    char *symbol_name;
+    Symbol *symbol;
+    int i;
+    int has_entry = 0;
+    int has_extern = 0;
+
+    /* Open input file (.am file after macro expansion) */
+    input_file = fopen(add_ext(object_file, PAS_F_EXT), "r");
+    if (!input_file) {
+        print_and_log("Error: Unable to open input file", NULL);
+        return 1;
     }
 
-    /* Extract first word */
-    sscanf(ptr, "%s", first_word);
+    /* First scan to identify entry and extern symbols */
+    while (fgets(line, MAX_LINE_LEN, input_file) != NULL) {
+        line_number++;
 
-    /* Check for macro definition start */
-    if (strcmp(first_word, MACRO_START_KW) == 0) {
-        if (*in_macro) {
-            printf("Error: Nested macro definition at line %d\n", line_number);
-            success = 0;
-        } else {
-            if (!extract_macro_name(ptr, current_macro)) {
-                printf("Error: Invalid macro name at line %d\n", line_number);
-                success = 0;
-            } else {
-                *in_macro = 1;
-                macro_content[0] = '\0';
+        /* Skip empty lines and comments */
+        if (is_empty_or_comment(line)) {
+            continue;
+        }
+
+        /* Get first field */
+        field = strtok(line, " \t\n");
+        if (!field)
+            continue;
+
+        /* Check for entry directive */
+        if (strcmp(field, ".entry") == 0) {
+            has_entry = 1;
+            symbol_name = strtok(NULL, " \t\n");
+            if (symbol_name) {
+                symbol = get_item(symbol_table, symbol_name);
+                if (symbol) {
+                    /* Mark symbol as entry but preserve its original type */
+                    if (symbol->symbol_type != SYMBOL_TYPE_EXTERN) {
+                        symbol->symbol_type |= SYMBOL_TYPE_ENTRY;
+                    } else {
+                        print_and_log(
+                            "Error: Symbol cannot be both entry and extern",
+                            symbol_name);
+                        error_count++;
+                    }
+                } else {
+                    print_and_log("Error: Entry symbol not found", symbol_name);
+                    error_count++;
+                }
+            }
+        }
+        /* Check for extern directive */
+        else if (strcmp(field, ".extern") == 0) {
+            has_extern = 1;
+            symbol_name = strtok(NULL, " \t\n");
+            if (symbol_name) {
+                symbol = get_item(symbol_table, symbol_name);
+                if (!symbol) {
+                    /* Add external symbol if not already in table */
+                    if (insert_symbol(symbol_name, 0, SYMBOL_TYPE_EXTERN) !=
+                        0) {
+                        print_and_log("Error: Failed to add external symbol",
+                                      symbol_name);
+                        error_count++;
+                    }
+                }
             }
         }
     }
-    /* Check for macro definition end */
-    else if (strcmp(first_word, MACRO_END_KW) == 0) {
-        if (!*in_macro) {
-            printf("Error: %s without matching %s at line %d\n", MACRO_END_KW,
-                   MACRO_START_KW, line_number);
-            success = 0;
-        } else {
-            /* Add macro to table */
-            if (insert_macro(current_macro, macro_content) != 0) {
-                printf("Error: Memory allocation failed at line %d\n",
-                       line_number);
-                success = 0;
-            }
-            *in_macro = 0;
-        }
-    }
-    /* Inside macro definition */
-    else if (*in_macro) {
-        /* Append line to macro content */
-        if (strlen(macro_content) + strlen(line) < MAX_MACRO_CONTENT_LEN) {
-            strcat(macro_content, line);
-        } else {
-            printf("Error: Macro content too large at line %d\n", line_number);
-            success = 0;
-        }
-    }
-    /* Check for macro usage */
-    else {
-        Macro *macro = get_item(macro_table, first_word);
-        if (macro) {
-            /* Replace macro usage with its content */
-            strcpy(line, macro->value);
-        }
+
+    /* Create output files */
+    output_file = fopen(add_ext(object_file, OBJ_F_EXT), "w");
+    if (!output_file) {
+        print_and_log("Error: Unable to create object file", NULL);
+        fclose(input_file);
+        return 1;
     }
 
-    return success;
+    /* Write header */
+    fprintf(output_file, "\t%d %d\n", ICF - 100, DCF);
+
+    /* Write code segment */
+    for (i = 100; i < ICF; i++) {
+        fprintf(output_file, "%04d\t%06X\n", i - 100,
+                code_memory[i] & 0xFFFFFF);
+    }
+
+    /* Write data segment */
+    for (i = 0; i < DCF; i++) {
+        fprintf(output_file, "%04d\t%06X\n", ICF - 100 + i,
+                code_memory[ICF + i] & 0xFFFFFF);
+    }
+
+    fclose(output_file);
+
+    /* Create entry file if needed */
+    if (has_entry) {
+        ent_file = fopen(add_ext(object_file, ENT_F_EXT), "w");
+        if (!ent_file) {
+            print_and_log("Error: Unable to create entry file", NULL);
+            fclose(input_file);
+            return 1;
+        }
+
+        /* Write entry symbols */
+        for (i = 0; i < symbol_count; i++) {
+            symbol = symbol_table->content[i];
+            if (symbol && (symbol->symbol_type & SYMBOL_TYPE_ENTRY)) {
+                fprintf(ent_file, "%s\t%04d\n", symbol->name,
+                        symbol->symbol_value - 100);
+            }
+        }
+
+        fclose(ent_file);
+    }
+
+    /* Create extern file if needed */
+    if (has_extern) {
+        ext_file = fopen(add_ext(object_file, EXT_F_EXT), "w");
+        if (!ext_file) {
+            print_and_log("Error: Unable to create external file", NULL);
+            fclose(input_file);
+            return 1;
+        }
+
+        /* Write external symbols */
+        for (i = 0; i < symbol_count; i++) {
+            symbol = symbol_table->content[i];
+            if (symbol && (symbol->symbol_type & SYMBOL_TYPE_EXTERN)) {
+                fprintf(ext_file, "%s\t%04d\n", symbol->name,
+                        symbol->symbol_value - 100);
+            }
+        }
+
+        fclose(ext_file);
+    }
+
+    fclose(input_file);
+    return error_count > 0; /* Return 0 on success (no errors), 1 on failure */
 }
 
-/* The extract_macro_name function was removed to eliminate the duplicate
-   definition. Using the version from pre_assembler.c instead, which is made
-   available through pre_assembler.h */
-
+/**
+ * @brief Check if a line is empty or a comment
+ * @param line The line to check
+ * @return 1 if empty or comment, 0 otherwise
+ */
 int is_empty_or_comment(const char *line) {
     const char *ptr = line;
 
