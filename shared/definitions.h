@@ -13,7 +13,7 @@
 #define OBJ_F_EXT ".ob"
 #define EXT_F_EXT ".ext"
 #define ENT_F_EXT ".ent"
-#define LOG_FILE_LOC "./io/log.txt"
+#define LOG_F_LOC "./io/log.txt"
 
 /* Project-wide definitions */
 #define MAX_MACRO_NAME_LEN 31
@@ -42,22 +42,46 @@
 #define MACRO_START_KW "mcro"
 #define MACRO_END_KW "mcroend"
 
-#define RESERVED_KW {\
-        /* Instructions */\
-        "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp",\
-        "bne", "jsr", "red", "prn", "rts", "stop",\
-\
-        /* Assembler directives */\
-        "data", "string", "entry", "extern",\
-\
-        /* Macro directives */\
-        MACRO_START_KW, MACRO_END_KW,\
-\
-        /* Registers */\
-        "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",\
-\
-        /* Terminator */\
-        NULL\
-}
+#define RESERVED_KW                                                            \
+    {/* Instructions */                                                        \
+     "mov",                                                                    \
+     "cmp",                                                                    \
+     "add",                                                                    \
+     "sub",                                                                    \
+     "lea",                                                                    \
+     "clr",                                                                    \
+     "not",                                                                    \
+     "inc",                                                                    \
+     "dec",                                                                    \
+     "jmp",                                                                    \
+     "bne",                                                                    \
+     "jsr",                                                                    \
+     "red",                                                                    \
+     "prn",                                                                    \
+     "rts",                                                                    \
+     "stop",                                                                   \
+                                                                               \
+     /* Assembler directives */                                                \
+     "data",                                                                   \
+     "string",                                                                 \
+     "entry",                                                                  \
+     "extern",                                                                 \
+                                                                               \
+     /* Macro directives */                                                    \
+     MACRO_START_KW,                                                           \
+     MACRO_END_KW,                                                             \
+                                                                               \
+     /* Registers */                                                           \
+     "r0",                                                                     \
+     "r1",                                                                     \
+     "r2",                                                                     \
+     "r3",                                                                     \
+     "r4",                                                                     \
+     "r5",                                                                     \
+     "r6",                                                                     \
+     "r7",                                                                     \
+                                                                               \
+     /* Terminator */                                                          \
+     NULL}
 
 #endif

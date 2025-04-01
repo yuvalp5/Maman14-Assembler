@@ -163,10 +163,10 @@ int first_pass(const char *file_basename) {
             else if (is_extern_or_entry(field)) {
                 /* 9. If directive is .entry, skip it (will be handled in
                  * second pass) */
-                if (strcmp(field, ".entry") != 0) {
+                if (strcmp(field, ENT_F_EXT) != 0) {
                     /* 10. If directive is .extern, add the symbol to the
                      * symbol table */
-                    if (strcmp(field, ".extern") == 0) {
+                    if (strcmp(field, EXT_F_EXT) == 0) {
                         /* Get the operand of .extern */
                         extern_symbol = strtok(NULL, " \t\n");
 

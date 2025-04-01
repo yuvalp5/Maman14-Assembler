@@ -31,7 +31,7 @@ all: $(TARGET)
 # Clean option - testing files not removed for debug pruposes
 clean: 
 	rm -f $(OBJS) $(TARGET)
-	rm -f io/*.am io/*.object io/*.externals io/*.entry
+	rm -f io/*.am io/*.ob io/*.ext io/*.ent
 
 # Run the test
 run: $(TARGET)

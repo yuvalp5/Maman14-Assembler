@@ -5,10 +5,10 @@
 
 #include "utils.h"
 #include "definitions.h"
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
 /* Logging messages to print and save in log file */
 FILE *log_file;
@@ -18,7 +18,7 @@ int print_and_log(char *text, char *format) {
 
     if (log_file == NULL) {
         /* Log file cannot be created */
-        if ((log_file = fopen(LOG_FILE_LOC, "w")) == NULL) {
+        if ((log_file = fopen(LOG_F_LOC, "w")) == NULL) {
             printf("[UNLOGGED:] Unable to open log file | ");
             return 1;
         }
