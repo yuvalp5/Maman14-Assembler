@@ -38,4 +38,11 @@ char *add_ext(const char *str1, const char *str2);
  */
 int extract_macro_name(const char *line, char *macro_name);
 
+/**
+ * @brief Checks if a name is a reserved word
+ * @param name The name to check
+ * @return 1 if the name is a reserved word, 0 otherwise
+ */
+int is_reserved_word(const char *name);
+
 #endif

@@ -34,17 +34,17 @@ extern Table *symbol_table; /* Symbol table */
  * @return 0 on success, 1 on failure
  */
 int second_pass(const char *object_file) {
-    FILE *input_file = NULL;
-    FILE *output_file = NULL;
-    FILE *ext_file = NULL;
-    FILE *ent_file = NULL;
-    char line[MAX_LINE_LEN];
-    char *field;
-    char *symbol_name;
-    Symbol *symbol;
-    int i;
-    int has_entry = 0;
-    int has_extern = 0;
+    FILE *input_file = NULL; /* Input file */
+    FILE *output_file = NULL; /* Output file */
+    FILE *ext_file = NULL; /* External file */
+    FILE *ent_file = NULL; /* Entry file */
+    char line[MAX_LINE_LEN]; /* Line to be processed */
+    char *field; /* Field to be used for parsing */
+    char *symbol_name; /* Symbol name */
+    Symbol *symbol; /* Symbol instance */
+    int i; /* Index */
+    int has_entry = 0; /* Entry flag */
+    int has_extern = 0; /* Extern flag */
 
     /* Open input file (.am file after macro expansion) */
     input_file = fopen(add_ext(object_file, PAS_F_EXT), "r");
@@ -172,18 +172,14 @@ int second_pass(const char *object_file) {
             }
         }
 
-        fclose(ext_file);
+        fclose(ext_file); /* Close the external file */
     }
 
-    fclose(input_file);
+    fclose(input_file); /* Close the input file */
     return error_count > 0; /* Return 0 on success (no errors), 1 on failure */
 }
 
-/**
- * @brief Check if a line is empty or a comment
- * @param line The line to check
- * @return 1 if empty or comment, 0 otherwise
- */
+/* Function to check if a line is empty or a comment */
 int is_empty_or_comment(const char *line) {
     const char *ptr = line;
 

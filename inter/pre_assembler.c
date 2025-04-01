@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Function to process a line in the pre-assembler as a master method */
 int pre_assembler(const char *file_basename) {
     /* Files to work on */
     FILE *user_input = NULL,
@@ -43,7 +44,7 @@ int pre_assembler(const char *file_basename) {
         fclose(user_input);
         return 1;
     }
-
+    /* Print debug information */
     fprintf(stderr, "Debug: Starting pre-assembler processing\n");
     fprintf(stderr, "Debug: Source file: %s\n", add_ext(file_basename, SRC_F_EXT));
     fprintf(stderr, "Debug: Destination file: %s\n", add_ext(file_basename, PAS_F_EXT));
@@ -53,18 +54,18 @@ int pre_assembler(const char *file_basename) {
         line_number++;
         fprintf(stderr, "Debug: Processing line %d: %s", line_number, line);
 
-        extract_first_word(line, first_word);
+        extract_first_word(line, first_word); /* Extract the first word to identify if it's a macro definition  */
         fprintf(stderr, "Debug: First word: '%s'\n", first_word);
 
-        /* Macro definition start */
+        /* if we found a macro definition */
         if (strcmp(first_word, MACRO_START_KW) == 0) {
             fprintf(stderr, "Debug: Found macro start\n");
-            if (!extract_macro_name(line, current_macro)) {
+            if (!extract_macro_name(line, current_macro)) { 
                 fprintf(stderr, "Error: Invalid macro name at line %d\n", line_number);
                 success = 0;
                 continue;
             }
-            if (!is_valid_macro_name(current_macro)) {
+            if (!is_reserved_word(current_macro)) {
                 fprintf(stderr, "Error: Invalid macro name '%s' at line %d\n", current_macro, line_number);
                 success = 0;
                 continue;
@@ -89,10 +90,9 @@ int pre_assembler(const char *file_basename) {
                 success = 0;
                 continue;
             }
-            current_content = existing_macro->value;
+            current_content = existing_macro->value; /* Get the existing content of the macro */
 
-            /* Create new content by concatenating existing content with the new
-             * line */
+            /* Create new content by concatenating existing content with the new line */
             if (current_content != NULL) {
                 strcpy(new_content, current_content);
             } else {
@@ -101,7 +101,7 @@ int pre_assembler(const char *file_basename) {
 
             /* Check for buffer overflow */
             if (strlen(new_content) + strlen(line) < MAX_MACRO_CONTENT_LEN) {
-                strcat(new_content, line);
+                strcat(new_content, line); /* Concatenate the new line to the existing content */
                 /* Update the macro content */
                 insert_macro(current_macro, new_content);
             } else {
@@ -115,11 +115,11 @@ int pre_assembler(const char *file_basename) {
             Macro *macro = get_item(macro_table, first_word);
             if (macro != NULL && macro->value != NULL) {
                 fprintf(stderr, "Debug: Expanding macro '%s'\n", first_word);
-                /* Expand macro */
+                /* Expand macro by writing its content to output */
                 fputs(macro->value, output_pre_assembled);
             } else {
                 fprintf(stderr, "Debug: Regular line\n");
-                /* Regular line */
+                /* Copy regular line directly to output */
                 fputs(line, output_pre_assembled);
             }
         }
@@ -137,6 +137,7 @@ int pre_assembler(const char *file_basename) {
 
 /* extract_macro_name has been moved to utils.c */
 
+/* Function to extract the first word from a line */
 void extract_first_word(const char *line, char *word) {
     const char *ptr = line;
     int i;
@@ -153,50 +154,4 @@ void extract_first_word(const char *line, char *word) {
         word[i++] = *ptr++;
     }
     word[i] = '\0';
-}
-
-/**
- * TODO: Keeping for future usage, we might need that for first and second pass
- * @brief Validates a macro name against reserved words
- * Ensures that macro names don't conflict with assembler instructions,
- * directives, or registers.
- * TODO: yuval - move to utils and change name to is_valid_field
- * @param name The macro name to check
- * @return 1 if the name is valid, 0 if invalid
- */
-int is_valid_macro_name(const char *name) {
-    int i;
-    /* List of reserved words that can't be macro names */
-    /* TODO use RESERVED_KW */
-    const char *reserved_words[] = {
-        /* Assembly instructions */
-        "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp",
-        "bne", "jsr", "red", "prn", "rts", "stop",
-
-        /* Assembler directives */
-        "data", "string", "entry", "extern",
-
-        /* Macro directives */
-        MACRO_START_KW, MACRO_END_KW,
-
-        /* Registers */
-        "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
-
-        /* Terminator */
-        NULL};
-
-    /* Check if name is empty */
-    if (name[0] == '\0') {
-        return 0;
-    }
-
-    /* Check against each reserved word */
-    for (i = 0; reserved_words[i] != NULL; i++) {
-        if (strcmp(name, reserved_words[i]) == 0) {
-            return 0;
-        }
-    }
-
-    /* Name is valid */
-    return 1;
 }

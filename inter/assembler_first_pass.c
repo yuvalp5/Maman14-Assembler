@@ -21,61 +21,7 @@ extern int error_count;     /* Number of errors */
 extern int line_number;     /* Line number */
 extern Table *symbol_table; /* Symbol table */
 
-/* Helper function to handle symbol table operations */
-int handle_symbol_addition(const char *symbol_name, int value, int type) {
-    /* Check if symbol already exists in the table */
-    if (find_symbol_in_table(symbol_name)) {
-        printf("Error in line %d: Symbol '%s' already defined\n", line_number,
-               symbol_name);
-        error_count++;
-        return 0;
-    }
-
-    /* Check if table is  full */
-    if (symbol_table && symbol_table->count >= MAX_SYMBOLS) {
-        printf("Error: Symbol table full, max %d symbols\n", MAX_SYMBOLS);
-        error_count++;
-        return 0;
-    }
-
-    /* Add symbol to table with specified type */
-    if (add_symbol_to_table(symbol_name, value, type) != 0) {
-        printf("Error in line %d: Failed to add symbol '%s' to table\n",
-               line_number, symbol_name);
-        error_count++;
-        return 0;
-    }
-
-    return 1;
-}
-
-/* Helper function to initialize code memory if needed */
-int initialize_code_memory() {
-    int i;
-
-    if (!code_memory) {
-        code_memory = (int *)malloc(MAX_MEMORY_SIZE * sizeof(int));
-        if (!code_memory) {
-            printf("Error: Memory allocation failed for code storage\n");
-            error_count++;
-            return 0;
-        }
-        /* Initialize memory to zero */
-        for (i = 0; i < MAX_MEMORY_SIZE; i++) {
-            code_memory[i] = 0;
-        }
-    }
-    return 1;
-}
-
-/* TODO: yuval-
-get content from symol table:
-((Macro *)macro_table->content[0])-><some_attr>)
-
-search by name:
-get_item(const Table *instance, const char *name);
-*/
-
+/* Master function for first pass to run the process with all of the necessary steps and functions*/
 int first_pass(const char *file_basename) {
     FILE *input_pre_assembled = NULL; /* File pointer for the input file */
     FILE *output_file = NULL;         /* File pointer for the output file */
@@ -105,17 +51,17 @@ int first_pass(const char *file_basename) {
     /* Open files */
     input_pre_assembled = fopen(add_ext(file_basename, PAS_F_EXT),
                                 "r"); /* Open source file for reading */
-    if (!input_pre_assembled) {
+    if (!input_pre_assembled) { /* If the file is not found, print an error message and return 1 */
         perror("Error: Unable to open input file\n");
         return 1;
     }
 
     /* 2. Read the next line from the input file */
     while (fgets(line, MAX_LINE_LEN, input_pre_assembled) != NULL) {
-        line_number++;
-        is_symbol_flag = 0;
-        code_index = 0;
-        proceed_to_next_line = 0;
+        line_number++; /* Increment line number */
+        is_symbol_flag = 0; /* Reset symbol flag */
+        code_index = 0; /* Reset code index */
+        proceed_to_next_line = 0; /* Reset proceed to next line flag */
 
         /* Make a copy of the line to work with */
         strcpy(line_copy, line);
@@ -130,9 +76,9 @@ int first_pass(const char *file_basename) {
                 /* Extract symbol name (without the colon) */
                 strncpy(symbol_name, field, len - 1);
                 symbol_name[len - 1] = '\0';
-
+                /* Check if the symbol name is not a reserved word */
                 if (!is_reserved_word(symbol_name)) {
-                    is_symbol_flag = 1;
+                    is_symbol_flag = 1; /* Set symbol flag */           
                     /* Get the next field (instruction) */
                     field = strtok(NULL, " \t\n");
                 }
@@ -152,12 +98,12 @@ int first_pass(const char *file_basename) {
                 }
 
                 /* 7. Encode the data values in memory, update DC */
-                operands = strtok(NULL, " \t\n");
+                operands = strtok(NULL, " \t\n"); /* Get the operands using strtok */
                 if (!encode_data_storage(field, operands, code_memory)) {
                     proceed_to_next_line = 1;
                     continue;
                 }
-                proceed_to_next_line = 1;
+                proceed_to_next_line = 1; 
             }
             /* 8. Check if line contains .extern or .entry directive */
             else if (is_extern_or_entry(field)) {
@@ -198,7 +144,7 @@ int first_pass(const char *file_basename) {
                     operand1 = strtok(NULL, " \t\n,");
                     operand2 = strtok(NULL, " \t\n,");
 
-                    /* Get addressing modes */
+                    /* Get addressing modes based on the operands */
                     operand1_mode =
                         operand1 ? get_addressing_mode(operand1) : -1;
                     operand2_mode =
@@ -242,7 +188,7 @@ int first_pass(const char *file_basename) {
                             break;
                         }
                     }
-
+                    /* Same for the second operand */
                     if (operand2_mode >= 0) {
                         switch (operand2_mode) {
                         case 0: /* Immediate */
@@ -296,7 +242,7 @@ int first_pass(const char *file_basename) {
     printf("Symbol count = %d\n", symbol_table ? symbol_table->count : 0);
     printf("Error count = %d\n", error_count);
 
-    /* Print symbol table */
+    /* Print symbol table for debugging purposes */
     print_symbol_table();
 
     if (error_count > 0) {
@@ -326,7 +272,7 @@ int first_pass(const char *file_basename) {
                 fprintf(output_file, "%04d\t%06X\n", i, code_memory[i]);
             }
         }
-
+        /* Write the data segment to the output file */
         fprintf(output_file, "Data segment:\n");
         for (i = 0; i < DCF; i++) {
             if (code_memory && ICF + i < MAX_MEMORY_SIZE) {
@@ -334,9 +280,9 @@ int first_pass(const char *file_basename) {
                         code_memory[ICF + i]);
             }
         }
-
+        /* Print a message to the user that the first pass output was written to the output file */
         printf("First pass output written to %s\n",
-               add_ext(file_basename, OBJ_F_EXT));
+               add_ext(file_basename, OBJ_F_EXT)); 
 
         /* Close the output file */
         fclose(output_file);
@@ -346,7 +292,7 @@ int first_pass(const char *file_basename) {
 }
 
 /* Helper functions */
-
+/* Function to check if the field is a symbol */
 int is_symbol(char *field) {
     int len;
     char symbol_name[MAX_SYMBOL_LEN + 1];
@@ -370,33 +316,18 @@ int is_symbol(char *field) {
     return 0;
 }
 
-int is_reserved_word(const char *word) {
-    /* List of reserved words to check against */
-    const char *reserved_words[] = {
-        "mov",   "cmp",     "add",    "sub",     "lea", "clr", "not", "inc",
-        "dec",   "jmp",     "bne",    "jsr",     "red", "prn", "rts", "stop",
-        ".data", ".string", ".entry", ".extern", "r0",  "r1",  "r2",  "r3",
-        "r4",    "r5",      "r6",     "r7",      NULL};
-    int i = 0;
 
-    while (reserved_words[i] != NULL) {
-        if (strcmp(word, reserved_words[i]) == 0) {
-            return 1; /* It is a reserved word */
-        }
-        i++;
-    }
-
-    return 0; /* Not a reserved word */
-}
 
 int is_storage(char *field) {
     return (strcmp(field, ".data") == 0 || strcmp(field, ".string") == 0);
 }
 
+/* Function to check if the field is an extern or entry directive */
 int is_extern_or_entry(char *field) {
     return (strcmp(field, ".extern") == 0 || strcmp(field, ".entry") == 0);
 }
 
+/* Function to search for a command in the command table */
 int search_command_in_table(char *command) {
     /* List of valid commands and their indices */
     const char *commands[] = {"mov", "cmp", "add", "sub",  "lea", "clr",
@@ -415,6 +346,7 @@ int search_command_in_table(char *command) {
     return 0; /* Command not found */
 }
 
+/* Function to calculate the number of words in an instruction */
 int calc_num_of_words(char *instruction, char *operand1, char *operand2) {
     int word_count = 1; /* Base word count is 1 for the instruction itself */
     int instr_idx = search_command_in_table(instruction);
@@ -475,6 +407,7 @@ int get_addressing_mode(char *operand) {
     return 1;
 }
 
+/* Function to get the number of words in an operand */
 int get_operand_words(int addressing_mode) {
     int result = 0;
 
@@ -552,7 +485,7 @@ void word_to_binary(int instruction_index, int operand1_mode, int operand2_mode,
             break;
         }
     }
-
+    /* Same for the second operand */
     if (operand2_mode >= 0) {
         switch (operand2_mode) {
         case 0: /* Immediate */
@@ -597,6 +530,7 @@ void save_values_with_binary(unsigned int *code, int word_count, int *memory,
     }
 }
 
+/* Function to add the LCFF to the data symbols */
 void add_lcf_to_data(int offset) {
     int i;
     Symbol *symbol;
@@ -946,6 +880,7 @@ void print_symbol_table(void) {
     printf("Name\t\tValue\tType\n");
     printf("----------------------\n");
 
+    /* Print the symbol table contents */
     if (symbol_table && symbol_table->content) {
         for (i = 0; i < symbol_table->count; i++) {
             symbol = (Symbol *)symbol_table->content[i];
@@ -974,7 +909,7 @@ void print_symbol_table(void) {
     printf("----------------------\n");
 }
 
-/* Implementation of symbol table functions using the proper API */
+/* Implementation of symbol table functions */
 int add_symbol_to_table(const char *name, int value, int type) {
     int result = insert_symbol(name, value, type);
 
@@ -989,12 +924,13 @@ int add_symbol_to_table(const char *name, int value, int type) {
     return result;
 }
 
+/* Function to find a symbol in the symbol table */
 int find_symbol_in_table(const char *name) {
     Symbol *symbol = (Symbol *)get_item(symbol_table, name);
     return (symbol != NULL);
 }
 
-/* Modified symbol table search function */
+/* Function to get the value of a symbol */
 int get_symbol_value(const char *name) {
     Symbol *symbol = (Symbol *)get_item(symbol_table, name);
     if (symbol) {
@@ -1003,10 +939,59 @@ int get_symbol_value(const char *name) {
     return -1; /* Symbol not found */
 }
 
+/* Function to get the type of a symbol */
 int get_symbol_type(const char *name) {
     Symbol *symbol = (Symbol *)get_item(symbol_table, name);
     if (symbol) {
         return symbol->symbol_type;
     }
     return -1; /* Symbol not found */
+}
+
+
+/* Helper function to handle symbol table operations */
+int handle_symbol_addition(const char *symbol_name, int value, int type) {
+    /* Check if symbol already exists in the table */
+    if (find_symbol_in_table(symbol_name)) {
+        printf("Error in line %d: Symbol '%s' already defined\n", line_number,
+               symbol_name);
+        error_count++;
+        return 0;
+    }
+
+    /* Check if table is  full */
+    if (symbol_table && symbol_table->count >= MAX_SYMBOLS) {
+        printf("Error: Symbol table full, max %d symbols\n", MAX_SYMBOLS);
+        error_count++;
+        return 0;
+    }
+
+    /* Add symbol to table with specified type */
+    if (add_symbol_to_table(symbol_name, value, type) != 0) {
+        printf("Error in line %d: Failed to add symbol '%s' to table\n",
+               line_number, symbol_name);
+        error_count++;
+        return 0;
+    }
+
+    return 1;
+}
+
+/* Helper function to initialize code memory if needed */
+int initialize_code_memory() {
+    int i;
+
+    if (!code_memory) {
+        code_memory = (int *)malloc(MAX_MEMORY_SIZE * sizeof(int));
+        if (!code_memory) {
+            printf("Error: Memory allocation failed for code storage\n");
+            error_count++;
+            return 0;
+        }
+        /* Initialize memory to zero */
+        for (i = 0; i < MAX_MEMORY_SIZE; i++) {
+            code_memory[i] = 0;
+        }
+    }
+    return 1;
 }

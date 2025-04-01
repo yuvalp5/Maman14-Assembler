@@ -20,11 +20,7 @@ int pre_assembler(const char *file_basename);
  */
 void extract_first_word(const char *line, char *word);
 
-/**
- * @brief Check if a macro name is valid (not a reserved word)
- * @param name The macro name to check
- * @return 1 if valid, 0 if invalid
- */
-int is_valid_macro_name(const char *name);
+
+
 
 #endif

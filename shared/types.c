@@ -28,6 +28,7 @@ int line_number = 0;  /* Line number */
 int ICF, DCF;         /* Final IC and DC values */
 int L;                /* Number of words in the instruction */
 
+/* Function to insert an item into a table */
 int _insert_item(Table *instance, void *item) {
     /* Reallocate memory with 1 slot increase every time */
     instance->content = (void **)realloc(
@@ -46,6 +47,7 @@ int _insert_item(Table *instance, void *item) {
     return 0;
 }
 
+/* Function to safely allocate memory */
 void *_safe_malloc(const int size, const char *table_name) {
     void *ptr = malloc(size);
     if (!ptr) {
@@ -54,6 +56,7 @@ void *_safe_malloc(const int size, const char *table_name) {
     return ptr;
 }
 
+/* Function to insert a macro into the macro table */
 int insert_macro(const char *name, const char *value) {
     /* Allocate memory for new macro structure */
     Macro *macro = (Macro *)_safe_malloc(sizeof(Macro), "macro_table");
@@ -96,12 +99,13 @@ int insert_label(const char *name, const int value) {
     return _insert_item(label_table, label);
 }
 
+/* Function to insert a symbol into the symbol table */
 int insert_symbol(const char *name, const int value, const int type) {
     /* Allocate memory for new symbol structure */
     Symbol *symbol = (Symbol *)_safe_malloc(sizeof(Symbol), "symbol_table");
     if (!symbol)
         return 1;
-
+    /* Insert the symbol name to the symbol structure */
     symbol->name = strdup(name);
     if (!symbol->name) {
         free(symbol);
@@ -112,9 +116,10 @@ int insert_symbol(const char *name, const int value, const int type) {
     symbol->symbol_value = value;
     symbol->symbol_type = type;
 
-    return _insert_item(symbol_table, symbol);
+    return _insert_item(symbol_table, symbol); 
 }
 
+/* Function to get an item from a table */
 void *get_item(const Table *instance, const char *name) {
     char *item_name;
     int i;

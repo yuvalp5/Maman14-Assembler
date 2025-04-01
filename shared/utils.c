@@ -86,3 +86,26 @@ int extract_macro_name(const char *line, char *macro_name) {
     /* Validate name is not empty */
     return (i > 0);
 }
+
+
+int is_reserved_word(const char *name) {
+    int i;
+    /* List of reserved words that can't be macro names */
+    /* TODO use RESERVED_KW */
+    const char *reserved_words[] = RESERVED_KW;
+
+    /* Check if name is empty */
+    if (name[0] == '\0') {
+        return 0;
+    }
+
+    /* Check against each reserved word */
+    for (i = 0; reserved_words[i] != NULL; i++) {
+        if (strcmp(name, reserved_words[i]) == 0) {
+            return 0;
+        }
+    }
+
+    /* Name is valid */
+    return 1;
+}
