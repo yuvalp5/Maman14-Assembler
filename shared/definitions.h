@@ -1,7 +1,5 @@
 /**
- * @brief Wrapper component to be accessed by user. Main entry point used to
- * recive input and pass it on through all stages as well as to print the output
- * to the user. Included are also definitions for use in the project.
+ * @brief Project-wide definitions for use across shared components
  */
 
 #ifndef DEFINITIONS_H
@@ -18,7 +16,6 @@
 /* Project-wide definitions */
 #define MAX_MACRO_NAME_LEN 31
 #define MAX_MACRO_CONTENT_LEN 1000
-#define MAX_MACROS 50
 
 /* Constants */
 #define MAX_LINE_LEN 80
@@ -38,9 +35,15 @@
 #define ADDR_MODE_INDEX 2
 #define ADDR_MODE_REGISTER 3
 
-/* Macro keywords */
+/* Keywords */
 #define MACRO_START_KW "mcro"
 #define MACRO_END_KW "mcroend"
+#define INSTRUCTIONS                                                           \
+    {                                                                          \
+    }
+#define DIRECTIVES                                                             \
+    {                                                                          \
+    }
 
 #define RESERVED_KW                                                            \
     {/* Instructions */                                                        \

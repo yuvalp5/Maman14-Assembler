@@ -5,24 +5,13 @@
 #ifndef ASSEMBLER_FIRST_PASS_H
 #define ASSEMBLER_FIRST_PASS_H 1
 
-/* Symbol types */
-#define SYMBOL_TYPE_CODE 1
-#define SYMBOL_TYPE_DATA 2
-#define SYMBOL_TYPE_EXTERN 3
-#define SYMBOL_TYPE_ENTRY 4
-
-/* Addressing modes */
-#define ADDR_MODE_IMMEDIATE 0
-#define ADDR_MODE_DIRECT 1
-#define ADDR_MODE_INDEX 2
-#define ADDR_MODE_REGISTER 3
-
 /* Memory for storing machine code - declared globally for second pass access */
 extern int *code_memory;
 
 /**
  * @brief Master function for first pass
- * @param file_basename Base name of the source assembly file (without extension)
+ * @param file_basename Base name of the source assembly file (without
+ * extension)
  * @return 0 on success, non-zero on failure
  */
 int first_pass(const char *file_basename);

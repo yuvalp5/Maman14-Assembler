@@ -10,40 +10,28 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Logging messages to print and save in log file */
-FILE *log_file;
-
-int print_and_log(char *text, char *format) {
-    printf("%s", text);
-
-    if (log_file == NULL) {
-        /* Log file cannot be created */
-        if ((log_file = fopen(LOG_F_LOC, "w")) == NULL) {
-            printf("[UNLOGGED:] Unable to open log file | ");
-            return 1;
-        }
-        /* Log file created */
-        else {
-            printf("[LOGGED:] Log file created\n");
-        }
-    }
-    fprintf(log_file, format, text);
-    return 0;
-}
-
 void exit_graceful(int exit_code, int stop) {
-    printf("[EXIT:] program exits with code %d\n", exit_code);
-    fclose(log_file);
+    printf("[UTILS:] program exits with code %d\n", exit_code);
     if (stop) {
         exit(exit_code);
     }
+}
+
+int is_reserved_kw(char *keyword) {
+    int i;
+    for (i = 0; RESERVED_KW[i] != NULL; i++) {
+        if (strcmp(keyword, RESERVED_KW[i]) == 0) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 char *add_ext(const char *str1, const char *str2) {
     /* Allocate memory */
     char *result = malloc((strlen(str1) + strlen(str2)) * sizeof(char));
     if (!result) {
-        printf("[UTILS:] Nenory could not be allocated\n");
+        printf("[UTILS:] Memory could not be allocated\n");
         return NULL;
     }
 
@@ -86,7 +74,6 @@ int extract_macro_name(const char *line, char *macro_name) {
     /* Validate name is not empty */
     return (i > 0);
 }
-
 
 int is_reserved_word(const char *name) {
     int i;

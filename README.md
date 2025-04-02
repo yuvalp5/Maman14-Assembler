@@ -29,5 +29,11 @@ This program is an implementation of a (very) basic assembler
 
 <i>more detailed TODOs are in src</i>
 
--   expand README as progress is made
 -   manage `#include`s
+- check: different types for data and instructions? keep binary codes in tables?
+- make use of RESERVED_KW
+- DOC
+- implement Memory type? end of p. 48 - machine code, type, text
+- error checking and reporting- dont stop before ending reading stream
+- define SUCCESS_CODE globally
+- print methods in utils for debug

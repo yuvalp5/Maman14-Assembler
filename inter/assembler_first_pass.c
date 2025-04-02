@@ -21,7 +21,8 @@ extern int error_count;     /* Number of errors */
 extern int line_number;     /* Line number */
 extern Table *symbol_table; /* Symbol table */
 
-/* Master function for first pass to run the process with all of the necessary steps and functions*/
+/* Master function for first pass to run the process with all of the necessary
+ * steps and functions*/
 int first_pass(const char *file_basename) {
     FILE *input_pre_assembled = NULL; /* File pointer for the input file */
     FILE *output_file = NULL;         /* File pointer for the output file */
@@ -51,16 +52,17 @@ int first_pass(const char *file_basename) {
     /* Open files */
     input_pre_assembled = fopen(add_ext(file_basename, PAS_F_EXT),
                                 "r"); /* Open source file for reading */
-    if (!input_pre_assembled) { /* If the file is not found, print an error message and return 1 */
+    if (!input_pre_assembled) { /* If the file is not found, print an error
+                                   message and return 1 */
         perror("Error: Unable to open input file\n");
         return 1;
     }
 
     /* 2. Read the next line from the input file */
     while (fgets(line, MAX_LINE_LEN, input_pre_assembled) != NULL) {
-        line_number++; /* Increment line number */
-        is_symbol_flag = 0; /* Reset symbol flag */
-        code_index = 0; /* Reset code index */
+        line_number++;            /* Increment line number */
+        is_symbol_flag = 0;       /* Reset symbol flag */
+        code_index = 0;           /* Reset code index */
         proceed_to_next_line = 0; /* Reset proceed to next line flag */
 
         /* Make a copy of the line to work with */
@@ -78,7 +80,7 @@ int first_pass(const char *file_basename) {
                 symbol_name[len - 1] = '\0';
                 /* Check if the symbol name is not a reserved word */
                 if (!is_reserved_word(symbol_name)) {
-                    is_symbol_flag = 1; /* Set symbol flag */           
+                    is_symbol_flag = 1; /* Set symbol flag */
                     /* Get the next field (instruction) */
                     field = strtok(NULL, " \t\n");
                 }
@@ -98,12 +100,13 @@ int first_pass(const char *file_basename) {
                 }
 
                 /* 7. Encode the data values in memory, update DC */
-                operands = strtok(NULL, " \t\n"); /* Get the operands using strtok */
+                operands =
+                    strtok(NULL, " \t\n"); /* Get the operands using strtok */
                 if (!encode_data_storage(field, operands, code_memory)) {
                     proceed_to_next_line = 1;
                     continue;
                 }
-                proceed_to_next_line = 1; 
+                proceed_to_next_line = 1;
             }
             /* 8. Check if line contains .extern or .entry directive */
             else if (is_extern_or_entry(field)) {
@@ -121,7 +124,8 @@ int first_pass(const char *file_basename) {
                                                    SYMBOL_TYPE_EXTERN);
                         } else { /* if the operand is missing, print an
                                     error message */
-                            printf("Error in line %d: Missing operand for "
+                            printf("[FIRST PASS:] Error in line %d: Missing "
+                                   "operand for "
                                    ".extern directive\n",
                                    line_number);
                             error_count++;
@@ -214,7 +218,8 @@ int first_pass(const char *file_basename) {
                     /* Update IC */
                     IC += L;
                 } else {
-                    printf("Error in line %d: Unknown instruction '%s'\n",
+                    printf("[FIRST PASS:] Error in line %d: Unknown "
+                           "instruction '%s'\n",
                            line_number, instruction);
                     error_count++;
                 }
@@ -237,20 +242,21 @@ int first_pass(const char *file_basename) {
     /* Note: code_memory is preserved for use in the second pass */
 
     /* Print summary */
-    printf("First pass finished.\n");
-    printf("ICF = %d, DCF = %d\n", ICF, DCF);
-    printf("Symbol count = %d\n", symbol_table ? symbol_table->count : 0);
-    printf("Error count = %d\n", error_count);
+    printf("[FIRST PASS:] First pass finished.\n");
+    printf("[FIRST PASS:] ICF = %d, DCF = %d\n", ICF, DCF);
+    printf("[FIRST PASS:] Symbol count = %d\n",
+           symbol_table ? symbol_table->count : 0);
+    printf("[FIRST PASS:] Error count = %d\n", error_count);
 
     /* Print symbol table for debugging purposes */
     print_symbol_table();
 
     if (error_count > 0) {
-        printf("First pass completed with errors.\n");
+        printf("[FIRST PASS:] First pass completed with errors.\n");
     } else {
-        printf("First pass completed successfully.\n");
+        printf("[FIRST PASS:] First pass completed successfully.\n");
     }
-    printf("Total errors: %d\n", error_count);
+    printf("[FIRST PASS:] Total errors: %d\n", error_count);
 
     /* Write first pass output to file if no errors */
     if (error_count == 0) {
@@ -280,9 +286,10 @@ int first_pass(const char *file_basename) {
                         code_memory[ICF + i]);
             }
         }
-        /* Print a message to the user that the first pass output was written to the output file */
-        printf("First pass output written to %s\n",
-               add_ext(file_basename, OBJ_F_EXT)); 
+        /* Print a message to the user that the first pass output was written to
+         * the output file */
+        printf("[FIRST PASS:] First pass output written to %s\n",
+               add_ext(file_basename, OBJ_F_EXT));
 
         /* Close the output file */
         fclose(output_file);
@@ -315,8 +322,6 @@ int is_symbol(char *field) {
 
     return 0;
 }
-
-
 
 int is_storage(char *field) {
     return (strcmp(field, ".data") == 0 || strcmp(field, ".string") == 0);
@@ -518,7 +523,8 @@ void save_values_with_binary(unsigned int *code, int word_count, int *memory,
     for (i = 0; i < word_count; i++) {
         /* Check if we're within memory bounds */
         if (current_ic + i >= MAX_MEMORY_SIZE) {
-            printf("Error: Memory overflow at address %d\n", current_ic + i);
+            printf("[FIRST PASS:] Error: Memory overflow at address %d\n",
+                   current_ic + i);
             return;
         }
 
@@ -526,7 +532,7 @@ void save_values_with_binary(unsigned int *code, int word_count, int *memory,
         code_memory[current_ic + i] = code[i];
 
         /* Debug output */
-        printf("Memory[%d] = 0x%04X\n", current_ic + i, code[i]);
+        printf("[FIRST PASS:] Memory[%d] = 0x%04X\n", current_ic + i, code[i]);
     }
 }
 
@@ -535,7 +541,7 @@ void add_lcf_to_data(int offset) {
     int i;
     Symbol *symbol;
 
-    printf("Adding offset %d to data symbols\n", offset);
+    printf("[FIRST PASS:] Adding offset %d to data symbols\n", offset);
 
     /* Iterate through the symbol table using the Table structure */
     if (symbol_table && symbol_table->content) {
@@ -544,8 +550,8 @@ void add_lcf_to_data(int offset) {
             if (symbol && symbol->symbol_type == SYMBOL_TYPE_DATA) {
                 /* Add the full ICF value to each data symbol */
                 symbol->symbol_value += offset;
-                printf("Updated symbol '%s' to value %d\n", symbol->name,
-                       symbol->symbol_value);
+                printf("[FIRST PASS:] Updated symbol '%s' to value %d\n",
+                       symbol->name, symbol->symbol_value);
             }
         }
     }
@@ -562,7 +568,8 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
     /* Handle no-operand instructions first */
     if (instruction_index == 15 || instruction_index == 16) { /* rts or stop */
         if (operand != NULL && operand_num == 1) {
-            printf("Error in line %d: Unexpected operand for no-operand "
+            printf("[FIRST PASS:] Error in line %d: Unexpected operand for "
+                   "no-operand "
                    "instruction\n",
                    line_number);
             error_count++;
@@ -585,14 +592,16 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
         if (instruction_index >= 6 &&
             instruction_index <= 14) { /* clr to prn */
             if (operand_num == 1) {
-                printf("Error in line %d: Missing operand for instruction\n",
+                printf("[FIRST PASS:] Error in line %d: Missing operand for "
+                       "instruction\n",
                        line_number);
                 error_count++;
                 return 0;
             }
         } else if (instruction_index >= 1 &&
                    instruction_index <= 5) { /* Two-operand instructions */
-            printf("Error in line %d: Missing operand %d for instruction\n",
+            printf("[FIRST PASS:] Error in line %d: Missing operand %d for "
+                   "instruction\n",
                    line_number, operand_num);
             error_count++;
             return 0;
@@ -614,16 +623,17 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
     case 1:                     /* mov */
         if (operand_num == 1) { /* Source operand */
             if (addressing_mode == -1) {
-                printf("Error in line %d: Invalid source operand for mov\n",
+                printf("[FIRST PASS:] Error in line %d: Invalid source operand "
+                       "for mov\n",
                        line_number);
                 error_count++;
                 return 0;
             }
         } else { /* Destination operand */
             if (addressing_mode == 0 || addressing_mode == -1) {
-                printf(
-                    "Error in line %d: Invalid destination operand for mov\n",
-                    line_number);
+                printf("[FIRST PASS:] Error in line %d: Invalid destination "
+                       "operand for mov\n",
+                       line_number);
                 error_count++;
                 return 0;
             }
@@ -632,7 +642,8 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
 
     case 2: /* cmp */
         if (addressing_mode == -1) {
-            printf("Error in line %d: Invalid operand for cmp\n", line_number);
+            printf("[FIRST PASS:] Error in line %d: Invalid operand for cmp\n",
+                   line_number);
             error_count++;
             return 0;
         }
@@ -642,7 +653,8 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
     case 4:                     /* sub */
         if (operand_num == 1) { /* Source operand */
             if (addressing_mode == -1) {
-                printf("Error in line %d: Invalid source operand for "
+                printf("[FIRST PASS:] Error in line %d: Invalid source operand "
+                       "for "
                        "arithmetic operation\n",
                        line_number);
                 error_count++;
@@ -650,7 +662,8 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
             }
         } else { /* Destination operand */
             if (addressing_mode == 0 || addressing_mode == -1) {
-                printf("Error in line %d: Invalid destination operand for "
+                printf("[FIRST PASS:] Error in line %d: Invalid destination "
+                       "operand for "
                        "arithmetic operation\n",
                        line_number);
                 error_count++;
@@ -662,7 +675,8 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
     case 5:                             /* lea */
         if (operand_num == 1) {         /* Source operand */
             if (addressing_mode != 1) { /* Must be direct addressing */
-                printf("Error in line %d: lea requires direct addressing for "
+                printf("[FIRST PASS:] Error in line %d: lea requires direct "
+                       "addressing for "
                        "source\n",
                        line_number);
                 error_count++;
@@ -670,9 +684,9 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
             }
         } else { /* Destination operand */
             if (addressing_mode == 0 || addressing_mode == -1) {
-                printf(
-                    "Error in line %d: Invalid destination operand for lea\n",
-                    line_number);
+                printf("[FIRST PASS:] Error in line %d: Invalid destination "
+                       "operand for lea\n",
+                       line_number);
                 error_count++;
                 return 0;
             }
@@ -684,7 +698,8 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
     case 8: /* inc */
     case 9: /* dec */
         if (addressing_mode == 0 || addressing_mode == -1) {
-            printf("Error in line %d: Invalid operand for single-operand "
+            printf("[FIRST PASS:] Error in line %d: Invalid operand for "
+                   "single-operand "
                    "instruction\n",
                    line_number);
             error_count++;
@@ -696,7 +711,8 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
     case 11: /* bne */
     case 12: /* jsr */
         if (addressing_mode == 0 || addressing_mode == -1) {
-            printf("Error in line %d: Invalid operand for jump instruction\n",
+            printf("[FIRST PASS:] Error in line %d: Invalid operand for jump "
+                   "instruction\n",
                    line_number);
             error_count++;
             return 0;
@@ -705,7 +721,8 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
 
     case 13: /* red */
         if (addressing_mode == 0 || addressing_mode == -1) {
-            printf("Error in line %d: Invalid operand for red instruction\n",
+            printf("[FIRST PASS:] Error in line %d: Invalid operand for red "
+                   "instruction\n",
                    line_number);
             error_count++;
             return 0;
@@ -714,7 +731,8 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
 
     case 14: /* prn */
         if (addressing_mode == -1) {
-            printf("Error in line %d: Invalid operand for prn instruction\n",
+            printf("[FIRST PASS:] Error in line %d: Invalid operand for prn "
+                   "instruction\n",
                    line_number);
             error_count++;
             return 0;
@@ -726,7 +744,8 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
     if (addressing_mode == 0) { /* Immediate addressing */
         value = operand + 1;    /* Skip the '#' */
         if (!isdigit(value[0]) && value[0] != '-') {
-            printf("Error in line %d: Invalid immediate value '%s'\n",
+            printf("[FIRST PASS:] Error in line %d: Invalid immediate value "
+                   "'%s'\n",
                    line_number, operand);
             error_count++;
             return 0;
@@ -738,7 +757,8 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
         reg = operand + 1;
         reg_num = reg[0] - '0';
         if (reg_num < 0 || reg_num > 7) {
-            printf("Error in line %d: Invalid register number '%s'\n",
+            printf("[FIRST PASS:] Error in line %d: Invalid register number "
+                   "'%s'\n",
                    line_number, operand);
             error_count++;
             return 0;
@@ -749,7 +769,8 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
     if (addressing_mode == 2) { /* Index addressing */
         bracket = strchr(operand, '[');
         if (!bracket) {
-            printf("Error in line %d: Invalid index addressing format '%s'\n",
+            printf("[FIRST PASS:] Error in line %d: Invalid index addressing "
+                   "format '%s'\n",
                    line_number, operand);
             error_count++;
             return 0;
@@ -758,9 +779,9 @@ int validate_operand(char *operand, int instruction_index, int operand_num,
         /* Check register part */
         reg = bracket + 1;
         if (reg[0] != 'r' || reg[1] < '0' || reg[1] > '7' || reg[2] != ']') {
-            printf(
-                "Error in line %d: Invalid register in index addressing '%s'\n",
-                line_number, operand);
+            printf("[FIRST PASS:] Error in line %d: Invalid register in index "
+                   "addressing '%s'\n",
+                   line_number, operand);
             error_count++;
             return 0;
         }
@@ -786,7 +807,8 @@ int encode_data_storage(const char *directive, char *operands,
     if (strcmp(directive, ".data") == 0) {
         /* Handle .data directive */
         if (!operands) {
-            printf("Error in line %d: Missing operands for .data directive\n",
+            printf("[FIRST PASS:] Error in line %d: Missing operands for .data "
+                   "directive\n",
                    line_number);
             error_count++;
             return 0;
@@ -803,7 +825,8 @@ int encode_data_storage(const char *directive, char *operands,
 
             /* Check if it's a valid number */
             if (!isdigit(token[0]) && token[0] != '-') {
-                printf("Error in line %d: Invalid number in .data directive: "
+                printf("[FIRST PASS:] Error in line %d: Invalid number in "
+                       ".data directive: "
                        "'%s'\n",
                        line_number, token);
                 error_count++;
@@ -815,14 +838,16 @@ int encode_data_storage(const char *directive, char *operands,
 
             /* Store the value in data memory */
             if (DC >= MAX_MEMORY_SIZE) {
-                printf("Error in line %d: Data segment overflow\n",
-                       line_number);
+                printf(
+                    "[FIRST PASS:] Error in line %d: Data segment overflow\n",
+                    line_number);
                 error_count++;
                 return 0;
             }
 
             code_memory[DC++] = value;
-            printf("Data[%d] = %d\n", DC - 1, value); /* Debug output */
+            printf("[FIRST PASS:] Data[%d] = %d\n", DC - 1,
+                   value); /* Debug output */
 
             /* Get next number */
             token = strtok(NULL, ",");
@@ -830,7 +855,8 @@ int encode_data_storage(const char *directive, char *operands,
     } else if (strcmp(directive, ".string") == 0) {
         /* Handle .string directive */
         if (!operands) {
-            printf("Error in line %d: Missing string for .string directive\n",
+            printf("[FIRST PASS:] Error in line %d: Missing string for .string "
+                   "directive\n",
                    line_number);
             error_count++;
             return 0;
@@ -847,24 +873,27 @@ int encode_data_storage(const char *directive, char *operands,
         /* Store each character plus null terminator */
         for (i = 0; operands[i] != '\0'; i++) {
             if (DC >= MAX_MEMORY_SIZE) {
-                printf("Error in line %d: Data segment overflow\n",
-                       line_number);
+                printf(
+                    "[FIRST PASS:] Error in line %d: Data segment overflow\n",
+                    line_number);
                 error_count++;
                 return 0;
             }
             code_memory[DC++] = operands[i];
-            printf("Data[%d] = %d ('%c')\n", DC - 1, operands[i],
+            printf("[FIRST PASS:] Data[%d] = %d ('%c')\n", DC - 1, operands[i],
                    operands[i]); /* Debug output */
         }
 
         /* Add null terminator */
         if (DC >= MAX_MEMORY_SIZE) {
-            printf("Error in line %d: Data segment overflow\n", line_number);
+            printf("[FIRST PASS:] Error in line %d: Data segment overflow\n",
+                   line_number);
             error_count++;
             return 0;
         }
         code_memory[DC++] = '\0';
-        printf("Data[%d] = 0 ('\\0')\n", DC - 1); /* Debug output */
+        printf("[FIRST PASS:] Data[%d] = 0 ('\\0')\n",
+               DC - 1); /* Debug output */
     }
 
     return 1;
@@ -875,38 +904,39 @@ void print_symbol_table(void) {
     int i;
     Symbol *symbol;
 
-    printf("\nSymbol Table Contents:\n");
-    printf("----------------------\n");
-    printf("Name\t\tValue\tType\n");
-    printf("----------------------\n");
+    printf("[FIRST PASS:] \nSymbol Table Contents:\n");
+    printf("[FIRST PASS:] ----------------------\n");
+    printf("[FIRST PASS:] Name\t\tValue\tType\n");
+    printf("[FIRST PASS:] ----------------------\n");
 
     /* Print the symbol table contents */
     if (symbol_table && symbol_table->content) {
         for (i = 0; i < symbol_table->count; i++) {
             symbol = (Symbol *)symbol_table->content[i];
             if (symbol) {
-                printf("%-16s %-8d ", symbol->name, symbol->symbol_value);
+                printf("[FIRST PASS:] %-16s %-8d ", symbol->name,
+                       symbol->symbol_value);
                 switch (symbol->symbol_type) {
                 case SYMBOL_TYPE_CODE:
-                    printf("CODE\n");
+                    printf("[FIRST PASS:] CODE\n");
                     break;
                 case SYMBOL_TYPE_DATA:
-                    printf("DATA\n");
+                    printf("[FIRST PASS:] DATA\n");
                     break;
                 case SYMBOL_TYPE_EXTERN:
-                    printf("EXTERN\n");
+                    printf("[FIRST PASS:] EXTERN\n");
                     break;
                 case SYMBOL_TYPE_ENTRY:
-                    printf("ENTRY\n");
+                    printf("[FIRST PASS:] ENTRY\n");
                     break;
                 default:
-                    printf("UNKNOWN\n");
+                    printf("[FIRST PASS:] UNKNOWN\n");
                     break;
                 }
             }
         }
     }
-    printf("----------------------\n");
+    printf("[FIRST PASS:] ----------------------\n");
 }
 
 /* Implementation of symbol table functions */
@@ -948,27 +978,28 @@ int get_symbol_type(const char *name) {
     return -1; /* Symbol not found */
 }
 
-
 /* Helper function to handle symbol table operations */
 int handle_symbol_addition(const char *symbol_name, int value, int type) {
     /* Check if symbol already exists in the table */
     if (find_symbol_in_table(symbol_name)) {
-        printf("Error in line %d: Symbol '%s' already defined\n", line_number,
-               symbol_name);
+        printf("[FIRST PASS:] Error in line %d: Symbol '%s' already defined\n",
+               line_number, symbol_name);
         error_count++;
         return 0;
     }
 
     /* Check if table is  full */
     if (symbol_table && symbol_table->count >= MAX_SYMBOLS) {
-        printf("Error: Symbol table full, max %d symbols\n", MAX_SYMBOLS);
+        printf("[FIRST PASS:] Error: Symbol table full, max %d symbols\n",
+               MAX_SYMBOLS);
         error_count++;
         return 0;
     }
 
     /* Add symbol to table with specified type */
     if (add_symbol_to_table(symbol_name, value, type) != 0) {
-        printf("Error in line %d: Failed to add symbol '%s' to table\n",
+        printf("[FIRST PASS:] Error in line %d: Failed to add symbol '%s' to "
+               "table\n",
                line_number, symbol_name);
         error_count++;
         return 0;
@@ -984,7 +1015,8 @@ int initialize_code_memory() {
     if (!code_memory) {
         code_memory = (int *)malloc(MAX_MEMORY_SIZE * sizeof(int));
         if (!code_memory) {
-            printf("Error: Memory allocation failed for code storage\n");
+            printf("[FIRST PASS:] Error: Memory allocation failed for code "
+                   "storage\n");
             error_count++;
             return 0;
         }

@@ -8,19 +8,18 @@
 #include <stdio.h>
 
 /**
- * @brief Prints a message and logs it to a file
- * @param text The message to be printed and logged
- * @param format The format string for the message
- * @return 0 on success; 1 on failure
- */
-int print_and_log(char *text, char *format);
-
-/**
  * @brief Exit gracefully with provided code and message, closing log file
  * @param exit_code The exit code to be returned
  * @param stop Whether to exit() the program or not
  */
 void exit_graceful(int exit_code, int stop);
+
+/**
+ * @brief Checks if a string is a reserved keyword
+ * @param keyword String to check
+ * @return 1 if the string is a reserved keyword; 0 otherwise
+ */
+int is_reserved_kw(char *keyword);
 
 /**
  * Concatenes two strings to a new one (used to add filename extensions)

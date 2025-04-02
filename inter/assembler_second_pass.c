@@ -34,22 +34,23 @@ extern Table *symbol_table; /* Symbol table */
  * @return 0 on success, 1 on failure
  */
 int second_pass(const char *object_file) {
-    FILE *input_file = NULL; /* Input file */
+    FILE *input_file = NULL;  /* Input file */
     FILE *output_file = NULL; /* Output file */
-    FILE *ext_file = NULL; /* External file */
-    FILE *ent_file = NULL; /* Entry file */
-    char line[MAX_LINE_LEN]; /* Line to be processed */
-    char *field; /* Field to be used for parsing */
-    char *symbol_name; /* Symbol name */
-    Symbol *symbol; /* Symbol instance */
-    int i; /* Index */
-    int has_entry = 0; /* Entry flag */
-    int has_extern = 0; /* Extern flag */
+    FILE *ext_file = NULL;    /* External file */
+    FILE *ent_file = NULL;    /* Entry file */
+    char line[MAX_LINE_LEN];  /* Line to be processed */
+    char *field;              /* Field to be used for parsing */
+    char *symbol_name;        /* Symbol name */
+    Symbol *symbol;           /* Symbol instance */
+    int i;                    /* Index */
+    int has_entry = 0;        /* Entry flag */
+    int has_extern = 0;       /* Extern flag */
 
     /* Open input file (.am file after macro expansion) */
     input_file = fopen(add_ext(object_file, PAS_F_EXT), "r");
     if (!input_file) {
-        print_and_log("Error: Unable to open input file", NULL);
+        printf("[SECOND PASS:] Error: Unable to open input file at %s\n",
+               add_ext(object_file, PAS_F_EXT));
         return 1;
     }
 
@@ -78,13 +79,13 @@ int second_pass(const char *object_file) {
                     if (symbol->symbol_type != SYMBOL_TYPE_EXTERN) {
                         symbol->symbol_type |= SYMBOL_TYPE_ENTRY;
                     } else {
-                        print_and_log(
-                            "Error: Symbol cannot be both entry and extern",
-                            symbol_name);
+                        printf("[SECOND PASS:] Error: Symbol cannot be both "
+                               "entry and extern");
                         error_count++;
                     }
                 } else {
-                    print_and_log("Error: Entry symbol not found", symbol_name);
+                    printf("[SECOND PASS:] Error: Entry symbol %s not found",
+                           symbol_name);
                     error_count++;
                 }
             }
@@ -99,8 +100,9 @@ int second_pass(const char *object_file) {
                     /* Add external symbol if not already in table */
                     if (insert_symbol(symbol_name, 0, SYMBOL_TYPE_EXTERN) !=
                         0) {
-                        print_and_log("Error: Failed to add external symbol",
-                                      symbol_name);
+                        printf("[SECOND PASS:] Error: Failed to add external "
+                               "symbol %s\n",
+                               symbol_name);
                         error_count++;
                     }
                 }
@@ -111,7 +113,8 @@ int second_pass(const char *object_file) {
     /* Create output files */
     output_file = fopen(add_ext(object_file, OBJ_F_EXT), "w");
     if (!output_file) {
-        print_and_log("Error: Unable to create object file", NULL);
+        printf("[SECOND PASS:] Error: Unable to create object file at %s\n",
+               add_ext(object_file, OBJ_F_EXT));
         fclose(input_file);
         return 1;
     }
@@ -137,7 +140,8 @@ int second_pass(const char *object_file) {
     if (has_entry) {
         ent_file = fopen(add_ext(object_file, ENT_F_EXT), "w");
         if (!ent_file) {
-            print_and_log("Error: Unable to create entry file", NULL);
+            printf("[SECOND PASS:] Error: Unable to create entry file at %s\n",
+                   add_ext(object_file, ENT_F_EXT));
             fclose(input_file);
             return 1;
         }
@@ -158,7 +162,9 @@ int second_pass(const char *object_file) {
     if (has_extern) {
         ext_file = fopen(add_ext(object_file, EXT_F_EXT), "w");
         if (!ext_file) {
-            print_and_log("Error: Unable to create external file", NULL);
+            printf(
+                "[SECOND PASS:] Error: Unable to create external file at %s\n",
+                add_ext(object_file, EXT_F_EXT));
             fclose(input_file);
             return 1;
         }
@@ -175,7 +181,7 @@ int second_pass(const char *object_file) {
         fclose(ext_file); /* Close the external file */
     }
 
-    fclose(input_file); /* Close the input file */
+    fclose(input_file);     /* Close the input file */
     return error_count > 0; /* Return 0 on success (no errors), 1 on failure */
 }
 
