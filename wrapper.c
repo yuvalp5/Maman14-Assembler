@@ -4,11 +4,9 @@
  * extensions
  */
 
-#include "inter/assembler_first_pass.h"
-#include "inter/assembler_second_pass.h"
-#include "shared/definitions.h"
-#include "inter/pre_assembler.h"
-#include "shared/utils.h"
+#include "assembler_first_pass.h"
+#include "assembler_second_pass.h"
+#include "pre_assembler.h"
 #include <stdio.h>
 
 /**
@@ -32,6 +30,9 @@ int main(int argc, char *argv[]) {
 
     /* Iterate over args */
     for (i = 1; i < argc; i++) {
+
+        /* Report args */
+        printf("[WRAPPER:] Processing file: %s\n", argv[i]);
 
         /* Pre-assembler */
         if (pre_assembler(argv[i]) == 0) {
@@ -60,7 +61,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
     }
-    printf("[WRAPPER:] All operations completed successfully.\n");
+    printf("[WRAPPER:] All operations completed successfully.\n\n");
 
     return 0;
 }

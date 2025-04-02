@@ -30,6 +30,7 @@ This program is an implementation of a (very) basic assembler
 <i>more detailed TODOs are in src</i>
 
 -   manage `#include`s
+- files with extensions as variables
 - check: different types for data and instructions? keep binary codes in tables?
 - make use of RESERVED_KW
 - DOC

@@ -6,7 +6,7 @@
 #ifndef ASSEMBLER_SECOND_PASS_H
 #define ASSEMBLER_SECOND_PASS_H 1
 
-#include "shared/types.h"
+#include "types.h"
 
 /**
  * @brief Master function for second pass

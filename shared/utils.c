@@ -17,7 +17,7 @@ void exit_graceful(int exit_code, int stop) {
     }
 }
 
-int is_reserved_kw(char *keyword) {
+/*int is_reserved_kw(char *keyword) {
     int i;
     for (i = 0; RESERVED_KW[i] != NULL; i++) {
         if (strcmp(keyword, RESERVED_KW[i]) == 0) {
@@ -25,7 +25,7 @@ int is_reserved_kw(char *keyword) {
         }
     }
     return 0;
-}
+}*/
 
 char *add_ext(const char *str1, const char *str2) {
     /* Allocate memory */

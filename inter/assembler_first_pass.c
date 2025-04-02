@@ -9,17 +9,6 @@
 
 /* Memory for storing machine code - made global for second pass access */
 int *code_memory = NULL;
-/* TODO yuval: not needed! exists globally from types.h- remove this */
-/* Global variables from types.h */
-extern int DC;              /* Data counter */
-extern int IC;              /* Instruction counter */
-extern int ICF;             /* Final IC value */
-extern int DCF;             /* Final DC value */
-extern int L;               /* Number of words in the instruction */
-extern int symbol_count;    /* Number of symbols in the symbol table */
-extern int error_count;     /* Number of errors */
-extern int line_number;     /* Line number */
-extern Table *symbol_table; /* Symbol table */
 
 /* Master function for first pass to run the process with all of the necessary
  * steps and functions*/
