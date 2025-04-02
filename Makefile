@@ -13,7 +13,7 @@ BIN_DIR = $(BUILD_DIR)/bin
 # Local includes
 INCLUDES = -I. -I./shared -I./inter
 
-# Source files - wrapper.c inter/pre_assembler.c inter/assembler_first_pass.c inter/assembler_second_pass.c shared/utils.c shared/types.c
+# Source files
 SRCS = $(wildcard *.c inter/*.c shared/*.c)
 
 # Corrosponding object files
