@@ -9,41 +9,29 @@
 
 /* Memory for storing machine code - made global for second pass access */
 int *code_memory = NULL;
-/* TODO yuval: not needed! exists globally from types.h- remove this */
-/* Global variables from types.h */
-extern int DC;              /* Data counter */
-extern int IC;              /* Instruction counter */
-extern int ICF;             /* Final IC value */
-extern int DCF;             /* Final DC value */
-extern int L;               /* Number of words in the instruction */
-extern int symbol_count;    /* Number of symbols in the symbol table */
-extern int error_count;     /* Number of errors */
-extern int line_number;     /* Line number */
-extern Table *symbol_table; /* Symbol table */
 
 /* Master function for first pass to run the process with all of the necessary
  * steps and functions*/
 int first_pass(const char *file_basename) {
-    FILE *input_pre_assembled = NULL; /* File pointer for the input file */
-    FILE *output_file = NULL;         /* File pointer for the output file */
-    char line[MAX_LINE_LEN];          /* Line buffer */
-    char line_copy[MAX_LINE_LEN];     /* Copy of the line to work with */
-    int is_symbol_flag = 0;           /* Flag to check if a symbol is found */
-    char *field;                      /* Field pointer */
-    char *instruction;                /* Instruction pointer */
-    char *operand1;                   /* Operand 1 pointer */
-    char *operand2;                   /* Operand 2 pointer */
-    unsigned int code[MAX_LINE_LEN];  /* To store generated machine code */
-    int code_index = 0;               /* Index for the code array */
-    int i;                            /* Counter for various loops */
-    char symbol_name[MAX_SYMBOL_LEN + 1]; /* Symbol name buffer */
-    int operand1_mode;                    /* Operand 1 mode */
-    int operand2_mode;                    /* Operand 2 mode */
-    int proceed_to_next_line =
-        0; /* Flag to check if we should proceed to the next line */
-    char *extern_symbol; /* External symbol pointer */
-    char *operands;      /* For data storage operands */
-    int len;             /* Length variable for string operations */
+    FILE *input_pre_assembled = NULL; 
+    FILE *output_file = NULL;         
+    char line[MAX_LINE_LEN];          
+    char line_copy[MAX_LINE_LEN];     
+    int is_symbol_flag = 0;           
+    char *field;                      
+    char *instruction;                
+    char *operand1;                   
+    char *operand2;                   
+    unsigned int code[MAX_LINE_LEN];  
+    int code_index = 0;               
+    int i;                            
+    char symbol_name[MAX_SYMBOL_LEN + 1]; 
+    int operand1_mode;                   
+    int operand2_mode;                   
+    int proceed_to_next_line = 0; 
+    char *extern_symbol; 
+    char *operands;      
+    int len;             
 
     /* Initialize IC and DC */
     IC = 100; /* Start at 100 as per requirements */

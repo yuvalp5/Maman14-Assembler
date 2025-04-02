@@ -1,5 +1,5 @@
 /**
- * @brief Pre-Assembler implementation as a master method and subfunctions
+ * @brief Pre-Assembler implementation as a master method and subfunctions. Handles macro identification and expansion stages.
  */
 
 #ifndef PRE_ASSEMBLER_H

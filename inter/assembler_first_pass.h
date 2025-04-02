@@ -1,5 +1,5 @@
 /**
- * @brief First pass implementation
+ * @brief First pass implementation. Handles symbol table creation, instruction processing, and data storage.
  */
 
 #ifndef ASSEMBLER_FIRST_PASS_H

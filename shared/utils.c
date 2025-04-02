@@ -1,8 +1,3 @@
-/* TODO: implement errors using `perror()`
- * TODO: implement `replace_segment()`- get file and end pos. to replace the
- * segment with the new one
- */
-
 #include "utils.h"
 #include "definitions.h"
 #include <ctype.h>
