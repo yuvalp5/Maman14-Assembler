@@ -15,7 +15,11 @@ OBJS = $(SRCS:.c=.o)
 INCLUDES = -I. -I./shared -I./inter
 
 # Final executable
+<<<<<<< HEAD
 TARGET = io/bin
+=======
+TARGET = assembler
+>>>>>>> ba7ccce76210c9fefe710287bad32c42c6fb4563
 
 # Link object files using Makefile pattern rules
 $(TARGET): $(OBJS)

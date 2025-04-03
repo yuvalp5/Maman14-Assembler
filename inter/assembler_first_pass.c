@@ -13,45 +13,43 @@ int *code_memory = NULL;
 /* Master function for first pass to run the process with all of the necessary
  * steps and functions*/
 int first_pass(const char *file_basename) {
-    FILE *input_pre_assembled = NULL; 
-    FILE *output_file = NULL;         
-    char line[MAX_LINE_LEN];          
-    char line_copy[MAX_LINE_LEN];     
-    int is_symbol_flag = 0;           
-    char *field;                      
-    char *instruction;                
-    char *operand1;                   
-    char *operand2;                   
-    unsigned int code[MAX_LINE_LEN];  
-    int code_index = 0;               
-    int i;                            
-    char symbol_name[MAX_SYMBOL_LEN + 1]; 
-    int operand1_mode;                   
-    int operand2_mode;                   
-    int proceed_to_next_line = 0; 
-    char *extern_symbol; 
-    char *operands;      
-    int len;             
+    FILE *input_pre_assembled = NULL;
+    FILE *output_file = NULL;
+    char line[MAX_LINE_LEN];
+    char line_copy[MAX_LINE_LEN];
+    int is_symbol_flag = 0;
+    char *field;
+    char *instruction;
+    char *operand1;
+    char *operand2;
+    unsigned int code[MAX_LINE_LEN];
+    int code_index = 0;
+    int i;
+    char symbol_name[MAX_SYMBOL_LEN + 1];
+    int operand1_mode;
+    int operand2_mode;
+    int proceed_to_next_line = 0;
+    char *extern_symbol;
+    char *operands;
+    int len;
 
     /* Initialize IC and DC */
-    IC = 100; /* Start at 100 as per requirements */
-    DC = 0;   /* Data counter starts at 0 */
+    IC = 100;
+    DC = 0;
 
     /* Open files */
-    input_pre_assembled = fopen(add_ext(file_basename, PAS_F_EXT),
-                                "r"); /* Open source file for reading */
-    if (!input_pre_assembled) { /* If the file is not found, print an error
-                                   message and return 1 */
+    input_pre_assembled = fopen(add_ext(file_basename, PAS_F_EXT), "r");
+    if (!input_pre_assembled) {
         perror("Error: Unable to open input file\n");
         return 1;
     }
 
-    /* 2. Read the next line from the input file */
+    /* Read the next line from the input file */
     while (fgets(line, MAX_LINE_LEN, input_pre_assembled) != NULL) {
-        line_number++;            /* Increment line number */
-        is_symbol_flag = 0;       /* Reset symbol flag */
-        code_index = 0;           /* Reset code index */
-        proceed_to_next_line = 0; /* Reset proceed to next line flag */
+        line_number++;
+        is_symbol_flag = 0;
+        code_index = 0;
+        proceed_to_next_line = 0;
 
         /* Make a copy of the line to work with */
         strcpy(line_copy, line);
@@ -78,11 +76,9 @@ int first_pass(const char *file_basename) {
         /* Process the line only if it's not empty, not a comment, and we
          * have a field */
         if (field != NULL && field[0] != ';') {
-            /* 5. Check if line contains a data storage directive (.data or
-             * .string) */
+            /* 5. data storage directive (.data or .string) */
             if (is_storage(field)) {
-                /* 6. If symbol definition found, add the symbol to the
-                 * symbol table */
+                /* 6. If symbol definition found */
                 if (is_symbol_flag) {
                     handle_symbol_addition(symbol_name, DC, SYMBOL_TYPE_DATA);
                 }
@@ -227,8 +223,6 @@ int first_pass(const char *file_basename) {
     /* Clean up input file handle */
     fclose(input_pre_assembled);
 
-    /* Note: code_memory is preserved for use in the second pass */
-
     /* Print summary */
     printf("[FIRST PASS:] First pass finished.\n");
     printf("[FIRST PASS:] ICF = %d, DCF = %d\n", ICF, DCF);
@@ -336,7 +330,7 @@ int search_command_in_table(char *command) {
         i++;
     }
 
-    return 0; /* Command not found */
+    return 0;
 }
 
 /* Function to calculate the number of words in an instruction */
@@ -372,7 +366,7 @@ int calc_num_of_words(char *instruction, char *operand1, char *operand2) {
 int get_addressing_mode(char *operand) {
     /* Determine addressing mode based on operand format */
     if (!operand) {
-        return -1; /* No operand */
+        return -1;
     }
 
     /* Check for immediate addressing (#value) */
@@ -402,27 +396,18 @@ int get_addressing_mode(char *operand) {
 
 /* Function to get the number of words in an operand */
 int get_operand_words(int addressing_mode) {
-    int result = 0;
-
     switch (addressing_mode) {
     case 0: /* Immediate */
-        result = 1;
-        break;
+        return 1;
     case 1: /* Direct */
-        result = 1;
-        break;
+        return 1;
     case 2: /* Index */
-        result = 2;
-        break;
-    case 3:         /* Register Direct */
-        result = 0; /* Register operands don't need extra words */
-        break;
+        return 2;
+    case 3: /* Register Direct */
+        return 0;
     default:
-        result = 0;
-        break;
+        return 0;
     }
-
-    return result;
 }
 
 void word_to_binary(int instruction_index, int operand1_mode, int operand2_mode,
@@ -444,14 +429,14 @@ void word_to_binary(int instruction_index, int operand1_mode, int operand2_mode,
 
     /* Set function code for arithmetic operations */
     switch (instruction_index) {
-    case 3:                /* add */
-        first_word |= 0x1; /* Function code 1 for add */
+    case 3: /* add */
+        first_word |= 0x1;
         break;
-    case 4:                /* sub */
-        first_word |= 0x2; /* Function code 2 for sub */
+    case 4: /* sub */
+        first_word |= 0x2;
         break;
-    case 5:                /* lea */
-        first_word |= 0x3; /* Function code 3 for lea */
+    case 5: /* lea */
+        first_word |= 0x3;
         break;
     default:
         first_word |= 0x0; /* No function code needed */
@@ -465,7 +450,6 @@ void word_to_binary(int instruction_index, int operand1_mode, int operand2_mode,
     if (operand1_mode >= 0) {
         switch (operand1_mode) {
         case 0: /* Immediate */
-            /* Value will be added by the caller */
             break;
         case 1: /* Direct */
             /* Label address will be added by the caller */

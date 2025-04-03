@@ -14,12 +14,12 @@ int pre_assembler(const char *file_basename) {
     int success = 1;
 
     /* Function variables */
-    char line[MAX_LINE_LEN]; 
+    char line[MAX_LINE_LEN];
     char first_word[MAX_MACRO_NAME_LEN + 1];
-    int in_macro = 0; 
-    char current_macro[MAX_MACRO_NAME_LEN]; 
-    char *current_content; 
-    char new_content[MAX_MACRO_CONTENT_LEN]; 
+    int in_macro = 0;
+    char current_macro[MAX_MACRO_NAME_LEN];
+    char *current_content;
+    char new_content[MAX_MACRO_CONTENT_LEN];
     Macro *existing_macro;
 
     /* Initialize line counter */
@@ -51,7 +51,7 @@ int pre_assembler(const char *file_basename) {
     /* Process the file line by line */
     while (fgets(line, MAX_LINE_LEN, user_input) != NULL) {
         line_number++;
-        printf("[PRE-ASSEMBLER:] [PRE-ASSEMBLER:] Processing line %d: %s",
+        printf("[PRE-ASSEMBLER:] [PRE-ASSEMBLER:] Processing line %d: %s\n",
                line_number, line);
 
         extract_first_word(line,

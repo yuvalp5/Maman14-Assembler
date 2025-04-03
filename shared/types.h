@@ -38,8 +38,8 @@ extern Table *label_table;
 extern Table *macro_table;
 extern Table *symbol_table;
 
-extern int DC;           /* Data counter initialized to 0 */
-extern int IC;           /* Instruction counter initialized to 100 */
+extern int DC;           /* Data counter */
+extern int IC;           /* Instruction counter */
 extern int symbol_count; /* Number of symbols in the symbol table */
 extern int error_count;  /* Number of errors */
 extern int line_number;  /* Line number */

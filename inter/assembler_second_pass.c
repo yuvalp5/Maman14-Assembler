@@ -15,17 +15,7 @@
 int search_command_in_table(const char *command);
 int get_addressing_mode(const char *operand);
 
-/* Global variables from types.h */
-extern int *code_memory;    /* Memory for storing machine code */
-extern int DC;              /* Data counter */
-extern int IC;              /* Instruction counter */
-extern int ICF;             /* Final IC value */
-extern int DCF;             /* Final DC value */
-extern int L;               /* Number of words in the instruction */
-extern int symbol_count;    /* Number of symbols in the symbol table */
-extern int error_count;     /* Number of errors */
-extern int line_number;     /* Line number */
-extern Table *symbol_table; /* Symbol table */
+extern int *code_memory; /* Memory for storing machine code */
 
 /**
  * @brief Master function for second pass
@@ -79,11 +69,11 @@ int second_pass(const char *object_file) {
                         symbol->symbol_type |= SYMBOL_TYPE_ENTRY;
                     } else {
                         printf("[SECOND PASS:] Error: Symbol cannot be both "
-                               "entry and extern");
+                               "entry and extern\n");
                         error_count++;
                     }
                 } else {
-                    printf("[SECOND PASS:] Error: Entry symbol %s not found",
+                    printf("[SECOND PASS:] Error: Entry symbol %s not found\n",
                            symbol_name);
                     error_count++;
                 }
