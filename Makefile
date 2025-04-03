@@ -2,44 +2,40 @@
 CC = gcc
 
 # Flags
-CFLAGS = -Wall -ansi -pedantic 
+CFLAGS = -Wall -ansi -pedantic
 LFLAGS = 
 
-# Directories
-BUILD_DIR = build
-OBJ_DIR = $(BUILD_DIR)/obj
-BIN_DIR = $(BUILD_DIR)/bin
+# Source files - wrapper.c inter/pre_assembler.c inter/assembler_first_pass.c inter/assembler_second_pass.c shared/utils.c shared/types.c
+SRCS = $(wildcard *.c) $(wildcard inter/*.c) $(wildcard shared/*.c)
 
-# Local includes
+# Object files
+OBJS = $(SRCS:.c=.o)
+
+# Header directories for lookup
 INCLUDES = -I. -I./shared -I./inter
 
-# Source files
-SRCS = $(wildcard *.c inter/*.c shared/*.c)
-
-# Corrosponding object files
-OBJS = $(patsubst %.c, $(OBJ_DIR)/%.o, $(notdir $(SRCS)))
-
 # Final executable
-TARGET = $(BIN_DIR)/bin
+TARGET = assembler
 
-# Link object files
+# Link object files using Makefile pattern rules
 $(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $(TARGET)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o $@ $^
 
-# Compile source files
-$(OBJ_DIR)/%.o: $(wildcard */%.c)
-	@mkdir -p $(OBJ_DIR)
+# Compile source files using Makefile pattern rules
+%.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# Build everything
+# Build targets
 all: $(TARGET)
 
-# Clean build files
-clean:
-	rm -rf $(BUILD_DIR)/*
+# Clean option - testing files not removed for debug pruposes
+clean: 
+	rm -f $(OBJS) $(TARGET)
+	rm -f io/*.am io/*.ob io/*.ext io/*.ent
 
-# Run program
+# Run the test
 run: $(TARGET)
 	./$(TARGET) $(ARGS)
 
+# Fake targets
 .PHONY: all clean run
