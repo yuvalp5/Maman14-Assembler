@@ -65,7 +65,7 @@ int first_pass(const char *file_basename) {
                 strncpy(symbol_name, field, len - 1);
                 symbol_name[len - 1] = '\0';
                 /* Check if the symbol name is not a reserved word */
-                if (!is_reserved_word(symbol_name)) {
+                if (is_reserved_word(symbol_name)) {
                     is_symbol_flag = 1; /* Set symbol flag */
                     /* Get the next field (instruction) */
                     field = strtok(NULL, " \t\n");
@@ -297,7 +297,7 @@ int is_symbol(char *field) {
 
         /* Check if the symbol name is valid (not empty and not a reserved word)
          */
-        if (strlen(symbol_name) > 0 && !is_reserved_word(symbol_name)) {
+        if (strlen(symbol_name) > 0 && is_reserved_word(symbol_name)) {
             return 1;
         }
     }

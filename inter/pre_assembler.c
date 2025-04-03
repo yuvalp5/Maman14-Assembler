@@ -69,17 +69,18 @@ int pre_assembler(const char *file_basename) {
                 success = 0;
                 continue;
             }
-            if (!is_reserved_word(current_macro)) {
+            if (is_reserved_word(current_macro)) {
+                printf("[PRE-ASSEMBLER:] Adding macro '%s'\n", current_macro);
+                /* Add macro to table with empty content */
+                insert_macro(current_macro, "");
+                in_macro = 1;
+            } else {
                 printf("[PRE-ASSEMBLER:] Error: Invalid macro name '%s' at "
                        "line %d\n",
                        current_macro, line_number);
                 success = 0;
                 continue;
             }
-            printf("[PRE-ASSEMBLER:] Adding macro '%s'\n", current_macro);
-            /* Add macro to table with empty content */
-            insert_macro(current_macro, "");
-            in_macro = 1;
         }
         /* Macro definition end */
         else if (strcmp(first_word, MACRO_END_KW) == 0) {
