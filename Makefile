@@ -28,14 +28,14 @@ $(TARGET): $(OBJS)
 # Build targets
 all: $(TARGET)
 
+# Run the test
+run: $(TARGET)
+	./$(TARGET) $@
+
 # Clean option - testing files not removed for debug pruposes
 clean: 
 	rm -f $(OBJS) $(TARGET)
 	rm -f io/*.am io/*.ob io/*.ext io/*.ent
-
-# Run the test
-run: $(TARGET)
-	./$(TARGET) $(ARGS)
 
 # Fake targets
 .PHONY: all clean run
