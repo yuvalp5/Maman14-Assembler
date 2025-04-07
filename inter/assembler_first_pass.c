@@ -235,6 +235,7 @@ int first_pass(const char *file_basename) {
 
     if (error_count > 0) {
         printf("[FIRST PASS:] First pass completed with errors.\n");
+        return 1;
     } else {
         printf("[FIRST PASS:] First pass completed successfully.\n");
     }
