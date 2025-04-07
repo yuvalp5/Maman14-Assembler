@@ -38,12 +38,6 @@
 /* Keywords */
 #define MACRO_START_KW "mcro"
 #define MACRO_END_KW "mcroend"
-#define INSTRUCTIONS                                                           \
-    {                                                                          \
-    }
-#define DIRECTIVES                                                             \
-    {                                                                          \
-    }
 
 #define RESERVED_KW                                                            \
     {/* Instructions */                                                        \

@@ -12,16 +12,6 @@ void exit_graceful(int exit_code, int stop) {
     }
 }
 
-/*int is_reserved_kw(char *keyword) {
-    int i;
-    for (i = 0; RESERVED_KW[i] != NULL; i++) {
-        if (strcmp(keyword, RESERVED_KW[i]) == 0) {
-            return 1;
-        }
-    }
-    return 0;
-}*/
-
 char *add_ext(const char *str1, const char *str2) {
     /* Allocate memory */
     char *result = malloc((strlen(str1) + strlen(str2)) * sizeof(char));
@@ -73,7 +63,6 @@ int extract_macro_name(const char *line, char *macro_name) {
 int is_reserved_word(const char *name) {
     int i;
     /* List of reserved words that can't be macro names */
-    /* TODO use RESERVED_KW */
     const char *reserved_words[] = RESERVED_KW;
 
     /* Check if name is empty */

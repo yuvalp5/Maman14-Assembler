@@ -876,9 +876,9 @@ void print_symbol_table(void) {
     int i;
     Symbol *symbol;
 
-    printf("[FIRST PASS:] \nSymbol Table Contents:\n");
+    printf("[FIRST PASS:] Symbol Table Contents:\n");
     printf("[FIRST PASS:] ----------------------\n");
-    printf("[FIRST PASS:] Name\t\tValue\tType\n");
+    printf("[FIRST PASS:] Name\t\t\tValue\t\tType\n");
     printf("[FIRST PASS:] ----------------------\n");
 
     /* Print the symbol table contents */
@@ -890,19 +890,19 @@ void print_symbol_table(void) {
                        symbol->symbol_value);
                 switch (symbol->symbol_type) {
                 case SYMBOL_TYPE_CODE:
-                    printf("[FIRST PASS:] CODE\n");
+                    printf("CODE\n");
                     break;
                 case SYMBOL_TYPE_DATA:
-                    printf("[FIRST PASS:] DATA\n");
+                    printf("DATA\n");
                     break;
                 case SYMBOL_TYPE_EXTERN:
-                    printf("[FIRST PASS:] EXTERN\n");
+                    printf("EXTERN\n");
                     break;
                 case SYMBOL_TYPE_ENTRY:
-                    printf("[FIRST PASS:] ENTRY\n");
+                    printf("ENTRY\n");
                     break;
                 default:
-                    printf("[FIRST PASS:] UNKNOWN\n");
+                    printf("UNKNOWN\n");
                     break;
                 }
             }

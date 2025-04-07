@@ -24,11 +24,3 @@ This program is an implementation of a (very) basic assembler
 `/core`: Logic and backend innerworkings
 
 `inter`: Proccessing of input before execution
-
-# TODOs:
-
-- make use of RESERVED_KW
-- DOC
-- error checking and reporting- dont stop before ending reading stream
-- MAIN: / LOOP: errors in first pass
-- second pass

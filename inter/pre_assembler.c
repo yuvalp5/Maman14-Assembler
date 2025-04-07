@@ -9,8 +9,7 @@
 /* Function to process a line in the pre-assembler as a master method */
 int pre_assembler(const char *file_basename) {
     /* Files to work on */
-    FILE *user_input = NULL,
-         *output_pre_assembled = NULL; /* Pointers to input and output files*/
+    FILE *user_input = NULL, *output_pre_assembled = NULL;
     int success = 1;
 
     /* Function variables */
@@ -22,7 +21,7 @@ int pre_assembler(const char *file_basename) {
     char new_content[MAX_MACRO_CONTENT_LEN];
     Macro *existing_macro;
 
-    /* Initialize line counter */
+    /* Line counter */
     line_number = 0;
 
     /* Open input file */
@@ -51,13 +50,11 @@ int pre_assembler(const char *file_basename) {
     /* Process the file line by line */
     while (fgets(line, MAX_LINE_LEN, user_input) != NULL) {
         line_number++;
-        printf("[PRE-ASSEMBLER:] [PRE-ASSEMBLER:] Processing line %d: %s\n",
-               line_number, line);
 
         extract_first_word(line,
                            first_word); /* Extract the first word to identify if
                                            it's a macro definition  */
-        printf("[PRE-ASSEMBLER:] First word: '%s'\n", first_word);
+        /*printf("[PRE-ASSEMBLER:] First word: '%s'\n", first_word);*/
 
         /* if we found a macro definition */
         if (strcmp(first_word, MACRO_START_KW) == 0) {
@@ -132,7 +129,6 @@ int pre_assembler(const char *file_basename) {
                 /* Expand macro by writing its content to output */
                 fputs(macro->value, output_pre_assembled);
             } else {
-                printf("[PRE-ASSEMBLER:] Regular line\n");
                 /* Copy regular line directly to output */
                 fputs(line, output_pre_assembled);
             }
