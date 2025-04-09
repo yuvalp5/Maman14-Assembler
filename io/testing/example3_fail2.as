@@ -1,41 +1,45 @@
-; Assembly file that will pass first pass but fail during second pass
+; Test file that passes first pass but fails in second pass
 
-; Define a macro for later use
-mcro print_hello
-    prn "Hello"
+; Define a macro that will be used correctly
+mcro inc_and_print
+    add #1, r1
+    mov r1, r2
 mcroend
 
-; This file has syntactically valid code that will pass the first pass
-; But will fail in the second pass due to symbol resolution issues
+; Define another macro for testing
+mcro print_value
+    mov r2, r3
+    mov r3, r4
+mcroend
 
-START: mov r1, r2
-       add #5, r3
-       
-; Error 1: Using an undefined label in an instruction (detected in second pass)
-       jmp &NONEXISTENT_LABEL   ; This label doesn't exist
+; Start of code section
+START: mov r1, r2        ; Initialize registers
+       add #5, r3        ; Some valid operation
 
-; Error 2: Entry declaration for an undefined symbol
-.entry UNDEFINED_ENTRY          ; This symbol is never defined
+; Error 1: Trying to use a data label in an instruction
+DATA_VAL: .data 100, 200, 300
+         jmp DATA_VAL    ; Error: Can't jump to data label
 
-; Error 3: Label defined both as extern and entry (conflict)
-.extern CONFLICT_SYMBOL
-.entry CONFLICT_SYMBOL          ; Error: Symbol cannot be both extern and entry
+; Error 2: Using an entry symbol that is defined as external
+.extern CONFLICT_SYM
+.entry CONFLICT_SYM      ; Error: Symbol can't be both extern and entry
 
-; Error 4: Using an external symbol as data
-.extern EXTERNAL_DATA
-       mov EXTERNAL_DATA[r1], r2  ; Valid in first pass, but will cause issues in second pass
+; Some valid data definitions
+STR1: .string "Test"
+STR2: .string "Hello"
 
-; Error 5: Reference to undefined macro
-undefined_macro                 ; This macro was never defined
+; Error 3: Using wrong addressing mode with external
+.extern EXTERNAL_LABEL
+       mov EXTERNAL_LABEL, r1  ; Valid in first pass, error in second
 
-; Error 6: Using a label before it's defined (forward reference)
-; This would pass first pass but might cause issues in second pass
-       lea LATER_DEFINED, r6    ; Forward reference
-       
-; Some valid code and definitions
-VALID_LABEL: mov r3, r4
-             print_hello        ; Using the defined macro
-             
-LATER_DEFINED: .data 10, 20, 30  ; The symbol referenced earlier
+; Some more valid code
+LOOP: mov r1, r2
+      add r2, r3
+      
+; Error 4: Using string label as number
+       lea STR1, r5     ; Valid in first pass, error in second
+
+; Error 5: Using data label in branch
+       jmp DATA_VAL     ; Valid in first pass, error in second
 
 END: stop 
