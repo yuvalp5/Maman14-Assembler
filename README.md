@@ -15,7 +15,6 @@ This program is an implementation of a (very) basic assembler
 -   error handling
 -   instructions - `mov`, `cmp`, `add`, `sub`, `lea`, `clr`, `not`, `inc`, `dec`, `jmp`, `bne`, `jsr`, `red`, `prn`, `rts`, `stop`
 -   registers 0-7
--   todo - add more details as progress is made
 
 ### Structure:
 
